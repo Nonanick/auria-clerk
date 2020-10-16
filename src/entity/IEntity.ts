@@ -1,3 +1,4 @@
+import { IModelValidation } from '../model/validate/IModelValdation';
 import { IEntityProcedureHook } from "../procedure/entity/hook/IEntityProcedureHook";
 import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
 import { IProxyEntityProcedureRequest } from "../procedure/entity/proxy/IProxyEntityProcedureRequest";
@@ -31,6 +32,11 @@ export interface IEntity {
   // Add default filters
   filters?: {
     [name: string]: EntityDefaultFilter;
+  };
+
+  // Model validation
+  validate?: {
+    [name: string]: IModelValidation;
   };
 
   // Entity procedures

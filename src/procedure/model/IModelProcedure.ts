@@ -1,3 +1,4 @@
+import { MaybePromise } from '../../error/Maybe';
 import { IModelProcedureContext } from "./context/IModelProcedureContext";
 import { IModelProcedureRequest } from "./IModelProcedureRequest";
 import { IModelProcedureResponse } from "./IModelProcedureResponse";
@@ -15,4 +16,4 @@ export type ExecuteModelProcedureFunction<
   > = (
     request: IModelProcedureRequest,
     context: Context
-  ) => Response | Promise<Response>;  
+  ) => MaybePromise<Response>;  

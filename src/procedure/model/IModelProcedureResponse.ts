@@ -1,8 +1,8 @@
-import { IModel } from "../../model/IModel";
+import { Model } from '../../model/Model';
 import { IModelProcedureRequest } from "./IModelProcedureRequest";
 
 export interface IModelProcedureResponse {
   request: IModelProcedureRequest;
-  model: IModel;
+  model: Model;
   success: boolean;
 }

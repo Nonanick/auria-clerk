@@ -111,7 +111,7 @@ export class MysqlArchive implements IArchive {
       let allProps: string[] = [];
       for (let prop in request.entity.properties) {
         let p = request.entity.properties[prop];
-        if (p.private !== true) {
+        if (p.isPrivate() !== true) {
           allProps.push(prop);
         }
       }

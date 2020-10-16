@@ -1,9 +1,9 @@
 import { Maybe, MaybePromise } from "../../error/Maybe";
-import { IModel } from "../IModel";
+import { Model } from "../Model";
 
 export interface IModelValidation {
   name: string;
   validation: ModelValidationFunction;
 }
 
-export type ModelValidationFunction = (model: IModel) => Maybe<true> | MaybePromise<true>;
+export type ModelValidationFunction = (model: Model) => Maybe<true> | MaybePromise<true>;

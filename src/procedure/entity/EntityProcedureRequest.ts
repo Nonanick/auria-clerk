@@ -1,0 +1,6 @@
+export class EntityProcedureRequest {
+
+  constructor() {
+
+  }
+}

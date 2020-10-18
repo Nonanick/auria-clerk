@@ -13,6 +13,7 @@ export interface IProperty {
   isDescriptive?: boolean;
   required?: boolean;
   private?: boolean;
+  unique?: boolean;
   default?: DefaultValue;
   validate?: PropertyValidationFunction | IPropertyValidation | IPropertyValidation[];
   sanitize?: PropertySanitizationFunction | IPropertySanitization | IPropertySanitization[];

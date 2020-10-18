@@ -1,14 +1,14 @@
 import { AppError } from '../../../../error/AppError';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
-import { MysqlArchive } from "../../MysqlArchive";
-import { MysqlArchiveTransaction } from '../../transaction/MysqlArchiveTransaction';
-import { IMysqlModelProcedure } from './IMysqlModelProcedure';
+import { SQLiteArchive } from '../../SQLiteArchive';
+import { SQLiteArchiveTransaction } from '../../transaction/SQLiteArchiveTransaction';
+import { ISQLiteModelProcedure } from './ISQLiteModelProcedure';
 
 export const CreateProcedure:
-  IMysqlModelProcedure
+  ISQLiteModelProcedure
   = {
   name: 'create',
-  async execute(this: MysqlArchive | MysqlArchiveTransaction, request) {
+  async execute(this: SQLiteArchive | SQLiteArchiveTransaction, request) {
 
     const model = request.model;
     const propertyNames: string[] = [];

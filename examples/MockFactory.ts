@@ -1,8 +1,14 @@
 import { nanoid } from "nanoid";
+import { Entity } from "../src/entity/Entity";
 import { Factory } from "../src/entity/Factory";
+import { Maybe } from "../src/error/Maybe";
 import { IProperty, IPropertyIdentifier } from "../src/property/IProperty";
 
 export class MockFactory extends Factory {
+
+  hydrateEntity(entity: Entity): Maybe<Entity> {
+    return entity;
+  }
 
   get defaultIdentifier(): IPropertyIdentifier {
     return {

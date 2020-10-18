@@ -13,6 +13,14 @@ export class Property {
     return this._info.private ?? false;
   }
 
+  isRequired(): boolean {
+    return this._info.required ?? false;
+  }
+
+  isUnique(): boolean {
+    return this._info.unique ?? false;
+
+  }
   protected _info: IProperty;
 
   constructor(propertyInfo: IProperty) {

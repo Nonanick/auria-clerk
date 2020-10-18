@@ -14,19 +14,24 @@ store
     'batch_update'
   );
 
-let query = store.query('mock');
-query.filters = {
-  'user-provided': {
-    property: 'name',
-    comparisson: 'like',
-    value: 'Nic'
-  },
-  'status-active': {
-    property: 'status',
-    comparisson: 'equal',
-    value: 'active'
-  },
-};
+let query = store.query('mock')
+  .addFilter(
+    'user-provided',
+    {
+      property: 'name',
+      comparisson: 'like',
+      value: 'Nic'
+    }
+  )
+  .addFilter(
+    'status-active',
+    {
+      property: 'status',
+      comparisson: 'equal',
+      value: 'active'
+    }
+  );
+
 
 query.removeLimit();
 

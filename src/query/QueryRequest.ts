@@ -1,9 +1,10 @@
 import { Entity } from "../entity/Entity";
-import { IFilterQuery } from "./filter/IFilterQuery";
+import { IFilterQuery, implementsFilterComparisson } from "./filter/IFilterQuery";
 import { IQueryRequest } from "./IQueryRequest";
 import { ILimitQuery } from "./limit/ILimitQuery";
 import { IOrderBy } from "./order/IOrderBy";
 import { Model } from '../model/Model';
+import { FilterComparison } from './filter/FilterComparisson';
 
 export class QueryRequest {
 
@@ -13,7 +14,7 @@ export class QueryRequest {
 
   protected _properties?: string[] = [];
 
-  protected _filters: { [name: string]: IFilterQuery; } = {};
+  protected _filters: IFilterQuery = {};
 
   protected _lockedFilters: { [name: string]: IFilterQuery; } = {};
 
@@ -36,8 +37,23 @@ export class QueryRequest {
     return { ...this._filters, ...this._lockedFilters };
   }
 
-  set filters(filters: { [name: string]: IFilterQuery; }) {
+  set filters(filters: IFilterQuery) {
     this._filters = filters;
+  }
+
+  addFilter(filterName: string, filter: IFilterQuery | FilterComparison | FilterComparison[]) {
+    if (
+      implementsFilterComparisson(filter)
+      || Array.isArray(filter)
+    ) {
+      this._filters[filterName] = {
+        ['filter-' + filterName]: filter
+      };
+      return this;
+    }
+
+    this._filters[filterName] = filter;
+    return this;
   }
 
   get limit(): ILimitQuery {
@@ -50,6 +66,7 @@ export class QueryRequest {
 
   removeLimit() {
     this._limit = { amount: -1 };
+    return this;
   }
 
   get ordering(): IOrderBy[] {
@@ -62,6 +79,7 @@ export class QueryRequest {
 
   addOrderBy(...order: IOrderBy[]) {
     this._ordering = [...this._ordering, ...order];
+    return this;
   }
 
   removeOrderBy() {
@@ -70,6 +88,7 @@ export class QueryRequest {
 
   lockedFilter(filters: { [name: string]: IFilterQuery; }) {
     this._lockedFilters = { ...this._lockedFilters, ...filters };
+    return this;
   }
 
   constructor(queriedEntity: Entity) {
@@ -87,7 +106,7 @@ export class QueryRequest {
 
   }
 
-  loadQueryRequest(request: IQueryRequest) {
+  loadQueryRequest(request: Omit<IQueryRequest, "entity">) {
 
     // Properties
     this._properties = [...this.properties, ...request.properties ?? []];
@@ -125,6 +144,7 @@ export class QueryRequest {
       this.limit = request.limit;
     }
 
+    return this;
 
   }
 
@@ -148,6 +168,11 @@ export class QueryRequest {
     return this._properties ?? [];
   }
 
+  addProperties(...property: string[]) {
+    this._properties = [...this._properties ?? [], ...property];
+    return this;
+  }
+
   async fetch(): Promise<Model[]> {
     return [];
   }
@@ -156,11 +181,4 @@ export class QueryRequest {
   async fetchOne(): Promise<Model | undefined> {
     return;
   }
-}
-
-function implementsQueryRequest(obj: any): obj is IQueryRequest {
-  return (
-    obj.entity != null
-    && (typeof obj.entity === 'string' || typeof obj.entity === 'object')
-  );
 }

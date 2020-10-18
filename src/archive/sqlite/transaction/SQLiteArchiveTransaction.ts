@@ -1,25 +1,26 @@
-import { PoolConnection } from 'mysql2/promise';
+import { Database } from 'sqlite3';
 import { AppException } from '../../../error/AppException';
 import { MaybePromise } from '../../../error/Maybe';
 import { ComparableValues } from '../../../query/filter/FilterComparisson';
-import { MysqlArchive } from '../MysqlArchive';
+import { SQLiteArchive } from '../SQLiteArchive';
 
-export class MysqlArchiveTransaction {
+export class SQLiteArchiveTransaction {
 
-  protected _trxConn?: PoolConnection;
+  protected _trxConn?: Database;
   protected _ended: boolean = false;
 
-  constructor(protected _conn: MysqlArchive) {
+  constructor(protected _conn: SQLiteArchive) {
   }
 
   protected async getConnection() {
+
     if (this._ended) {
-      throw new AppException('Mysql Transaction already finished!');
+      throw new AppException('SQLite Transaction already finished!');
     }
 
     if (this._trxConn == null) {
-      this._trxConn = await (await this._conn.connection()).getConnection();
-      await this._trxConn.beginTransaction();
+      this._trxConn = await this._conn.connection();
+      await this._trxConn?.exec('START TRANSACTION');
     }
 
     return this._trxConn;
@@ -37,7 +38,8 @@ export class MysqlArchiveTransaction {
     let poolConn = await this.getConnection();
 
     try {
-      let ret = await poolConn.execute(query, params);
+      let stmt = await poolConn.prepare(query, params);
+      let ret = stmt.run();
       return ret;
     } catch (err) {
       await this.rollback();
@@ -55,12 +57,11 @@ export class MysqlArchiveTransaction {
     }
     this._ended = true;
     try {
-      await this._trxConn!.commit();
+      this._trxConn!.exec('COMMIT');
     } catch (err) {
-      await this._trxConn!.rollback();
+      this._trxConn!.exec('ROLLBACK');
       throw err;
     } finally {
-      await this._trxConn!.release();
       delete this._trxConn;
     }
   }
@@ -72,11 +73,10 @@ export class MysqlArchiveTransaction {
     this._ended = true;
 
     try {
-      await this._trxConn!.rollback();
+      this._trxConn!.exec('ROLLBACK');
     } catch (err) {
       console.error('Failed to rollback mysql transaction! ', err);
     } finally {
-      await this._trxConn!.release();
       delete this._trxConn;
     }
   }

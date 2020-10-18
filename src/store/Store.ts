@@ -69,7 +69,18 @@ export class Store {
         continue;
       }
 
-      this._entities[entity.name] = new Entity(entity, this._defaultFactory);
+      let createdEntity = new Entity(entity, this._defaultFactory);
+
+      let hydratedEntity = factory.hydrateEntity(createdEntity);
+      if (hydratedEntity instanceof Error) {
+        console.error(
+          'Failed to hydrate entity ', createdEntity.name,
+          '\nFactory generated error ', hydratedEntity.message,
+        );
+        continue;
+      }
+
+      this._entities[entity.name] = hydratedEntity;
       continue;
     }
   }

@@ -8,6 +8,8 @@ import { IProperty } from "../property/IProperty";
 import { Property } from '../property/Property';
 import { PropertyGetProxy } from "../property/proxy/PropertyGetProxy";
 import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
+import { ComparableValues } from '../query/filter/FilterComparisson';
+import { ValueHistory } from './history/ValueHistory';
 
 type ModelProxies = {
   get: {
@@ -52,6 +54,8 @@ class Model {
 
   protected _values: any;
 
+  protected _valuesHistory: ValueHistory[] = [];
+
   protected _changedProperties: string[] = [];
 
   protected _hooks: ModelHooks = {};
@@ -75,17 +79,17 @@ class Model {
     this._procedures[procedure.name] = procedure;
   }
 
-  $addProcedureProxy(
+  $proxyProcedure(
     type: 'request',
     procedure: string,
     proxy: IProxyModelProcedureRequest
   ): void;
-  $addProcedureProxy(
+  $proxyProcedure(
     type: 'response',
     procedure: string,
     proxy: IProxyModelProcedureResponse
   ): void;
-  $addProcedureProxy(
+  $proxyProcedure(
     type: 'request' | 'response',
     procedure: string,
     proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse
@@ -106,6 +110,17 @@ class Model {
         break;
     }
 
+  }
+
+  $hookProcedure(
+    procedure: string,
+    hook: IModelProcedureHook
+  ): Model {
+    if (this._hooks[procedure] == null) {
+      this._hooks[procedure] = [];
+    }
+    this._hooks[procedure].push(hook);
+    return this;
   }
 
   $properties() {
@@ -209,18 +224,52 @@ class Model {
     return ret as T;
   }
 
-  async $commit(): MaybePromise<true> {
+  async $commit<T = any>(validate = true): MaybePromise<T> {
 
     // Validate model
-    let isValid = await this._entity.validate(this);
-    if (isValid instanceof Error) {
-      return isValid;
+    if (validate === true) {
+      let isValid = await this._entity.validate(this);
+      if (isValid instanceof Error) {
+        return isValid;
+      }
     }
 
-    // Fire hooks
+    // Create history
+    this._valuesHistory.push(
+      {
+        changedProperties: this._changedProperties,
+        comitted_at: new Date(Date.now()),
+        modelRef: this,
+        values: this._values,
+      }
+    );
 
-    return true;
+    // Update state
+    this._changedProperties = [];
 
+    return this._values;
+
+  }
+
+  async $id(): Promise<ComparableValues> {
+    return await this.$get(this._entity.identifier.name);
+  }
+
+  $history(): ValueHistory[] {
+    return this._valuesHistory;
+  }
+
+  $rollback(): boolean {
+    if (this._valuesHistory.length > 1) {
+
+      let lastHistory: ValueHistory = this._valuesHistory[this._valuesHistory.length - 1];
+
+      this._changedProperties = [];
+      this._values = lastHistory.values;
+
+      return true;
+    }
+    return false;
   }
 
 }

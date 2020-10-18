@@ -1,24 +1,21 @@
 import { IArchive } from '../IArchive';
-import { MysqlConnectionInfo } from './connection/MysqlConnetionInfo';
-import { Pool, createPool } from 'mysql2/promise';
+import { SQLiteConnectionInfo } from './connection/SQLiteConnetionInfo';
 import { QueryRequest } from '../../query/QueryRequest';
 import { MaybePromise } from '../../error/Maybe';
 import { QueryResponse } from '../../query/QueryResponse';
 import { IFilterQuery, implementsFilterComparisson } from '../../query/filter/IFilterQuery';
 import { ComparableValues, FilterComparison } from '../../query/filter/FilterComparisson';
-import { customAlphabet } from 'nanoid';
 import { PropertyComparison } from '../../property/comparisson/PropertyComparisson';
 import { IModelProcedure } from '../../procedure/model/IModelProcedure';
 import { IEntityProcedure } from '../../procedure/entity/IEntityProcedure';
-import { MysqlArchiveTransaction } from './transaction/MysqlArchiveTransaction';
+import { Database } from 'sqlite3';
+import { SQLiteArchiveTransaction } from './transaction/SQLiteArchiveTransaction';
 
-export class MysqlArchive implements IArchive {
+export class SQLiteArchive implements IArchive {
 
-  protected _connectionInfo: MysqlConnectionInfo;
+  protected _connectionInfo: SQLiteConnectionInfo;
 
-  protected _mysqlConn?: Pool;
-
-  protected _paramNameGenerator = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10);
+  protected _sqliteConn?: Database;
 
   protected _modelProcedures: {
     [name: string]: IModelProcedure;
@@ -28,7 +25,7 @@ export class MysqlArchive implements IArchive {
     [name: string]: IEntityProcedure;
   } = {};
 
-  constructor(connectionInfo: MysqlConnectionInfo) {
+  constructor(connectionInfo: SQLiteConnectionInfo) {
     this._connectionInfo = connectionInfo;
   }
 
@@ -57,17 +54,31 @@ export class MysqlArchive implements IArchive {
   }
 
   async connect() {
-    this._mysqlConn = await createPool(this._connectionInfo);
-    return this._mysqlConn;
+    return new Promise<Database>((resolve, reject) => {
+
+      this._sqliteConn = new Database(
+        this._connectionInfo.filename,
+        this._connectionInfo.openMode,
+        (err) => {
+          if (err == null) {
+            resolve(this._sqliteConn);
+          } else {
+            reject(err);
+          }
+        }
+      );
+
+    });
+
   }
 
-  async connection(): Promise<Pool> {
+  async connection(): Promise<Database> {
 
-    if (this._mysqlConn == null) {
+    if (this._sqliteConn == null) {
       await this.connect();
     }
 
-    return this._mysqlConn!;
+    return this._sqliteConn!;
 
   }
 
@@ -81,11 +92,20 @@ export class MysqlArchive implements IArchive {
       'with params',
       sql.params
     );
-    let values = await conn.query(sql.query, sql.params);
 
-    console.log('Returned values: ', values);
+    let stmt = await conn.prepare(sql.query, sql.params);
+    return new Promise<QueryResponse>((resolve, reject) => {
+      stmt.get((err, rows) => {
+        if (err != null) {
+          reject(err);
+          return;
+        }
+        let response = new QueryResponse();
+        response.addRows(rows);
+        resolve(response);
+      });
+    });
 
-    return new QueryResponse();
 
   }
 
@@ -145,6 +165,7 @@ export class MysqlArchive implements IArchive {
       if (filterString.length > 0) {
         builtSQL += ` WHERE ${filterString} `;
       }
+
     }
 
     // Order By
@@ -356,8 +377,8 @@ export class MysqlArchive implements IArchive {
     }
   }
 
-  transaction(): MysqlArchiveTransaction {
-    let trx = new MysqlArchiveTransaction(this);
+  transaction(): SQLiteArchiveTransaction {
+    let trx = new SQLiteArchiveTransaction(this);
 
     return trx;
   }
@@ -367,7 +388,16 @@ export class MysqlArchive implements IArchive {
   }
 
   async execute(query: string, params: ComparableValues[] = []) {
-    return (await this.connection()).execute(query, params);
+    let stmt = (await this.connection()).prepare(query, params);
+    return new Promise((resolve, reject) => {
+      stmt.run((err) => {
+        if (err != null) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
+    });
   }
 }
 

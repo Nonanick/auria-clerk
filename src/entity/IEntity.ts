@@ -30,9 +30,7 @@ export interface IEntity {
   orderBy?: string | IOrderBy;
 
   // Add default filters
-  filters?: {
-    [name: string]: EntityDefaultFilter;
-  };
+  filters?: IFilterQuery;
 
   // Model validation
   validate?: {

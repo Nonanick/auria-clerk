@@ -39,6 +39,11 @@ export interface IEntity {
 
   // Entity procedures
   procedures?: {
+    optOut?: {
+      create?: boolean;
+      update?: boolean;
+      delete?: boolean;
+    };
     model?: {
       [name: string]: IModelProcedure<any, any>;
     };
@@ -49,7 +54,6 @@ export interface IEntity {
 
   // Proxy entity/model procedures, intervene in the natural flow 
   proxy?: {
-
     // Model procedures target a single model
     model?: {
       procedure?: {

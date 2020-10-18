@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { Entity } from "../src/entity/Entity";
 import { Factory } from "../src/entity/Factory";
 import { Maybe } from "../src/error/Maybe";
-import { IProperty, IPropertyIdentifier } from "../src/property/IProperty";
+import { IPropertyIdentifier } from "../src/property/IProperty";
 
 export class MockFactory extends Factory {
 

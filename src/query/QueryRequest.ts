@@ -5,6 +5,7 @@ import { ILimitQuery } from "./limit/ILimitQuery";
 import { IOrderBy } from "./order/IOrderBy";
 import { Model } from '../model/Model';
 import { FilterComparison } from './filter/FilterComparisson';
+import { MaybePromise } from '../error/Maybe';
 
 export class QueryRequest {
 
@@ -173,12 +174,31 @@ export class QueryRequest {
     return this;
   }
 
-  async fetch(): Promise<Model[]> {
-    return [];
+  async fetch(): MaybePromise<Model[]> {
+
+    let response = await this._entity.archive.query(this);
+
+    if (response instanceof Error) {
+      return response;
+    }
+
+    return await response.rowsAsModels(this._entity);
   }
 
   // Ignores limiter
-  async fetchOne(): Promise<Model | undefined> {
-    return;
+  async fetchOne(): MaybePromise<Model | undefined> {
+    this.limit = {
+      amount: 1,
+      offset: 0
+    };
+    let response = await this._entity.archive.query(this);
+
+    if (response instanceof Error) {
+      return response;
+    }
+
+    let models = await response.rowsAsModels(this._entity);
+
+    return models[0];
   }
 }

@@ -80,6 +80,9 @@ export class Store {
         continue;
       }
 
+      // Associate Factory archive to all entity and model procedures
+      factory.bindArchiveToProcedures(hydratedEntity);
+
       this._entities[entity.name] = hydratedEntity;
       continue;
     }

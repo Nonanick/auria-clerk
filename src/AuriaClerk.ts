@@ -26,10 +26,19 @@ export { IntegerType } from './property/type/common/IntegerType';
 export { StringType } from './property/type/common/StringType';
 export { UnsignedInteger } from './property/type/common/UnsignedInteger';
 export { IPropertyValidation, PropertyValidationContext, PropertyValidationFunction } from './property/validation/IPropertyValidation';
+export { AppError } from './error/AppError';
+export { AppException } from './error/AppException';
+export { Maybe, MaybePromise } from './error/Maybe';
 
 export { IArchive } from './archive/IArchive';
 
 // mysql
 export * as MySQL from './archive/mysql';
+// sqlite
+export * as SQLite from './archive/sqlite';
 
 export { Store } from './store/Store';
+
+export { Model } from './model/Model';
+export { ValueHistory } from './model/history/ValueHistory';
+export { IModelValidation, ModelValidationFunction } from './model/validate/IModelValdation';

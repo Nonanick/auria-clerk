@@ -104,6 +104,12 @@ export class Property {
     return this._info.default !== undefined;
   }
 
+  /**
+   * Get Default
+   * -----------
+   * Return the resolved default value for this property!
+   * If it's inside a function it shall call it !
+   */
   async getDefault(): Promise<DefaultValue | undefined> {
     if (!this.hasDefault()) {
       return undefined;

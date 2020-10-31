@@ -100,7 +100,7 @@ export class SQLiteArchive implements IArchive {
           reject(err);
           return;
         }
-        let response = new QueryResponse();
+        let response = new QueryResponse(request);
         response.addRows(rows);
         resolve(response);
       });

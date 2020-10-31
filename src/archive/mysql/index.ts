@@ -8,3 +8,4 @@ export { IMysqlModelProcedure } from './procedure/model/IMysqlModelProcedure';
 export { IMysqlModelProcedureResponse } from './procedure/model/IMysqlModelProcedureResponse';
 export { UpdateProcedure } from './procedure/model/UpdateProcedure';
 export { MysqlArchiveTransaction } from './transaction/MysqlArchiveTransaction';
+export { BatchUpdate, BatchUpdateContext } from './procedure/entity/BatchUpdate';

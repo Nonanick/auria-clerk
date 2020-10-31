@@ -1,9 +1,13 @@
+import { IArchive } from '../archive/IArchive';
+import { UnkownEntityProcedure } from '../error/entity/UnkownEntityPocedure';
 import { MaybePromise } from '../error/Maybe';
 import { Model } from "../model/Model";
 import { EntityProcedureRequest } from "../procedure/entity/EntityProcedureRequest";
 import { IEntityProcedureHook } from '../procedure/entity/hook/IEntityProcedureHook';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureContext } from "../procedure/entity/IEntityProcedureContext";
+import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
+import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
 import { IProxyEntityProcedureRequest } from '../procedure/entity/proxy/IProxyEntityProcedureRequest';
 import { IProxyEntityProcedureResponse } from '../procedure/entity/proxy/IProxyEntityProcedureResponse';
 import { IModelProcedureHook } from '../procedure/model/hook/IModelProcedureHook';
@@ -25,6 +29,12 @@ export class Entity {
   protected _factory: Factory;
 
   protected _entity: IEntity;
+
+  protected _archive: IArchive;
+
+  get archive(): IArchive {
+    return this._archive;
+  }
 
   protected _procedures: EntityProcedures = {
     model: {},
@@ -61,6 +71,10 @@ export class Entity {
     return this._entity.filters ?? {};
   }
 
+  get proceduresFor() {
+    return this._procedures;
+  }
+
   hasFilters(): boolean {
     let keys = Object.keys(this.filters);
     return keys.length > 0;
@@ -93,6 +107,7 @@ export class Entity {
   }
 
   constructor(init: IEntity, factory: Factory) {
+
     this._entity = init;
     this._factory = factory;
 
@@ -108,6 +123,12 @@ export class Entity {
       );
       this._properties[newProp.name] = newProp;
     }
+
+    this._archive = factory.archive;
+
+    this._procedures.entity = init.procedures?.entity ?? {};
+    this._procedures.model = init.procedures?.model ?? {};
+
   }
 
   query(request?: Omit<IQueryRequest, "entity">): QueryRequest {
@@ -118,11 +139,35 @@ export class Entity {
     return query;
   }
 
-  execute(
+  async execute<Context extends IEntityProcedureContext = IEntityProcedureContext>(
     procedure: string,
-    context?: IEntityProcedureContext
-  ): EntityProcedureRequest {
-    return new EntityProcedureRequest();
+    context: Context
+  ): MaybePromise<IEntityProcedureResponse> {
+
+    if (this._procedures.entity[procedure] == null) {
+      return new UnkownEntityProcedure(
+        `Failed to execute procedure ${procedure} on entity ${this.name}, procedure not found!`
+      );
+    }
+
+    let proc = this._procedures.entity[procedure];
+
+    let request: IEntityProcedureRequest<Context> = {
+      context: context,
+      entity: this,
+      procedure
+    };
+
+    // Apply request proxies
+    for (let proxy of this._proxies.entity.procedure[procedure]?.request ?? []) {
+      let newRequest = await proxy.proxy(request);
+      if (newRequest instanceof Error) {
+        return newRequest;
+      }
+      request = newRequest as IEntityProcedureRequest<Context>;
+    }
+
+    return await proc.execute(request);
   }
 
   model(): Model {
@@ -251,7 +296,7 @@ export class Entity {
       };
     }
 
-    this._proxies.entity.procedure[procedure][type].push(proxy);
+    this._proxies.entity.procedure[procedure][type].push(proxy as any);
     return this;
   }
 
@@ -300,8 +345,8 @@ type EntityProxies = {
   entity: {
     procedure: {
       [name: string]: {
-        request: IProxyModelProcedureRequest[];
-        response: IProxyModelProcedureResponse[];
+        request: IProxyEntityProcedureRequest[];
+        response: IProxyEntityProcedureResponse[];
       };
     };
   };

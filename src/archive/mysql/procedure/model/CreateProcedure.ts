@@ -1,3 +1,4 @@
+import { ResultSetHeader } from 'mysql2';
 import { AppError } from '../../../../error/AppError';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
 import { MysqlArchive } from "../../MysqlArchive";
@@ -72,15 +73,10 @@ export const CreateProcedure:
         propertyValues
       );
 
-      console.log(
-        'INSERT QUERY response: ', queryResponse,
-        '\nLast inserted ID: ', await this.lastInsertedId()
-      );
-
       return {
         request,
         model: request.model,
-        success: true,
+        success: (queryResponse[0] as ResultSetHeader).affectedRows == 1,
       };
 
     } catch (err) {

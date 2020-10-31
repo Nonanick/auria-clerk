@@ -75,17 +75,28 @@ export class MysqlArchive implements IArchive {
     let sql = this.requestToSQL(request);
 
     let conn = await this.connection();
+
     console.log(
       'Will now run query',
       sql.query,
       'with params',
       sql.params
     );
-    let values = await conn.query(sql.query, sql.params);
 
-    console.log('Returned values: ', values);
+    let response = new QueryResponse(request);
 
-    return new QueryResponse();
+    try {
+      let values = await conn.query(
+        sql.query,
+        sql.params
+      );
+      if (Array.isArray(values[0])) {
+        response.addRows(...values[0]);
+      }
+    } catch (err) {
+      response.addErrors(err);
+    }
+    return response;
 
   }
 

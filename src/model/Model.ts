@@ -1,4 +1,4 @@
-import { Entity } from "../entity/Entity";
+import { Entity, ProcedureProxyWildcard } from "../entity/Entity";
 import { MaybePromise } from '../error/Maybe';
 import { IModelProcedureHook } from '../procedure/model/hook/IModelProcedureHook';
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
@@ -11,12 +11,6 @@ import { PropertyGetProxy } from "../property/proxy/PropertyGetProxy";
 import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
 import { ComparableValues } from '../query/filter/FilterComparisson';
 import { ValueHistory } from './history/ValueHistory';
-import { ResolveDefaultValue } from '../property/default/DefaultValue';
-
-
-type ModelHooks = {
-  [procedureName: string]: IModelProcedureHook[];
-};
 
 class Model {
 
@@ -42,7 +36,7 @@ class Model {
 
   protected $_properties: { [name: string]: Property; } = {};
 
-  protected $_values: any = {};
+  protected $_values: ModelValues = {};
 
   protected $_valuesHistory: ValueHistory[] = [];
 
@@ -69,34 +63,24 @@ class Model {
     this.$_procedures[procedure.name] = procedure;
   }
 
-  $proxyProcedure(
-    type: 'request',
-    procedure: string,
-    proxy: IProxyModelProcedureRequest
-  ): void;
-  $proxyProcedure(
-    type: 'response',
-    procedure: string,
-    proxy: IProxyModelProcedureResponse
-  ): void;
+  $proxyProcedure(type: 'request', procedure: string, proxy: IProxyModelProcedureRequest): void;
+  $proxyProcedure(type: 'response', procedure: string, proxy: IProxyModelProcedureResponse): void;
   $proxyProcedure(
     type: 'request' | 'response',
     procedure: string,
     proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse
   ): void {
+
     if (this.$_proxies.procedures[procedure] == null) {
-      this.$_proxies.procedures[procedure] = {
-        request: [],
-        response: []
-      };
+      this.$_proxies.procedures[procedure] = { request: [], response: [] };
     }
 
     switch (type) {
       case 'request':
-        this.$_proxies.procedures[procedure].request.push(proxy);
+        this.$_proxies.procedures[procedure].request.push(proxy as IProxyModelProcedureRequest);
         break;
       case 'response':
-        this.$_proxies.procedures[procedure].response.push(proxy);
+        this.$_proxies.procedures[procedure].response.push(proxy as IProxyModelProcedureResponse);
         break;
     }
 
@@ -125,38 +109,53 @@ class Model {
     return this.$_entity.source;
   }
 
-  $set(property: string, value: any): boolean {
+  $set(objectProperties: ModelValues): boolean;
+  $set(property: string, value: ComparableValues): boolean;
+  $set(propOrObj: string | ModelValues, value?: ComparableValues): boolean {
+
+    // Iterate though each property in the object!
+    if (typeof propOrObj === 'object') {
+      let allSet = true;
+
+      for (let prop in propOrObj) {
+        let val = propOrObj[prop];
+        const propSet = this.$set(prop, val);
+        allSet &&= propSet;
+      }
+
+      return allSet;
+    }
 
     // Property exists ?
-    if (!this.$propertyExists(property)) {
+    if (!this.$propertyExists(propOrObj)) {
       console.error(
         'Property ',
-        property,
+        propOrObj,
         ' does not exists in model of source ',
         this.$_entity.name
       );
       return false;
     }
 
-    let propField = this.$properties()[property];
+    let propField = this.$properties()[propOrObj];
 
     let setValue = propField.setProxy(value, this);
     if (setValue instanceof Error) {
       return false;
     }
 
-    let isValid = propField.validate(value, this);
+    let isValid = propField.validate(value!, this);
     if (isValid !== true) {
       return false;
     }
 
-    if (setValue != this.$_values[property]) {
-      if (!this.$_changedProperties.includes(property)) {
-        this.$_changedProperties.push(property);
+    if (setValue != this.$_values[propOrObj]) {
+      if (!this.$_changedProperties.includes(propOrObj)) {
+        this.$_changedProperties.push(propOrObj);
       }
     }
 
-    this.$_values[property] = setValue;
+    this.$_values[propOrObj] = setValue;
     return true;
   }
 
@@ -216,7 +215,7 @@ class Model {
     return ret as T;
   }
 
-  async $commit<T = any>(validate = true): MaybePromise<T> {
+  async $commit<T extends ModelValues = ModelValues>(validate = true): MaybePromise<T> {
 
     // Use default values for undefined props
     for (let p in this.$_properties) {
@@ -249,7 +248,7 @@ class Model {
     // Update state
     this.$_changedProperties = [];
 
-    return this.$_values;
+    return this.$_values as any;
 
   }
 
@@ -287,7 +286,51 @@ class Model {
       model: this,
     };
 
-    return await this.$_procedures[procedure].execute(request, {});
+    // Apply request wildcard proxies
+    for (let modelProxy of this.__proxies.procedures[ProcedureProxyWildcard]?.request ?? []) {
+      let req = await modelProxy.proxy(request);
+      if (req instanceof Error) {
+        return req;
+      }
+      request = req;
+    }
+
+    // Apply request specific proxies
+    for (let modelProxy of this.__proxies.procedures[procedure]?.request ?? []) {
+      let req = await modelProxy.proxy(request);
+      if (req instanceof Error) {
+        return req;
+      }
+      request = req;
+    }
+
+    const maybeResponse = await this.$_procedures[procedure].execute(this.$_entity.archive, request, {});
+    if (maybeResponse instanceof Error) {
+      return maybeResponse;
+    }
+
+    let response = maybeResponse;
+
+    // Apply response wildcard proxies
+    for (let modelProxy of this.__proxies.procedures[procedure]?.response ?? []) {
+      let res = await modelProxy.proxy(response);
+      if (res instanceof Error) {
+        return res;
+      }
+      response = res;
+    }
+
+    // Apply response wildcard proxies
+    for (let modelProxy of this.__proxies.procedures[ProcedureProxyWildcard]?.response ?? []) {
+      let res = await modelProxy.proxy(response);
+      if (res instanceof Error) {
+        return res;
+      }
+      response = res;
+    }
+
+    return response;
+
   }
 
 }
@@ -317,8 +360,6 @@ const ProxiedModelHandler: ProxyHandler<Model> = {
   }
 };
 
-export { Model };
-
 type ModelProxies = {
   get: {
     [propertyName: string]: PropertyGetProxy[];
@@ -333,3 +374,13 @@ type ModelProxies = {
     };
   };
 };
+
+type ModelHooks = {
+  [procedureName: string]: IModelProcedureHook[];
+};
+
+export type ModelValues = {
+  [name: string]: ComparableValues;
+};
+
+export { Model };

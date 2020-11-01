@@ -3,13 +3,6 @@ export { Entity } from './entity/Entity';
 export { Factory } from './entity/Factory';
 export { HookEntity } from './entity/HookEntity';
 export { EntityDefaultFilter, IEntity } from './entity/IEntity';
-export {
-  ENTITY_PROCEDURE_REQUEST_PROXY,
-  ENTITY_PROCEDURE_RESPONSE_PROXY,
-  MODEL_PROCEDURE_REQUEST_PROXY,
-  MODEL_PROCEDURE_RESPONSE_PROXY,
-  ProxyEntity
-} from './entity/ProxyEntity';
 
 export { IProperty, IPropertyIdentifier } from './property/IProperty';
 export { IPropertyDecode } from './property/decode/IPropertyDecode';

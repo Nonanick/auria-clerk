@@ -1,15 +1,19 @@
 import { ResultSetHeader } from 'mysql2';
 import { AppError } from '../../../../error/AppError';
+import { IModelProcedureContext } from '../../../../procedure/model/context/IModelProcedureContext';
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
-import { MysqlArchive } from "../../MysqlArchive";
-import { MysqlArchiveTransaction } from '../../transaction/MysqlArchiveTransaction';
-import { IMysqlModelProcedure } from './IMysqlModelProcedure';
+import { IArchive } from '../../../IArchive';
+import { MysqlArchive } from '../../MysqlArchive';
+import { IMysqlModelProcedureResponse } from './IMysqlModelProcedureResponse';
 
-export const CreateProcedure:
-  IMysqlModelProcedure
-  = {
+export const CreateProcedure: IModelProcedure<IModelProcedureContext, IMysqlModelProcedureResponse> = {
   name: 'create',
-  async execute(this: MysqlArchive | MysqlArchiveTransaction, request) {
+  async execute(archive: IArchive, request) {
+
+    if (!(archive instanceof MysqlArchive)) {
+      return new Error('Create procedure expects an MysqlArchive!');
+    }
 
     const model = request.model;
     const propertyNames: string[] = [];
@@ -68,7 +72,7 @@ export const CreateProcedure:
 
     try {
 
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         insertSQL,
         propertyValues
       );
@@ -77,6 +81,8 @@ export const CreateProcedure:
         request,
         model: request.model,
         success: (queryResponse[0] as ResultSetHeader).affectedRows == 1,
+        sql: insertSQL,
+        bindParams: propertyValues,
       };
 
     } catch (err) {
@@ -85,6 +91,8 @@ export const CreateProcedure:
         request,
         model: request.model,
         success: false,
+        sql: insertSQL,
+        bindParams: propertyValues
       };
     }
 

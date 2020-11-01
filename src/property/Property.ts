@@ -1,5 +1,6 @@
 import { Maybe } from '../error/Maybe';
 import { Model } from '../model/Model';
+import { ComparableValues } from '../query/filter/FilterComparisson';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
 import { IProperty } from './IProperty';
 
@@ -27,7 +28,7 @@ export class Property {
     this._info = propertyInfo;
   }
 
-  validate(value: string, model: Model): Maybe<true> {
+  validate(value: ComparableValues, model: Model): Maybe<true> {
     if (this._info.validate == null) {
       return true;
     }
@@ -110,7 +111,7 @@ export class Property {
    * Return the resolved default value for this property!
    * If it's inside a function it shall call it !
    */
-  async getDefault(): Promise<DefaultValue | undefined> {
+  async getDefault(): Promise<ComparableValues | undefined> {
     if (!this.hasDefault()) {
       return undefined;
     }

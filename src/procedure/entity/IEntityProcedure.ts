@@ -1,3 +1,4 @@
+import { IArchive } from '../../archive/IArchive';
 import { MaybePromise } from '../../error/Maybe';
 import { IEntityProcedureContext } from './IEntityProcedureContext';
 import { IEntityProcedureRequest } from './IEntityProcedureRequest';
@@ -9,4 +10,4 @@ export interface IEntityProcedure<Context extends IEntityProcedureContext = IEnt
 }
 
 export type EntityProcedureFunction<Context extends IEntityProcedureContext> =
-  (request: IEntityProcedureRequest<Context>) => MaybePromise<IEntityProcedureResponse>;
+  (archive: IArchive, request: IEntityProcedureRequest<Context>) => MaybePromise<IEntityProcedureResponse>;

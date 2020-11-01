@@ -1,3 +1,4 @@
+import { IArchive } from '../../archive/IArchive';
 import { MaybePromise } from '../../error/Maybe';
 import { IModelProcedureContext } from "./context/IModelProcedureContext";
 import { IModelProcedureRequest } from "./IModelProcedureRequest";
@@ -14,6 +15,7 @@ export type ExecuteModelProcedureFunction<
   Context extends IModelProcedureContext = IModelProcedureContext,
   Response extends IModelProcedureResponse = IModelProcedureResponse
   > = (
+    archive: IArchive,
     request: IModelProcedureRequest,
     context: Context
   ) => MaybePromise<Response>;  

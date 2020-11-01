@@ -8,6 +8,6 @@ export function ExecuteEntityProcedure<
   Response extends IEntityProcedureResponse = IEntityProcedureResponse
 >(this: IEntity, procedure: string, context: IModelProcedureContext): IEntityProcedureResponse {
   return {
-
+    success: true
   };
 }

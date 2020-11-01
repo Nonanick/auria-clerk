@@ -9,7 +9,11 @@ import { IMysqlEntityProcedureResponse } from './IMysqlEntityProcedureResponse';
 
 export const BatchUpdate: IMysqlEntityProcedure<BatchUpdateContext> = {
   name: 'batch-update',
-  async execute(request) {
+  async execute(archive, request) {
+
+    if (!(archive instanceof MysqlArchive)) {
+      return new Error('Batch Update expects an MySQL archive!');
+    }
 
     let updateSQL = `UPDATE \`${request.entity.source}\` `;
 
@@ -23,12 +27,12 @@ export const BatchUpdate: IMysqlEntityProcedure<BatchUpdateContext> = {
     updateSQL += ' SET ' + updateProperties.join(' , ');
 
     let whereParams: { [name: string]: ComparableValues; } = {};
-    let whereQuery = this.sqlFromFilter(request.context.filter, whereParams);
-    let parsedWhere = this.parseNamedAttributes(whereQuery, whereParams);
+    let whereQuery = archive.sqlFromFilter(request.context.filter, whereParams);
+    let parsedWhere = archive.parseNamedAttributes(whereQuery, whereParams);
     updateSQL += ' WHERE ' + parsedWhere.query;
     bindParams.push(...parsedWhere.params);
 
-    let batchUpdateResponse = await this.execute(updateSQL, bindParams);
+    let batchUpdateResponse = await archive.execute(updateSQL, bindParams);
 
     let result: ResultSetHeader = batchUpdateResponse[0] as ResultSetHeader;
 

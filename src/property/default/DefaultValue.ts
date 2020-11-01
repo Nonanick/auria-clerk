@@ -1,11 +1,12 @@
+import { ComparableValues } from '../../query/filter/FilterComparisson';
+
 export type DefaultValue =
   | String
   | Number
   | Boolean
-  | ArrayBuffer
   | Date
-  | (() => String | Number | Boolean | ArrayBuffer | Date)
-  | (() => Promise<String | Number | Boolean | ArrayBuffer | Date>);
+  | (() => String | Number | Boolean | Date)
+  | (() => Promise<String | Number | Boolean | Date>);
 
 export async function ResolveDefaultValue(def: DefaultValue) {
   let value: any;
@@ -25,6 +26,6 @@ export async function ResolveDefaultValue(def: DefaultValue) {
     }
   }
 
-  return value;
+  return value as ComparableValues;
 
 }

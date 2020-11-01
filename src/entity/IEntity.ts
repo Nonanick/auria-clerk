@@ -58,8 +58,8 @@ export interface IEntity {
     model?: {
       procedure?: {
         [procedureName: string]: {
-          request?: IProxyModelProcedureRequest | IProxyModelProcedureRequest[];
-          response?: IProxyModelProcedureResponse | IProxyModelProcedureResponse[];
+          request: IProxyModelProcedureRequest[];
+          response: IProxyModelProcedureResponse[];
         };
       };
     };
@@ -68,8 +68,8 @@ export interface IEntity {
     entity?: {
       procedure?: {
         [procedureName: string]: {
-          request?: IProxyEntityProcedureRequest | IProxyEntityProcedureRequest[];
-          response?: IProxyEntityProcedureResponse | IProxyEntityProcedureResponse[];
+          request: IProxyEntityProcedureRequest[];
+          response: IProxyEntityProcedureResponse[];
         };
       };
     };

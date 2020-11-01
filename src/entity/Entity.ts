@@ -2,7 +2,6 @@ import { IArchive } from '../archive/IArchive';
 import { UnkownEntityProcedure } from '../error/entity/UnkownEntityPocedure';
 import { MaybePromise } from '../error/Maybe';
 import { Model } from "../model/Model";
-import { EntityProcedureRequest } from "../procedure/entity/EntityProcedureRequest";
 import { IEntityProcedureHook } from '../procedure/entity/hook/IEntityProcedureHook';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureContext } from "../procedure/entity/IEntityProcedureContext";
@@ -22,7 +21,6 @@ import { IOrderBy } from "../query/order/IOrderBy";
 import { QueryRequest } from "../query/QueryRequest";
 import { Factory } from "./Factory";
 import { IEntity } from "./IEntity";
-
 
 export class Entity {
 
@@ -111,24 +109,29 @@ export class Entity {
     this._entity = init;
     this._factory = factory;
 
+    // Properties
     let idProp = new Property(init.identifier ?? this._factory.defaultIdentifier);
     this._properties[idProp.name] = idProp;
-
     for (let propName in this._entity.properties) {
-      let newProp = new Property(
-        {
-          name: propName,
-          ...this._entity.properties[propName]
-        }
-      );
-      this._properties[newProp.name] = newProp;
+      this._properties[propName] = new Property({
+        name: propName,
+        ...this._entity.properties[propName]
+      });;
     }
 
     this._archive = factory.archive;
 
+    // Procedures
     this._procedures.entity = init.procedures?.entity ?? {};
     this._procedures.model = init.procedures?.model ?? {};
 
+    // Proxies
+    this._proxies.entity.procedure = init.proxy?.entity?.procedure ?? {};
+    this._proxies.model.procedure = init.proxy?.model?.procedure ?? {};
+
+    // Hooks
+    this._hooks.entity.procedure = init.hooks?.procedure?.entity ?? {};
+    this._hooks.model.procedure = init.hooks?.procedure?.model ?? {};
   }
 
   query(request?: Omit<IQueryRequest, "entity">): QueryRequest {
@@ -158,7 +161,16 @@ export class Entity {
       procedure
     };
 
-    // Apply request proxies
+    // Apply request proxies from wildcard proxies
+    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.request ?? []) {
+      let newRequest = await proxy.proxy(request);
+      if (newRequest instanceof Error) {
+        return newRequest;
+      }
+      request = newRequest as IEntityProcedureRequest<Context>;
+    }
+
+    // Apply request proxies from specific procedure
     for (let proxy of this._proxies.entity.procedure[procedure]?.request ?? []) {
       let newRequest = await proxy.proxy(request);
       if (newRequest instanceof Error) {
@@ -167,7 +179,32 @@ export class Entity {
       request = newRequest as IEntityProcedureRequest<Context>;
     }
 
-    return await proc.execute(request);
+    const maybeResponse = await proc.execute(this.archive, request);
+    if (maybeResponse instanceof Error) {
+      return maybeResponse;
+    }
+    let response = maybeResponse;
+
+    // Apply response proxies from wildcard proxies
+    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.response ?? []) {
+      let newResponse = await proxy.proxy(response);
+      if (newResponse instanceof Error) {
+        return newResponse;
+      }
+      response = newResponse;
+    }
+
+    // Apply response proxies from specific procedure
+    for (let proxy of this._proxies.entity.procedure[procedure]?.response ?? []) {
+      let newResponse = await proxy.proxy(response);
+      if (newResponse instanceof Error) {
+        return newResponse;
+      }
+      response = newResponse;
+    }
+
+    return response;
+
   }
 
   model(): Model {
@@ -225,8 +262,8 @@ export class Entity {
   addModelProcedure(name: string, procedure: IModelProcedure) {
     if (this._procedures.model[name] != null) {
       console.error(
-        'Cannot override procedure with name', name,
-        'on entity ', this.name
+        'Cannot override procedure with named', name,
+        'on entity', this.name
       );
       return;
     };
@@ -234,7 +271,7 @@ export class Entity {
     this._procedures.model[name] = procedure;
   }
 
-  addEntityProcedure(name: string, procedure: IEntityProcedure) {
+  addEntityProcedure(name: string, procedure: IEntityProcedure<any>) {
     if (this._procedures.entity[name] != null) {
       console.error(
         'Cannot override procedure with name', name,
@@ -261,15 +298,11 @@ export class Entity {
     type: 'request' | 'response',
     proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse
   ): Entity {
-
     if (this._proxies.model.procedure[procedure] == null) {
-      this._proxies.model.procedure[procedure] = {
-        request: [],
-        response: []
-      };
+      this._proxies.model.procedure[procedure] = { request: [], response: [] };
     }
 
-    this._proxies.model.procedure[procedure][type].push(proxy);
+    this._proxies.model.procedure[procedure][type].push(proxy as any);
     return this;
   }
 
@@ -290,10 +323,7 @@ export class Entity {
   ): Entity {
 
     if (this._proxies.entity.procedure[procedure] == null) {
-      this._proxies.entity.procedure[procedure] = {
-        request: [],
-        response: []
-      };
+      this._proxies.entity.procedure[procedure] = { request: [], response: [] };
     }
 
     this._proxies.entity.procedure[procedure][type].push(proxy as any);
@@ -364,3 +394,5 @@ type EntityHooks = {
     };
   };
 };
+
+export const ProcedureProxyWildcard = '_';

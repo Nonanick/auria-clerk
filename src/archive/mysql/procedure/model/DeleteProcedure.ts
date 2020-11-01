@@ -1,12 +1,15 @@
+import { IModelProcedureContext } from '../../../../procedure/model/context/IModelProcedureContext';
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { MysqlArchive } from "../../MysqlArchive";
-import { MysqlArchiveTransaction } from '../../transaction/MysqlArchiveTransaction';
-import { IMysqlModelProcedure } from './IMysqlModelProcedure';
+import { IMysqlModelProcedureResponse } from './IMysqlModelProcedureResponse';
 
-export const DeleteProcedure:
-  IMysqlModelProcedure
-  = {
+export const DeleteProcedure: IModelProcedure<IModelProcedureContext, IMysqlModelProcedureResponse> = {
   name: 'delete',
-  async execute(this: MysqlArchive | MysqlArchiveTransaction, request) {
+  async execute(archive, request) {
+
+    if (!(archive instanceof MysqlArchive)) {
+      return new Error('Create procedure expects an MysqlArchive!');
+    }
 
     const model = request.model;
     let deleteSQL = `DELETE FROM \`${request.entity.source}\` `;
@@ -15,27 +18,27 @@ export const DeleteProcedure:
     deleteSQL += ` WHERE \`${request.entity.identifier.name}\` = ?`;
 
     try {
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         deleteSQL,
         [await model.$id()]
-      );
-
-      console.log(
-        'DELETE QUERY response: ', queryResponse
       );
 
       return {
         request,
         model: request.model,
         success: true,
+        sql: deleteSQL,
+        bindParams: [await model.$id()]
       };
 
     } catch (err) {
-      console.error('FAILED to delete model using SQL query ',);
+      console.error('FAILED to delete model using SQL query ', deleteSQL);
       return {
         request,
         model: request.model,
         success: false,
+        sql: deleteSQL,
+        bindParams: [await model.$id()]
       };
     }
 

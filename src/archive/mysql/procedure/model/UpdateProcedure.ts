@@ -1,14 +1,17 @@
 import { AppError } from '../../../../error/AppError';
+import { IModelProcedureContext } from '../../../../procedure/model/context/IModelProcedureContext';
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
 import { MysqlArchive } from "../../MysqlArchive";
-import { MysqlArchiveTransaction } from '../../transaction/MysqlArchiveTransaction';
-import { IMysqlModelProcedure } from './IMysqlModelProcedure';
+import { IMysqlModelProcedureResponse } from './IMysqlModelProcedureResponse';
 
-export const UpdateProcedure:
-  IMysqlModelProcedure
-  = {
+export const UpdateProcedure: IModelProcedure<IModelProcedureContext, IMysqlModelProcedureResponse> = {
   name: 'update',
-  async execute(this: MysqlArchive | MysqlArchiveTransaction, request) {
+  async execute(archive, request) {
+
+    if (!(archive instanceof MysqlArchive)) {
+      return new Error('Create procedure expects an MysqlArchive!');
+    }
 
     const model = request.model;
     const propertyNames: string[] = request.model.$changedProperties();
@@ -53,9 +56,9 @@ export const UpdateProcedure:
 
     try {
 
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         updateSQL,
-        propertyValues
+        propertyValues,
       );
 
       console.log(
@@ -66,6 +69,8 @@ export const UpdateProcedure:
         request,
         model: request.model,
         success: true,
+        sql: updateSQL,
+        bindParams: propertyValues
       };
 
     } catch (err) {
@@ -74,6 +79,8 @@ export const UpdateProcedure:
         request,
         model: request.model,
         success: false,
+        sql: updateSQL,
+        bindParams: propertyValues
       };
     }
 

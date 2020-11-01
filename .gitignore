@@ -104,3 +104,9 @@ dist
 # TernJS port file
 .tern-port
 
+# Ignore generated js files
+src/**/*.js
+yarn.lock
+
+# ignore generated test js files
+__tests/**/*.js

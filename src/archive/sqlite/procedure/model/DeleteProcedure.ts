@@ -1,13 +1,15 @@
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { SQLiteArchive } from '../../SQLiteArchive';
-import { SQLiteArchiveTransaction } from '../../transaction/SQLiteArchiveTransaction';
-import { ISQLiteModelProcedure } from './ISQLiteModelProcedure';
 
 export const DeleteProcedure:
-  ISQLiteModelProcedure
+  IModelProcedure
   = {
   name: 'delete',
-  async execute(this: SQLiteArchive | SQLiteArchiveTransaction, request) {
+  async execute(archive, request) {
 
+    if (!(archive instanceof SQLiteArchive)) {
+      return new Error('Procedure expects SQLite Archive!');
+    }
     const model = request.model;
     let deleteSQL = `DELETE FROM \`${request.entity.source}\` `;
 
@@ -15,7 +17,7 @@ export const DeleteProcedure:
     deleteSQL += ` WHERE \`${request.entity.identifier.name}\` = ?`;
 
     try {
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         deleteSQL,
         [await model.$id()]
       );

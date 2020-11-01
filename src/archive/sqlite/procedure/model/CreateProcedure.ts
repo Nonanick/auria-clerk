@@ -1,14 +1,17 @@
 import { AppError } from '../../../../error/AppError';
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
 import { SQLiteArchive } from '../../SQLiteArchive';
-import { SQLiteArchiveTransaction } from '../../transaction/SQLiteArchiveTransaction';
-import { ISQLiteModelProcedure } from './ISQLiteModelProcedure';
 
 export const CreateProcedure:
-  ISQLiteModelProcedure
+  IModelProcedure
   = {
   name: 'create',
-  async execute(this: SQLiteArchive | SQLiteArchiveTransaction, request) {
+  async execute(archive, request) {
+
+    if (!(archive instanceof SQLiteArchive)) {
+      return new Error('Procedure expects SQLite Archive!');
+    }
 
     const model = request.model;
     const propertyNames: string[] = [];
@@ -67,14 +70,14 @@ export const CreateProcedure:
 
     try {
 
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         insertSQL,
         propertyValues
       );
 
       console.log(
         'INSERT QUERY response: ', queryResponse,
-        '\nLast inserted ID: ', await this.lastInsertedId()
+        '\nLast inserted ID: ', await archive.lastInsertedId()
       );
 
       return {

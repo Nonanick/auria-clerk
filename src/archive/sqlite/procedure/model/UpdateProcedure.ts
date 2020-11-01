@@ -1,14 +1,16 @@
 import { AppError } from '../../../../error/AppError';
+import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
 import { ComparableValues } from '../../../../query/filter/FilterComparisson';
+import { IArchive } from '../../../IArchive';
 import { SQLiteArchive } from '../../SQLiteArchive';
-import { SQLiteArchiveTransaction } from '../../transaction/SQLiteArchiveTransaction';
-import { ISQLiteModelProcedure } from './ISQLiteModelProcedure';
 
-export const UpdateProcedure:
-  ISQLiteModelProcedure
-  = {
+export const UpdateProcedure: IModelProcedure = {
   name: 'update',
-  async execute(this: SQLiteArchive | SQLiteArchiveTransaction, request) {
+  async execute(archive: IArchive, request) {
+
+    if (!(archive instanceof SQLiteArchive)) {
+      return new Error('Procedure expects SQLite Archive!');
+    }
 
     const model = request.model;
     const propertyNames: string[] = request.model.$changedProperties();
@@ -53,7 +55,7 @@ export const UpdateProcedure:
 
     try {
 
-      let queryResponse = await this.execute(
+      let queryResponse = await archive.execute(
         updateSQL,
         propertyValues
       );

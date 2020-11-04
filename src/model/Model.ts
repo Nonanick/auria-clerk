@@ -287,7 +287,7 @@ class Model {
     };
 
     // Apply request wildcard proxies
-    for (let modelProxy of this.__proxies.procedures[ProcedureProxyWildcard]?.request ?? []) {
+    for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.request ?? []) {
       let req = await modelProxy.proxy(request);
       if (req instanceof Error) {
         return req;
@@ -296,7 +296,7 @@ class Model {
     }
 
     // Apply request specific proxies
-    for (let modelProxy of this.__proxies.procedures[procedure]?.request ?? []) {
+    for (let modelProxy of this.$_proxies.procedures[procedure]?.request ?? []) {
       let req = await modelProxy.proxy(request);
       if (req instanceof Error) {
         return req;
@@ -312,7 +312,7 @@ class Model {
     let response = maybeResponse;
 
     // Apply response wildcard proxies
-    for (let modelProxy of this.__proxies.procedures[procedure]?.response ?? []) {
+    for (let modelProxy of this.$_proxies.procedures[procedure]?.response ?? []) {
       let res = await modelProxy.proxy(response);
       if (res instanceof Error) {
         return res;
@@ -321,7 +321,7 @@ class Model {
     }
 
     // Apply response wildcard proxies
-    for (let modelProxy of this.__proxies.procedures[ProcedureProxyWildcard]?.response ?? []) {
+    for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.response ?? []) {
       let res = await modelProxy.proxy(response);
       if (res instanceof Error) {
         return res;

@@ -20,6 +20,6 @@
     "jest": "^26.6.1"
   },
   "scripts": {
-    "test": "tsc -p __tests\\ & jest"
+    "test": "tsc -p __tests\\ && jest"
   }
 }

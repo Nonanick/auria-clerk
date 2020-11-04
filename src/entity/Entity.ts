@@ -142,71 +142,6 @@ export class Entity {
     return query;
   }
 
-  async execute<Context extends IEntityProcedureContext = IEntityProcedureContext>(
-    procedure: string,
-    context: Context
-  ): MaybePromise<IEntityProcedureResponse> {
-
-    if (this._procedures.entity[procedure] == null) {
-      return new UnkownEntityProcedure(
-        `Failed to execute procedure ${procedure} on entity ${this.name}, procedure not found!`
-      );
-    }
-
-    let proc = this._procedures.entity[procedure];
-
-    let request: IEntityProcedureRequest<Context> = {
-      context: context,
-      entity: this,
-      procedure
-    };
-
-    // Apply request proxies from wildcard proxies
-    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.request ?? []) {
-      let newRequest = await proxy.proxy(request);
-      if (newRequest instanceof Error) {
-        return newRequest;
-      }
-      request = newRequest as IEntityProcedureRequest<Context>;
-    }
-
-    // Apply request proxies from specific procedure
-    for (let proxy of this._proxies.entity.procedure[procedure]?.request ?? []) {
-      let newRequest = await proxy.proxy(request);
-      if (newRequest instanceof Error) {
-        return newRequest;
-      }
-      request = newRequest as IEntityProcedureRequest<Context>;
-    }
-
-    const maybeResponse = await proc.execute(this.archive, request);
-    if (maybeResponse instanceof Error) {
-      return maybeResponse;
-    }
-    let response = maybeResponse;
-
-    // Apply response proxies from wildcard proxies
-    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.response ?? []) {
-      let newResponse = await proxy.proxy(response);
-      if (newResponse instanceof Error) {
-        return newResponse;
-      }
-      response = newResponse;
-    }
-
-    // Apply response proxies from specific procedure
-    for (let proxy of this._proxies.entity.procedure[procedure]?.response ?? []) {
-      let newResponse = await proxy.proxy(response);
-      if (newResponse instanceof Error) {
-        return newResponse;
-      }
-      response = newResponse;
-    }
-
-    return response;
-
-  }
-
   model(): Model {
     let model = new Model(this);
 
@@ -238,6 +173,68 @@ export class Entity {
     }
 
     return model;
+  }
+
+  async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {
+
+    if (this._procedures.entity[procedure] == null) {
+      return new UnkownEntityProcedure(
+        `Failed to execute procedure ${procedure} on entity ${this.name}, procedure not found!`
+      );
+    }
+
+    let proc = this._procedures.entity[procedure];
+
+    let request: IEntityProcedureRequest<any> = {
+      context: context,
+      entity: this,
+      procedure
+    };
+
+    // Apply request proxies from wildcard proxies
+    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.request ?? []) {
+      let newRequest = await proxy.proxy(request);
+      if (newRequest instanceof Error) {
+        return newRequest;
+      }
+      request = newRequest as IEntityProcedureRequest<any>;
+    }
+
+    // Apply request proxies from specific procedure
+    for (let proxy of this._proxies.entity.procedure[procedure]?.request ?? []) {
+      let newRequest = await proxy.proxy(request);
+      if (newRequest instanceof Error) {
+        return newRequest;
+      }
+      request = newRequest as IEntityProcedureRequest<any>;
+    }
+
+    const maybeResponse = await proc.execute(this.archive, request);
+    if (maybeResponse instanceof Error) {
+      return maybeResponse;
+    }
+    let response = maybeResponse;
+
+    // Apply response proxies from wildcard proxies
+    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.response ?? []) {
+      let newResponse = await proxy.proxy(response);
+      if (newResponse instanceof Error) {
+        return newResponse;
+      }
+      response = newResponse;
+    }
+
+    // Apply response proxies from specific procedure
+    for (let proxy of this._proxies.entity.procedure[procedure]?.response ?? []) {
+      let newResponse = await proxy.proxy(response);
+      if (newResponse instanceof Error) {
+        return newResponse;
+      }
+      response = newResponse;
+    }
+
+    return response;
+
   }
 
   // Apply all validations to model

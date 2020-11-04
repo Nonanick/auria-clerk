@@ -1,18 +1,18 @@
-import { IArchive } from '../../src/archive/IArchive';
-import { Entity, ProcedureProxyWildcard } from '../../src/entity/Entity';
-import { Factory } from '../../src/entity/Factory';
-import { IEntity } from '../../src/entity/IEntity';
-import { Maybe, MaybePromise } from '../../src/error/Maybe';
-import { IEntityProcedure } from '../../src/procedure/entity/IEntityProcedure';
-import { IEntityProcedureContext } from '../../src/procedure/entity/IEntityProcedureContext';
-import { IProxyEntityProcedureRequest } from '../../src/procedure/entity/proxy/IProxyEntityProcedureRequest';
-import { IProxyEntityProcedureResponse } from '../../src/procedure/entity/proxy/IProxyEntityProcedureResponse';
-import { IModelProcedureContext } from '../../src/procedure/model/context/IModelProcedureContext';
-import { IModelProcedure } from '../../src/procedure/model/IModelProcedure';
-import { IModelProcedureResponse } from '../../src/procedure/model/IModelProcedureResponse';
-import { IPropertyIdentifier } from '../../src/property/IProperty';
-import { QueryRequest } from '../../src/query/QueryRequest';
-import { QueryResponse } from '../../src/query/QueryResponse';
+import { IArchive } from '../../dist/archive/IArchive';
+import { Entity, ProcedureProxyWildcard } from '../../dist/entity/Entity';
+import { Factory } from '../../dist/entity/Factory';
+import { IEntity } from '../../dist/entity/IEntity';
+import { Maybe, MaybePromise } from '../../dist/error/Maybe';
+import { IEntityProcedure } from '../../dist/procedure/entity/IEntityProcedure';
+import { IEntityProcedureContext } from '../../dist/procedure/entity/IEntityProcedureContext';
+import { IProxyEntityProcedureRequest } from '../../dist/procedure/entity/proxy/IProxyEntityProcedureRequest';
+import { IProxyEntityProcedureResponse } from '../../dist/procedure/entity/proxy/IProxyEntityProcedureResponse';
+import { IModelProcedureContext } from '../../dist/procedure/model/context/IModelProcedureContext';
+import { IModelProcedure } from '../../dist/procedure/model/IModelProcedure';
+import { IModelProcedureResponse } from '../../dist/procedure/model/IModelProcedureResponse';
+import { IPropertyIdentifier } from '../../dist/property/IProperty';
+import { QueryRequest } from '../../dist/query/QueryRequest';
+import { QueryResponse } from '../../dist/query/QueryResponse';
 
 describe('entity', () => {
 

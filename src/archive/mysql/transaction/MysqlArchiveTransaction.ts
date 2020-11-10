@@ -1,7 +1,7 @@
 import { PoolConnection } from 'mysql2/promise';
 import { AppException } from '../../../error/AppException';
 import { MaybePromise } from '../../../error/Maybe';
-import { ComparableValues } from '../../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../../query/filter/FilterComparison';
 import { MysqlArchive } from '../MysqlArchive';
 
 export class MysqlArchiveTransaction {

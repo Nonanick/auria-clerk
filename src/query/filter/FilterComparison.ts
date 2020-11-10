@@ -1,9 +1,9 @@
-import { PropertyComparison } from '../../property/comparisson/PropertyComparisson';
+import { PropertyComparison } from '../../property/comparison/PropertyComparison';
 
 export interface FilterComparison {
   source?: string;
   property: string;
-  comparisson: PropertyComparison;
+  comparison: PropertyComparison;
   value: ComparableValues;
 }
 

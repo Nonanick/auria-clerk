@@ -1,7 +1,7 @@
 import { AppError } from '../../../../error/AppError';
 import { IModelProcedureContext } from '../../../../procedure/model/context/IModelProcedureContext';
 import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
-import { ComparableValues } from '../../../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../../../query/filter/FilterComparison';
 import { MysqlArchive } from "../../MysqlArchive";
 import { IMysqlModelProcedureResponse } from './IMysqlModelProcedureResponse';
 

@@ -9,7 +9,7 @@ import { IProperty } from "../property/IProperty";
 import { Property } from '../property/Property';
 import { PropertyGetProxy } from "../property/proxy/PropertyGetProxy";
 import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
-import { ComparableValues } from '../query/filter/FilterComparisson';
+import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
 class Model {

@@ -3,9 +3,9 @@ import { SQLiteConnectionInfo } from './connection/SQLiteConnetionInfo';
 import { QueryRequest } from '../../query/QueryRequest';
 import { MaybePromise } from '../../error/Maybe';
 import { QueryResponse } from '../../query/QueryResponse';
-import { IFilterQuery, implementsFilterComparisson } from '../../query/filter/IFilterQuery';
-import { ComparableValues, FilterComparison } from '../../query/filter/FilterComparisson';
-import { PropertyComparison } from '../../property/comparisson/PropertyComparisson';
+import { IFilterQuery, implementsFilterComparison } from '../../query/filter/IFilterQuery';
+import { ComparableValues, FilterComparison } from '../../query/filter/FilterComparison';
+import { PropertyComparison } from '../../property/comparison/PropertyComparison';
 import { IModelProcedure } from '../../procedure/model/IModelProcedure';
 import { IEntityProcedure } from '../../procedure/entity/IEntityProcedure';
 import { Database } from 'sqlite3';
@@ -239,7 +239,7 @@ export class SQLiteArchive implements IArchive {
     }
 
     // Handle FilterComparison
-    if (implementsFilterComparisson(filter)) {
+    if (implementsFilterComparison(filter)) {
 
       // random name -> make it hard to colide parameters names
       //let paramName = this._paramNameGenerator();
@@ -268,7 +268,7 @@ export class SQLiteArchive implements IArchive {
           + ' `' + filter.property + '` '
 
           // Comparator
-          + this.resolveComparison(filter.comparisson)
+          + this.resolveComparison(filter.comparison)
 
           // Value placeholder
           + ` :[${paramName + nonce}] `

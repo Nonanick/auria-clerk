@@ -1,7 +1,7 @@
 import { ResultSetHeader } from 'mysql2';
 import { MaybePromise } from '../../../../error/Maybe';
 import { IEntityProcedureContext } from '../../../../procedure/entity/IEntityProcedureContext';
-import { ComparableValues } from '../../../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../../../query/filter/FilterComparison';
 import { IFilterQuery } from '../../../../query/filter/IFilterQuery';
 import { MysqlArchive } from '../../MysqlArchive';
 import { IMysqlEntityProcedure } from './IMysqlEntityProcedure';

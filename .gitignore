@@ -107,6 +107,7 @@ dist
 # Ignore generated js files
 src/**/*.js
 yarn.lock
+package-lock.json
 
 # ignore generated test js files
 __tests/**/*.js

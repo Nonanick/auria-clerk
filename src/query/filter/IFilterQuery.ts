@@ -1,4 +1,4 @@
-import { FilterComparison } from './FilterComparisson';
+import { FilterComparison } from './FilterComparison';
 
 export type IFilterQuery = {
   $or?: FilterComparison[];
@@ -6,10 +6,10 @@ export type IFilterQuery = {
   [name: string]: IFilterQuery | FilterComparison | FilterComparison[] | undefined;
 };
 
-export function implementsFilterComparisson(obj: any): obj is FilterComparison {
+export function implementsFilterComparison(obj: any): obj is FilterComparison {
   return (
     typeof obj.property === "string"
-    && typeof obj.comparisson === "string"
+    && typeof obj.comparison === "string"
     && ["string", "number", "object", "boolean",].includes(typeof obj.value)
   );
 }

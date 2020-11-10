@@ -1,4 +1,4 @@
-import { ComparableValues } from '../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../query/filter/FilterComparison';
 
 export type DefaultValue =
   | String

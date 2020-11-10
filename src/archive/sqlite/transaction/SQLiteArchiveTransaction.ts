@@ -1,7 +1,7 @@
 import { Database } from 'sqlite3';
 import { AppException } from '../../../error/AppException';
 import { MaybePromise } from '../../../error/Maybe';
-import { ComparableValues } from '../../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../../query/filter/FilterComparison';
 import { SQLiteArchive } from '../SQLiteArchive';
 
 export class SQLiteArchiveTransaction {

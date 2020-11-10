@@ -1,6 +1,6 @@
 import { AppError } from '../../../../error/AppError';
 import { IModelProcedure } from '../../../../procedure/model/IModelProcedure';
-import { ComparableValues } from '../../../../query/filter/FilterComparisson';
+import { ComparableValues } from '../../../../query/filter/FilterComparison';
 import { IArchive } from '../../../IArchive';
 import { SQLiteArchive } from '../../SQLiteArchive';
 

@@ -1,10 +1,10 @@
 import { Entity } from "../entity/Entity";
-import { IFilterQuery, implementsFilterComparisson } from "./filter/IFilterQuery";
+import { IFilterQuery, implementsFilterComparison } from "./filter/IFilterQuery";
 import { IQueryRequest } from "./IQueryRequest";
 import { ILimitQuery } from "./limit/ILimitQuery";
 import { IOrderBy } from "./order/IOrderBy";
 import { Model } from '../model/Model';
-import { FilterComparison } from './filter/FilterComparisson';
+import { FilterComparison } from './filter/FilterComparison';
 import { MaybePromise } from '../error/Maybe';
 
 export class QueryRequest {
@@ -44,7 +44,7 @@ export class QueryRequest {
 
   addFilter(filterName: string, filter: IFilterQuery | FilterComparison | FilterComparison[]) {
     if (
-      implementsFilterComparisson(filter)
+      implementsFilterComparison(filter)
       || Array.isArray(filter)
     ) {
       this._filters[filterName] = {

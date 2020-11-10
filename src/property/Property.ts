@@ -1,6 +1,6 @@
 import { Maybe } from '../error/Maybe';
 import { Model } from '../model/Model';
-import { ComparableValues } from '../query/filter/FilterComparisson';
+import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
 import { IProperty } from './IProperty';
 

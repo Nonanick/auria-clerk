@@ -1,4 +1,4 @@
-import { IModelValidation } from '../model/validate/IModelValdation';
+import { IModelValidation } from '../model/validate/IModelValidation';
 import { IEntityProcedureHook } from "../procedure/entity/hook/IEntityProcedureHook";
 import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
 import { IProxyEntityProcedureRequest } from "../procedure/entity/proxy/IProxyEntityProcedureRequest";

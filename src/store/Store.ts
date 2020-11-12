@@ -24,7 +24,7 @@ export class Store {
 
   }
 
-  query(entity: string, request?: IQueryRequest): QueryRequest {
+  query(entity: string, request?: Omit<IQueryRequest, "entity">): QueryRequest {
 
     if (this._entities[entity] == null) {
       throw new AppException('Cannot query unknown entity ' + entity + ' does it exist on this store?');
@@ -32,6 +32,9 @@ export class Store {
 
     let entityInst = this._entities[entity];
     let q = new QueryRequest(entityInst);
+    if (request !== undefined) {
+      q.loadQueryRequest(request);
+    }
     return q;
   }
 

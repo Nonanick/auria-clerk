@@ -19,7 +19,7 @@ let query = store.query('mock')
     'user-provided',
     {
       property: 'name',
-      comparisson: 'like',
+      comparison: 'like',
       value: 'Nic'
     }
   )
@@ -27,7 +27,7 @@ let query = store.query('mock')
     'status-active',
     {
       property: 'status',
-      comparisson: 'equal',
+      comparison: 'equal',
       value: 'active'
     }
   );

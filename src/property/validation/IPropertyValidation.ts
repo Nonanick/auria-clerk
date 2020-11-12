@@ -1,15 +1,15 @@
-import { Maybe } from "../../error/Maybe";
+import { Maybe, MaybePromise } from "../../error/Maybe";
 import { Model } from '../../model/Model';
-import { Property } from '../Property';
+import { IProperty } from '../IProperty';
 
 export interface IPropertyValidation {
   name: string;
   validate: PropertyValidationFunction;
 }
 
-export type PropertyValidationFunction = (value: any, context: PropertyValidationContext) => Maybe<true>;
+export type PropertyValidationFunction = (value: any, context: PropertyValidationContext) => Maybe<true> | MaybePromise<true>;
 
 export interface PropertyValidationContext {
-  property: Property;
+  property: IProperty;
   model: Model;
 }

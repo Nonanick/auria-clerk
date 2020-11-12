@@ -10,6 +10,5 @@ export function implementsFilterComparison(obj: any): obj is FilterComparison {
   return (
     typeof obj.property === "string"
     && typeof obj.comparison === "string"
-    && ["string", "number", "object", "boolean",].includes(typeof obj.value)
   );
 }

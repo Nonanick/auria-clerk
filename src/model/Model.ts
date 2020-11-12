@@ -145,7 +145,7 @@ class Model {
     }
 
     let isValid = propField.validate(value!, this);
-    if (isValid !== true) {
+    if (!(isValid instanceof Promise) && isValid !== true) {
       return false;
     }
 

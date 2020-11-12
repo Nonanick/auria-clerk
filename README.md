@@ -67,7 +67,7 @@ const Entity : IEntity = {
     // can be removed by 'key' or calling 'noDefaultFilters()'
     'only-fetch-who-like-mangos' : {
       property : 'like_mangos',
-      comparisson : 'equal',
+      comparison : 'equal',
       value : true
     },
   },

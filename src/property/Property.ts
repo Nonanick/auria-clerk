@@ -1,4 +1,4 @@
-import { Maybe } from '../error/Maybe';
+import { Maybe, MaybePromise } from '../error/Maybe';
 import { Model } from '../model/Model';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
@@ -28,7 +28,7 @@ export class Property {
     this._info = propertyInfo;
   }
 
-  validate(value: ComparableValues, model: Model): Maybe<true> {
+  async validate(value: ComparableValues, model: Model): MaybePromise<true> {
     if (this._info.validate == null) {
       return true;
     }
@@ -37,7 +37,7 @@ export class Property {
     // Array of validations
     if (Array.isArray(validate)) {
       for (let v of validate) {
-        let isValid = v.validate(value, { property: this, model, });
+        let isValid = await v.validate(value, { property: this._info, model, });
 
         if (isValid instanceof Error) {
           return isValid;
@@ -49,9 +49,9 @@ export class Property {
     let isValid: Maybe<true>;
     // Single validation function
     if (typeof validate === 'function') {
-      isValid = validate(value, { property: this, model });
+      isValid = await validate(value, { property: this._info, model });
     } else {
-      isValid = validate.validate(value, { property: this, model });
+      isValid = await validate.validate(value, { property: this._info, model });
     }
 
     if (isValid instanceof Error) {

@@ -3,6 +3,12 @@ import { Model } from '../model/Model';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
 import { IProperty } from './IProperty';
+import { ArrayBufferType } from './type/common/ArrayBufferType';
+import { BooleanType } from './type/common/BooleanType';
+import { DateType } from './type/common/DateType';
+import { NumberType } from './type/common/NumberType';
+import { StringType } from './type/common/StringType';
+import { IPropertyType } from './type/IPropertyType';
 
 export class Property {
 
@@ -132,4 +138,38 @@ export class Property {
     }
 
   }
+
+  getType(): IPropertyType {
+
+    const type = this._info.type;
+    return normalizePropertyType(type);
+
+  }
+}
+
+
+export function normalizePropertyType(type: IProperty['type']): IPropertyType {
+
+  if (type === String) {
+    return StringType;
+  }
+
+  if (type === Number) {
+    return NumberType;
+  }
+
+  if (type === Boolean) {
+    return BooleanType;
+  }
+
+  if (type === Date) {
+    return DateType;
+  }
+
+  if (type === ArrayBuffer) {
+    return ArrayBufferType;
+  }
+
+  return type as IPropertyType;
+
 }

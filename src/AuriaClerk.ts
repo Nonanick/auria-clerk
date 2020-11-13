@@ -5,6 +5,7 @@ export { HookEntity } from './entity/HookEntity';
 export { EntityDefaultFilter, IEntity } from './entity/IEntity';
 
 export { IProperty, IPropertyIdentifier } from './property/IProperty';
+export { Property, normalizePropertyType } from './property/Property';
 export { IPropertyDecode } from './property/decode/IPropertyDecode';
 export { DefaultValue } from './property/default/DefaultValue';
 export { IPropertyEncode } from './property/encode/IPropertyEncode';
@@ -18,7 +19,7 @@ export { DateType } from './property/type/common/DateType';
 export { IntegerType } from './property/type/common/IntegerType';
 export { StringType } from './property/type/common/StringType';
 export { UnsignedInteger } from './property/type/common/UnsignedInteger';
-export { IPropertyValidation, PropertyValidationContext, PropertyValidationFunction } from './property/validation/IPropertyValidation';
+export { IPropertyValidation, PropertyValidationContext, PropertyValidationFunction, normalizePropertyValidation } from './property/validation/IPropertyValidation';
 export { AppError } from './error/AppError';
 export { AppException } from './error/AppException';
 export { Maybe, MaybePromise } from './error/Maybe';

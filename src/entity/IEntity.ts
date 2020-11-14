@@ -33,9 +33,7 @@ export interface IEntity {
   filters?: IFilterQuery;
 
   // Model validation
-  validate?: {
-    [name: string]: IModelValidation;
-  };
+  validate?: IModelValidation | IModelValidation[];
 
   // Entity procedures
   procedures?: {

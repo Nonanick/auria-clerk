@@ -2,6 +2,7 @@ import { IArchive } from '../archive/IArchive';
 import { UnkownEntityProcedure } from '../error/entity/UnkownEntityPocedure';
 import { MaybePromise } from '../error/Maybe';
 import { Model } from "../model/Model";
+import { IModelValidation } from '../model/validate/IModelValidation';
 import { IEntityProcedureHook } from '../procedure/entity/hook/IEntityProcedureHook';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureContext } from "../procedure/entity/IEntityProcedureContext";
@@ -240,8 +241,18 @@ export class Entity {
   // Apply all validations to model
   async validate(model: Model): MaybePromise<true> {
 
-    for (let validationName in this._entity.validate ?? {}) {
-      let validation = this._entity.validate![validationName];
+    if (this._entity.validate == null) {
+      return true;
+    }
+    let validations: IModelValidation[] = [];
+
+    if (!Array.isArray(this._entity.validate)) {
+      validations = [this._entity.validate];
+    } else {
+      validations = this._entity.validate;
+    }
+
+    for (let validation of validations) {
       let isValid = validation.validation(model);
 
       if (isValid instanceof Promise) {

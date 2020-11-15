@@ -3,11 +3,11 @@ import { IFilterQuery, implementsFilterComparison } from "./filter/IFilterQuery"
 import { IQueryRequest } from "./IQueryRequest";
 import { ILimitQuery } from "./limit/ILimitQuery";
 import { IOrderBy } from "./order/IOrderBy";
-import { Model } from '../model/Model';
 import { FilterComparison } from './filter/FilterComparison';
 import { MaybePromise } from '../error/Maybe';
+import { ModelOf } from '../model/ModelOf';
 
-export class QueryRequest {
+export class QueryRequest<T = {}> {
 
   static MAX_ROWS_PER_QUERY = 1000;
 
@@ -174,7 +174,7 @@ export class QueryRequest {
     return this;
   }
 
-  async fetch(): MaybePromise<Model[]> {
+  async fetch(): MaybePromise<ModelOf<T>[]> {
 
     let response = await this._entity.archive.query(this);
 
@@ -186,7 +186,7 @@ export class QueryRequest {
   }
 
   // Ignores limiter
-  async fetchOne(): MaybePromise<Model | undefined> {
+  async fetchOne(): MaybePromise<ModelOf<T> | undefined> {
     this.limit = {
       amount: 1,
       offset: 0

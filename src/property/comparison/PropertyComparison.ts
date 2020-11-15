@@ -5,6 +5,9 @@ export type PropertyComparison =
   | '='
   | '=='
 
+  // is
+  | "is"
+
   // not equal
   | 'neq'
   | 'not equal'

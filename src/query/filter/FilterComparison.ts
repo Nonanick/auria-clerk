@@ -16,5 +16,6 @@ export type ComparableValues =
   | Number[]
   | Boolean[]
   | Date[]
+  | null
   | undefined
   ;

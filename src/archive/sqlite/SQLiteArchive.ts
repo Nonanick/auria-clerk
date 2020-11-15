@@ -322,6 +322,8 @@ export class SQLiteArchive implements IArchive {
       case '=':
       case '==':
         return '=';
+      case "is":
+        return "is";
       // not equal
       case 'neq':
       case 'not equal':

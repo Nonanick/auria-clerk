@@ -1,9 +1,10 @@
 import { Entity } from '../entity/Entity';
+import { ModelOf } from '../model/ModelOf';
 import { QueryRequest } from './QueryRequest';
 
-export class QueryResponse {
+export class QueryResponse<T = {}> {
 
-  protected _request: QueryRequest;
+  protected _request: QueryRequest<T>;
 
   protected _rows: any[] = [];
 
@@ -13,7 +14,7 @@ export class QueryResponse {
     return this._errors.length === 0;
   }
 
-  constructor(request: QueryRequest) {
+  constructor(request: QueryRequest<T>) {
     this._request = request;
   }
 
@@ -27,14 +28,14 @@ export class QueryResponse {
     return this;
   }
 
-  async rowsAsModels(forEntity: Entity) {
+  async rowsAsModels<T = any>(forEntity: Entity) {
     return Promise.all(
       this._rows.map(row => {
         let model = forEntity.model();
         for (let prop in row) {
           model.$set(prop, row[prop]);
         }
-        return model;
+        return model as ModelOf<T>;
       })
     );
   }

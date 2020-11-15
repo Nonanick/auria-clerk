@@ -29,6 +29,7 @@ export { IArchive } from './archive/IArchive';
 export { Store } from './store/Store';
 
 export { Model } from './model/Model';
+export { ModelOf } from './model/ModelOf';
 export { ValueHistory } from './model/history/ValueHistory';
 export { IModelValidation, ModelValidationFunction } from './model/validate/IModelValidation';
 

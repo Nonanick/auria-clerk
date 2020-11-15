@@ -24,14 +24,14 @@ export class Store {
 
   }
 
-  query(entity: string, request?: Omit<IQueryRequest, "entity">): QueryRequest {
+  query<T = {}>(entity: string, request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
 
     if (this._entities[entity] == null) {
       throw new AppException('Cannot query unknown entity ' + entity + ' does it exist on this store?');
     }
 
     let entityInst = this._entities[entity];
-    let q = new QueryRequest(entityInst);
+    let q = new QueryRequest<T>(entityInst);
     if (request !== undefined) {
       q.loadQueryRequest(request);
     }
@@ -96,4 +96,4 @@ export class Store {
 
 type ClassOfFactory = new (...args: any[]) => Factory & Factory;
 
-type CustomFactoryEntity = [entity: IEntity, facttory: Factory | ClassOfFactory];
+type CustomFactoryEntity = [entity: IEntity, factory: Factory | ClassOfFactory];

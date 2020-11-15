@@ -2,6 +2,7 @@ import { IArchive } from '../archive/IArchive';
 import { UnkownEntityProcedure } from '../error/entity/UnkownEntityPocedure';
 import { MaybePromise } from '../error/Maybe';
 import { Model } from "../model/Model";
+import { ModelOf } from '../model/ModelOf';
 import { IModelValidation } from '../model/validate/IModelValidation';
 import { IEntityProcedureHook } from '../procedure/entity/hook/IEntityProcedureHook';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
@@ -23,7 +24,7 @@ import { QueryRequest } from "../query/QueryRequest";
 import { Factory } from "./Factory";
 import { IEntity } from "./IEntity";
 
-export class Entity {
+export class Entity<T = any> {
 
   protected _factory: Factory;
 
@@ -135,15 +136,15 @@ export class Entity {
     this._hooks.model.procedure = init.hooks?.procedure?.model ?? {};
   }
 
-  query(request?: Omit<IQueryRequest, "entity">): QueryRequest {
-    let query = new QueryRequest(this);
+  query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
+    let query = new QueryRequest<T>(this);
     if (request !== undefined) {
       query.loadQueryRequest(request);
     }
     return query;
   }
 
-  model(): Model {
+  model(): ModelOf<T> {
     let model = new Model(this);
 
     // push procedures
@@ -173,7 +174,7 @@ export class Entity {
       }
     }
 
-    return model;
+    return model as ModelOf<T>;
   }
 
   async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {

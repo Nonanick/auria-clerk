@@ -4,7 +4,7 @@ import { Pool, createPool } from 'mysql2/promise';
 import { QueryRequest } from '../../query/QueryRequest';
 import { MaybePromise } from '../../error/Maybe';
 import { QueryResponse } from '../../query/QueryResponse';
-import { IFilterQuery, implementsFilterComparison } from '../../query/filter/IFilterQuery';
+import { IFilterQuery, implementsFilterComparison, isFilterComparisonArray } from '../../query/filter/IFilterQuery';
 import { ComparableValues, FilterComparison } from '../../query/filter/FilterComparison';
 import { customAlphabet } from 'nanoid';
 import { PropertyComparison } from '../../property/comparison/PropertyComparison';
@@ -222,14 +222,23 @@ export class MysqlArchive implements IArchive {
     params: { [name: string]: ComparableValues; }
   ): string | string[] {
 
-    // Handle array of FilterComparison
-    if (Array.isArray(filter)) {
+
+
+    if (Array.isArray(filter) && !isFilterComparisonArray(filter)) {
       return filter
         .map(f => this.sqlFromFilter(f, params));
     }
 
     // Handle FilterComparison
     if (implementsFilterComparison(filter)) {
+
+      if (Array.isArray(filter)) {
+        filter = {
+          property: filter[0],
+          comparison: filter[1],
+          value: filter[2]
+        };
+      }
 
       // random name -> make it hard to colide parameters names
       //let paramName = this._paramNameGenerator();

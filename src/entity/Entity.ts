@@ -155,12 +155,12 @@ export class Entity<T = any> {
     // push procedure proxies
     for (let procedure in this._proxies.model.procedure) {
       // request
-      let reqProxies = this._proxies.model.procedure[procedure].request;
+      let reqProxies = this._proxies.model.procedure[procedure].request ?? [];
       for (let reqProxy of reqProxies) {
         model.$proxyProcedure('request', procedure, reqProxy);
       }
       // response
-      let resProxies = this._proxies.model.procedure[procedure].response;
+      let resProxies = this._proxies.model.procedure[procedure].response ?? [];
       for (let resProxy of resProxies) {
         model.$proxyProcedure('response', procedure, resProxy);
       }
@@ -311,7 +311,7 @@ export class Entity<T = any> {
       this._proxies.model.procedure[procedure] = { request: [], response: [] };
     }
 
-    this._proxies.model.procedure[procedure][type].push(proxy as any);
+    this._proxies.model.procedure[procedure][type]!.push(proxy as any);
     return this;
   }
 
@@ -335,7 +335,7 @@ export class Entity<T = any> {
       this._proxies.entity.procedure[procedure] = { request: [], response: [] };
     }
 
-    this._proxies.entity.procedure[procedure][type].push(proxy as any);
+    this._proxies.entity.procedure[procedure][type]!.push(proxy as any);
     return this;
   }
 
@@ -376,16 +376,16 @@ type EntityProxies = {
   model: {
     procedure: {
       [name: string]: {
-        request: IProxyModelProcedureRequest[];
-        response: IProxyModelProcedureResponse[];
+        request?: IProxyModelProcedureRequest[];
+        response?: IProxyModelProcedureResponse[];
       };
     };
   };
   entity: {
     procedure: {
       [name: string]: {
-        request: IProxyEntityProcedureRequest[];
-        response: IProxyEntityProcedureResponse[];
+        request?: IProxyEntityProcedureRequest[];
+        response?: IProxyEntityProcedureResponse[];
       };
     };
   };

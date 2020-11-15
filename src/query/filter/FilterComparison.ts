@@ -1,11 +1,15 @@
 import { PropertyComparison } from '../../property/comparison/PropertyComparison';
 
-export interface FilterComparison {
+export interface FilterAsObject {
   source?: string;
   property: string;
   comparison: PropertyComparison;
   value: ComparableValues;
 }
+
+export type FilterAsArray = [property: string, comparison: PropertyComparison, value: ComparableValues];
+
+export type FilterComparison = FilterAsObject | FilterAsArray;
 
 export type ComparableValues =
   | String

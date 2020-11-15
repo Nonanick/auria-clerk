@@ -3,7 +3,7 @@ import { SQLiteConnectionInfo } from './connection/SQLiteConnetionInfo';
 import { QueryRequest } from '../../query/QueryRequest';
 import { MaybePromise } from '../../error/Maybe';
 import { QueryResponse } from '../../query/QueryResponse';
-import { IFilterQuery, implementsFilterComparison } from '../../query/filter/IFilterQuery';
+import { IFilterQuery, implementsFilterComparison, isFilterComparisonArray } from '../../query/filter/IFilterQuery';
 import { ComparableValues, FilterComparison } from '../../query/filter/FilterComparison';
 import { PropertyComparison } from '../../property/comparison/PropertyComparison';
 import { IModelProcedure } from '../../procedure/model/IModelProcedure';
@@ -233,7 +233,7 @@ export class SQLiteArchive implements IArchive {
   ): string | string[] {
 
     // Handle array of FilterComparison
-    if (Array.isArray(filter)) {
+    if (Array.isArray(filter) && !isFilterComparisonArray(filter)) {
       return filter
         .map(f => this.sqlFromFilter(f, params));
     }
@@ -241,6 +241,13 @@ export class SQLiteArchive implements IArchive {
     // Handle FilterComparison
     if (implementsFilterComparison(filter)) {
 
+      if (Array.isArray(filter)) {
+        filter = {
+          property: filter[0],
+          comparison: filter[1],
+          value: filter[2]
+        };
+      }
       // random name -> make it hard to colide parameters names
       //let paramName = this._paramNameGenerator();
 

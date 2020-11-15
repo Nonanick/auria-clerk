@@ -5,4 +5,5 @@ export interface IModelProcedureResponse {
   request: IModelProcedureRequest;
   model: Model;
   success: boolean;
+  errors?: string | string[];
 }

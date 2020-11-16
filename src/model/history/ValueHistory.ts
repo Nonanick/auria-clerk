@@ -4,5 +4,5 @@ export interface ValueHistory {
   modelRef: Model;
   values: any;
   changedProperties: string[];
-  comitted_at: Date;
+  committed_at: Date;
 }

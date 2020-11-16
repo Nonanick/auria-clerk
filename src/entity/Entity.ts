@@ -1,22 +1,21 @@
 import { IArchive } from '../archive/IArchive';
-import { UnkownEntityProcedure } from '../error/entity/UnkownEntityPocedure';
+import { UnknownEntityProcedure } from '../error/entity/UnknownEntityProcedure';
 import { MaybePromise } from '../error/Maybe';
+import { IHookProcedure } from '../hook/IHookProcedure';
 import { Model } from "../model/Model";
 import { ModelOf } from '../model/ModelOf';
 import { IModelValidation } from '../model/validate/IModelValidation';
-import { IEntityProcedureHook } from '../procedure/entity/hook/IEntityProcedureHook';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
-import { IEntityProcedureContext } from "../procedure/entity/IEntityProcedureContext";
 import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
 import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
-import { IProxyEntityProcedureRequest } from '../procedure/entity/proxy/IProxyEntityProcedureRequest';
-import { IProxyEntityProcedureResponse } from '../procedure/entity/proxy/IProxyEntityProcedureResponse';
-import { IModelProcedureHook } from '../procedure/model/hook/IModelProcedureHook';
 import { IModelProcedure } from '../procedure/model/IModelProcedure';
-import { IProxyModelProcedureRequest } from '../procedure/model/proxy/IProxyModelProcedureRequest';
-import { IProxyModelProcedureResponse } from '../procedure/model/proxy/IProxyModelProcedureResponse';
 import { IPropertyIdentifier } from "../property/IProperty";
 import { Property } from '../property/Property';
+import {
+  IProxyEntityProcedureRequest,
+  IProxyProcedure,
+  IProxyEntityProcedureResponse
+} from '../proxy/IProxyProcedure';
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IQueryRequest } from '../query/IQueryRequest';
 import { IOrderBy } from "../query/order/IOrderBy";
@@ -46,21 +45,9 @@ export class Entity<T = any> {
   } = {};
 
   protected _proxies: EntityProxies = {
-    entity: {
-      procedure: {}
-    },
-    model: {
-      procedure: {}
-    }
   };
 
   protected _hooks: EntityHooks = {
-    model: {
-      procedure: {}
-    },
-    entity: {
-      procedure: {}
-    }
   };
 
   get name(): string {
@@ -128,12 +115,10 @@ export class Entity<T = any> {
     this._procedures.model = init.procedures?.model ?? {};
 
     // Proxies
-    this._proxies.entity.procedure = init.proxy?.entity?.procedure ?? {};
-    this._proxies.model.procedure = init.proxy?.model?.procedure ?? {};
+    this._proxies = init.proxy ?? {};
 
     // Hooks
-    this._hooks.entity.procedure = init.hooks?.procedure?.entity ?? {};
-    this._hooks.model.procedure = init.hooks?.procedure?.model ?? {};
+    this._hooks = init.hooks ?? {};
   }
 
   query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
@@ -153,39 +138,36 @@ export class Entity<T = any> {
     }
 
     // push procedure proxies
-    for (let procedure in this._proxies.model.procedure) {
-      // request
-      let reqProxies = this._proxies.model.procedure[procedure].request ?? [];
-      for (let reqProxy of reqProxies) {
-        model.$proxyProcedure('request', procedure, reqProxy);
-      }
-      // response
-      let resProxies = this._proxies.model.procedure[procedure].response ?? [];
-      for (let resProxy of resProxies) {
-        model.$proxyProcedure('response', procedure, resProxy);
+    for (let proxyName in this._proxies) {
+      const proxy = this._proxies[proxyName];
+      if (proxy.appliesTo === "model") {
+        model.$proxyProcedure(proxy);
       }
     }
 
     // push procedure hooks
-    for (let procedure in this._hooks.model.procedure) {
-      let hooks = this._hooks.model.procedure[procedure];
-      for (let hook of hooks) {
-        model.$hookProcedure(procedure, hook);
+    for (let hookName in this._hooks) {
+      const hook = this._hooks[hookName];
+      if (hook.appliesTo === "model") {
+        model.$hookProcedure(hook);
       }
     }
 
     return model as ModelOf<T>;
   }
 
-  async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {
+  async execute(
+    procedure: string,
+    context: any
+  ): MaybePromise<IEntityProcedureResponse> {
 
     if (this._procedures.entity[procedure] == null) {
-      return new UnkownEntityProcedure(
+      return new UnknownEntityProcedure(
         `Failed to execute procedure ${procedure} on entity ${this.name}, procedure not found!`
       );
     }
 
-    let proc = this._procedures.entity[procedure];
+    let procedureExecuter = this._procedures.entity[procedure];
 
     let request: IEntityProcedureRequest<any> = {
       context: context,
@@ -193,46 +175,61 @@ export class Entity<T = any> {
       procedure
     };
 
+    context = {
+      // Add more info?
+      ...context
+    };
+
     // Apply request proxies from wildcard proxies
-    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.request ?? []) {
-      let newRequest = await proxy.proxy(request);
-      if (newRequest instanceof Error) {
-        return newRequest;
+    for (let proxyName in this._proxies ?? {}) {
+
+      const proxy = this._proxies[proxyName];
+
+      if (
+        // Applies to entity
+        proxy.appliesTo === "entity"
+        && proxy.proxies === "request"
+        // Wildcard procedure OR requested procedure
+        && (
+          proxy.procedure === ProcedureProxyWildcard
+          || proxy.procedure === procedure
+        )
+      ) {
+        let newRequest = await (proxy as IProxyEntityProcedureRequest).apply(request, context);
+        if (newRequest instanceof Error) {
+          return newRequest;
+        }
+        request = newRequest as IEntityProcedureRequest<any>;
       }
-      request = newRequest as IEntityProcedureRequest<any>;
     }
 
-    // Apply request proxies from specific procedure
-    for (let proxy of this._proxies.entity.procedure[procedure]?.request ?? []) {
-      let newRequest = await proxy.proxy(request);
-      if (newRequest instanceof Error) {
-        return newRequest;
-      }
-      request = newRequest as IEntityProcedureRequest<any>;
-    }
-
-    const maybeResponse = await proc.execute(this.archive, request);
+    const maybeResponse = await procedureExecuter.execute(this.archive, request);
     if (maybeResponse instanceof Error) {
       return maybeResponse;
     }
     let response = maybeResponse;
 
     // Apply response proxies from wildcard proxies
-    for (let proxy of this._proxies.entity.procedure[ProcedureProxyWildcard]?.response ?? []) {
-      let newResponse = await proxy.proxy(response);
-      if (newResponse instanceof Error) {
-        return newResponse;
-      }
-      response = newResponse;
-    }
+    for (let proxyName in this._proxies ?? {}) {
+      const proxy = this._proxies[proxyName];
 
-    // Apply response proxies from specific procedure
-    for (let proxy of this._proxies.entity.procedure[procedure]?.response ?? []) {
-      let newResponse = await proxy.proxy(response);
-      if (newResponse instanceof Error) {
-        return newResponse;
+      if (
+        // Applies to entity
+        proxy.appliesTo === "entity"
+        && proxy.proxies === "response"
+        // Wildcard procedure OR requested procedure
+        && (
+          proxy.procedure === ProcedureProxyWildcard
+          || proxy.procedure === procedure
+        )
+      ) {
+        let newResponse = await (proxy as IProxyEntityProcedureResponse).apply(response);
+        if (newResponse instanceof Error) {
+          return newResponse;
+        }
+        response = newResponse;
       }
-      response = newResponse;
+
     }
 
     return response;
@@ -268,97 +265,12 @@ export class Entity<T = any> {
     return true;
   }
 
-  addModelProcedure(name: string, procedure: IModelProcedure) {
-    if (this._procedures.model[name] != null) {
-      console.error(
-        'Cannot override procedure with named', name,
-        'on entity', this.name
-      );
-      return;
-    };
+  addHook(name: string, hook: IHookProcedure) {
 
-    this._procedures.model[name] = procedure;
   }
 
-  addEntityProcedure(name: string, procedure: IEntityProcedure<any>) {
-    if (this._procedures.entity[name] != null) {
-      console.error(
-        'Cannot override procedure with name', name,
-        'on entity ', this.name
-      );
-      return;
-    };
-
-    this._procedures.entity[name] = procedure;
-  }
-
-  proxyModelProcedure(
-    procedure: string,
-    type: 'request',
-    proxy: IProxyModelProcedureRequest
-  ): Entity;
-  proxyModelProcedure(
-    procedure: string,
-    type: 'response',
-    proxy: IProxyModelProcedureResponse
-  ): Entity;
-  proxyModelProcedure(
-    procedure: string,
-    type: 'request' | 'response',
-    proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse
-  ): Entity {
-    if (this._proxies.model.procedure[procedure] == null) {
-      this._proxies.model.procedure[procedure] = { request: [], response: [] };
-    }
-
-    this._proxies.model.procedure[procedure][type]!.push(proxy as any);
-    return this;
-  }
-
-  proxyEntityProcedure(
-    procedure: string,
-    type: 'request',
-    proxy: IProxyEntityProcedureRequest
-  ): Entity;
-  proxyEntityProcedure(
-    procedure: string,
-    type: 'response',
-    proxy: IProxyEntityProcedureResponse
-  ): Entity;
-  proxyEntityProcedure(
-    procedure: string,
-    type: 'request' | 'response',
-    proxy: IProxyEntityProcedureRequest | IProxyEntityProcedureResponse
-  ): Entity {
-
-    if (this._proxies.entity.procedure[procedure] == null) {
-      this._proxies.entity.procedure[procedure] = { request: [], response: [] };
-    }
-
-    this._proxies.entity.procedure[procedure][type]!.push(proxy as any);
-    return this;
-  }
-
-  addModelProcedureHook(
-    procedure: string,
-    hook: IModelProcedureHook
-  ) {
-    if (this._hooks.model.procedure[procedure] == null) {
-      this._hooks.model.procedure[procedure] = [];
-    }
-    this._hooks.model.procedure[procedure].push(hook);
-    return this;
-  }
-
-  addEntityProcedureHook(
-    procedure: string,
-    hook: IEntityProcedureHook
-  ) {
-    if (this._hooks.entity.procedure[procedure] == null) {
-      this._hooks.entity.procedure[procedure] = [];
-    }
-    this._hooks.entity.procedure[procedure].push(hook);
-    return this;
+  addProxy(name: string, proxy: IProxyProcedure) {
+    this._proxies[name] = proxy;
   }
 
 }
@@ -373,35 +285,11 @@ type EntityProcedures = {
 };
 
 type EntityProxies = {
-  model: {
-    procedure: {
-      [name: string]: {
-        request?: IProxyModelProcedureRequest[];
-        response?: IProxyModelProcedureResponse[];
-      };
-    };
-  };
-  entity: {
-    procedure: {
-      [name: string]: {
-        request?: IProxyEntityProcedureRequest[];
-        response?: IProxyEntityProcedureResponse[];
-      };
-    };
-  };
+  [name: string]: IProxyProcedure;
 };
 
 type EntityHooks = {
-  model: {
-    procedure: {
-      [name: string]: IModelProcedureHook[];
-    };
-  };
-  entity: {
-    procedure: {
-      [name: string]: IEntityProcedureHook[];
-    };
-  };
+  [name: string]: IHookProcedure;
 };
 
 export const ProcedureProxyWildcard = '_';

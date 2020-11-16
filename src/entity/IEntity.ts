@@ -1,13 +1,9 @@
+import { IHookProcedure } from '../hook/IHookProcedure';
 import { IModelValidation } from '../model/validate/IModelValidation';
-import { IEntityProcedureHook } from "../procedure/entity/hook/IEntityProcedureHook";
 import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
-import { IProxyEntityProcedureRequest } from "../procedure/entity/proxy/IProxyEntityProcedureRequest";
-import { IProxyEntityProcedureResponse } from "../procedure/entity/proxy/IProxyEntityProcedureResponse";
-import { IModelProcedureHook } from "../procedure/model/hook/IModelProcedureHook";
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
-import { IProxyModelProcedureRequest } from "../procedure/model/proxy/IProxyModelProcedureRequest";
-import { IProxyModelProcedureResponse } from "../procedure/model/proxy/IProxyModelProcedureResponse";
 import { IProperty, IPropertyIdentifier } from "../property/IProperty";
+import { IProxyProcedure } from '../proxy/IProxyProcedure';
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IOrderBy } from "../query/order/IOrderBy";
 
@@ -52,45 +48,12 @@ export interface IEntity {
 
   // Proxy entity/model procedures, intervene in the natural flow 
   proxy?: {
-    // Model procedures target a single model
-    model?: {
-      procedure?: {
-        [procedureName: string]: {
-          request?: IProxyModelProcedureRequest[];
-          response?: IProxyModelProcedureResponse[];
-        };
-      };
-    };
-
-    // Entity procedures can target multiple models 
-    entity?: {
-      procedure?: {
-        [procedureName: string]: {
-          request?: IProxyEntityProcedureRequest[];
-          response?: IProxyEntityProcedureResponse[];
-        };
-      };
-    };
+    [name: string]: IProxyProcedure;
   };
 
   // Trigger actions without intervening in the life cycle 
   hooks?: {
-    procedure?: {
-      model?: {
-        [procedureName: string]: IModelProcedureHook[];
-      };
-      entity?: {
-        [procedureName: string]: IEntityProcedureHook[];
-      };
-    };
-    lifecycle?: {
-      model?: {
-
-      };
-      entity?: {
-
-      };
-    };
+    [name: string]: IHookProcedure;
   };
 
 }

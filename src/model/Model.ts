@@ -1,14 +1,15 @@
 import { Entity, ProcedureProxyWildcard } from "../entity/Entity";
 import { MaybePromise } from '../error/Maybe';
+import { IHookModelProcedure } from '../hook/IHookProcedure';
+import { IModelProcedureContext } from '../procedure/model/context/IModelProcedureContext';
 import { IModelProcedureHook } from '../procedure/model/hook/IModelProcedureHook';
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
 import { IModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
-import { IProxyModelProcedureRequest } from "../procedure/model/proxy/IProxyModelProcedureRequest";
-import { IProxyModelProcedureResponse } from "../procedure/model/proxy/IProxyModelProcedureResponse";
 import { IProperty } from "../property/IProperty";
 import { Property } from '../property/Property';
 import { PropertyGetProxy } from "../property/proxy/PropertyGetProxy";
 import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
+import { IProxyModelProcedureRequest, IProxyModelProcedureResponse } from '../proxy/IProxyProcedure';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
@@ -30,7 +31,7 @@ class Model {
     procedures: {}
   };
 
-  get __proxies() {
+  get $__proxies() {
     return this.$_proxies;
   }
 
@@ -63,19 +64,15 @@ class Model {
     this.$_procedures[procedure.name] = procedure;
   }
 
-  $proxyProcedure(type: 'request', procedure: string, proxy: IProxyModelProcedureRequest): void;
-  $proxyProcedure(type: 'response', procedure: string, proxy: IProxyModelProcedureResponse): void;
-  $proxyProcedure(
-    type: 'request' | 'response',
-    procedure: string,
-    proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse
-  ): void {
+  $proxyProcedure(proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse): void {
+
+    let procedure = proxy.procedure;
 
     if (this.$_proxies.procedures[procedure] == null) {
       this.$_proxies.procedures[procedure] = { request: [], response: [] };
     }
 
-    switch (type) {
+    switch (proxy.proxies) {
       case 'request':
         this.$_proxies.procedures[procedure].request.push(proxy as IProxyModelProcedureRequest);
         break;
@@ -87,12 +84,14 @@ class Model {
   }
 
   $hookProcedure(
-    procedure: string,
-    hook: IModelProcedureHook
+    hook: IHookModelProcedure
   ): Model {
+    const procedure = hook.procedure;
+
     if (this.$_hooks[procedure] == null) {
       this.$_hooks[procedure] = [];
     }
+
     this.$_hooks[procedure].push(hook);
     return this;
   }
@@ -239,7 +238,7 @@ class Model {
     this.$_valuesHistory.push(
       {
         changedProperties: this.$_changedProperties,
-        comitted_at: new Date(Date.now()),
+        committed_at: new Date(Date.now()),
         modelRef: this,
         values: this.$_values,
       }
@@ -286,9 +285,11 @@ class Model {
       model: this,
     };
 
+    let context: IModelProcedureContext = {};
+
     // Apply request wildcard proxies
     for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.request ?? []) {
-      let req = await modelProxy.proxy(request);
+      let req = await modelProxy.apply(request, context);
       if (req instanceof Error) {
         return req;
       }
@@ -297,7 +298,7 @@ class Model {
 
     // Apply request specific proxies
     for (let modelProxy of this.$_proxies.procedures[procedure]?.request ?? []) {
-      let req = await modelProxy.proxy(request);
+      let req = await modelProxy.apply(request, context);
       if (req instanceof Error) {
         return req;
       }
@@ -313,7 +314,7 @@ class Model {
 
     // Apply response wildcard proxies
     for (let modelProxy of this.$_proxies.procedures[procedure]?.response ?? []) {
-      let res = await modelProxy.proxy(response);
+      let res = await modelProxy.apply(response);
       if (res instanceof Error) {
         return res;
       }
@@ -322,7 +323,7 @@ class Model {
 
     // Apply response wildcard proxies
     for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.response ?? []) {
-      let res = await modelProxy.proxy(response);
+      let res = await modelProxy.apply(response);
       if (res instanceof Error) {
         return res;
       }

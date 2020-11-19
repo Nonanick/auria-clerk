@@ -9,5 +9,4 @@ export interface IQueryRequest {
   filters?: IFilterQuery | IFilterQuery[];
   order?: IOrderBy | IOrderBy[];
   limit?: ILimitQuery;
-  include?: string[];
 }

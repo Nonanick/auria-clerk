@@ -33,11 +33,6 @@ export interface IEntity {
 
   // Entity procedures
   procedures?: {
-    optOut?: {
-      create?: boolean;
-      update?: boolean;
-      delete?: boolean;
-    };
     model?: {
       [name: string]: IModelProcedure<any, any>;
     };

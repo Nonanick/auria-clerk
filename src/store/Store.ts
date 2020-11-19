@@ -1,8 +1,18 @@
-import { Entity } from "../entity/Entity";
+import { ArchiveProcedureHook } from '../archive/ArchiveProcedureHook';
+import { ArchiveProcedureProxy } from '../archive/ArchiveProcedureProxy';
+import { Entity, ProcedureProxyWildcard } from "../entity/Entity";
 import { Factory } from "../entity/Factory";
 import { IEntity } from "../entity/IEntity";
 import { AppException } from "../error/AppException";
-import { EntityProcedureRequest } from "../procedure/entity/EntityProcedureRequest";
+import { MaybePromise } from '../error/Maybe';
+import { IHookProcedure } from '../hook/IHookProcedure';
+import { Model } from '../model/Model';
+import { IEntityProcedureRequest, implementsEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
+import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
+import { IModelProcedureRequest, implementsModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
+import { IModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
+import { implementsProxyProcedure } from '../proxy/IProxyProcedure';
+import { implementsProxyQuery, IProxyQuery } from '../proxy/IProxyQuery';
 import { IQueryRequest } from '../query/IQueryRequest';
 import { QueryRequest } from "../query/QueryRequest";
 
@@ -13,6 +23,13 @@ export class Store {
   } = {};
 
   protected _defaultFactory: Factory;
+
+  protected _queryProxies: IProxyQuery[] = [];
+
+  protected _modelProcedureProxies: ArchiveProcedureProxy[] = [];
+  protected _entityProcedureProxies: ArchiveProcedureProxy[] = [];
+
+  protected _procedureHooks: IHookProcedure[] = [];
 
   constructor(defaultFactory: Factory | ClassOfFactory) {
 
@@ -38,14 +55,43 @@ export class Store {
     return q;
   }
 
-  execute(
+  addProxy(...proxies: (ArchiveProcedureProxy | IProxyQuery)[]) {
+    for (const proxy of proxies) {
+      if (implementsProxyProcedure(proxy)) {
+        if (implementsModelProcedureRequest(proxy)) {
+          this._modelProcedureProxies;
+        }
+        this._procedureProxies.push(proxy);
+        continue;
+      }
+
+      if (implementsProxyQuery(proxy)) {
+        this._queryProxies.push(proxy);
+        continue;
+      }
+
+      console.error('Failed to determine proxy nature added to the store!');
+    }
+  }
+
+  addHook(...hooks: ArchiveProcedureHook[]) {
+    this._procedureHooks.push(...hooks);
+  }
+
+  removeHook(...hooks: ArchiveProcedureHook[]) {
+    this._procedureHooks = this._procedureHooks;
+  }
+
+  async execute(on: Model, procedure: string, context: any): MaybePromise<IModelProcedureResponse>;
+  async execute(on: Entity, procedure: string, context: any): MaybePromise<IEntityProcedureResponse>;
+  async execute(
+    on: Model | Entity,
     procedure: string,
-    on: Entity
-  ): EntityProcedureRequest {
+    context: any
+  ): MaybePromise<IEntityProcedureResponse | IModelProcedureResponse> {
 
-    let request = new EntityProcedureRequest();
 
-    return request;
+    throw new Error('Not implemented!');
   }
 
   add(...entities: (IEntity | CustomFactoryEntity)[]) {
@@ -74,7 +120,22 @@ export class Store {
 
       let createdEntity = new Entity(entity, this._defaultFactory);
 
+      // Inject store high order fn
+      createdEntity.query = (request: Omit<IQueryRequest, "entity">) => {
+        return this.query(entity.name, request);
+      };
+
+      //
+      createdEntity.execute = async (procedure: string, context: any) => {
+        return this.execute(createdEntity, procedure, context);
+      };
+
+      createdEntity.executeOnModel = async (model: Model, procedure: string, context?: any) => {
+        return this.execute(model, procedure, context ?? {});
+      };
+
       let hydratedEntity = factory.hydrateEntity(createdEntity);
+
       if (hydratedEntity instanceof Error) {
         console.error(
           'Failed to hydrate entity ', createdEntity.name,
@@ -92,6 +153,43 @@ export class Store {
     return this._entities[name];
   }
 
+  async applyRequestProxies(request: IModelProcedureRequest | IEntityProcedureRequest): MaybePromise<IModelProcedureRequest | IEntityProcedureRequest> {
+
+    for (let proxy of this._procedureProxies) {
+      if (proxy.proxies !== 'request') continue;
+
+      const proxiesThisProcedure = Array.isArray(proxy.procedure)
+        ? proxy.procedure.includes(request.procedure)
+        : (proxy.procedure === request.procedure || proxy.procedure === ProcedureProxyWildcard);
+
+      // Applies to model ?
+      if (
+        implementsModelProcedureRequest(request)
+        && proxy.appliesTo === 'model'
+        && proxiesThisProcedure
+      ) {
+
+      }
+
+      if (
+        implementsEntityProcedureRequest(request)
+        && proxy.appliesTo === 'entity'
+        && proxiesThisProcedure
+      ) {
+
+      }
+
+    }
+    return request;
+  }
+
+  async applyResponseProxies(response: IModelProcedureResponse | IEntityProcedureResponse): MaybePromise<IModelProcedureResponse | IEntityProcedureResponse> {
+    return response;
+  };
+
+  async applyQueryProxies(queryReq: QueryRequest): MaybePromise<QueryRequest> {
+    return queryReq;
+  }
 }
 
 type ClassOfFactory = new (...args: any[]) => Factory & Factory;

@@ -1,13 +1,24 @@
 import { MaybePromise } from '../error/Maybe';
-import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
-import { IModelProcedure } from '../procedure/model/IModelProcedure';
+import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
+import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
+import { IModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
+import { IModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
 import { QueryRequest } from '../query/QueryRequest';
 import { QueryResponse } from '../query/QueryResponse';
+import { ArchiveProcedureHook } from './ArchiveProcedureHook';
+import { ArchiveProcedureProxy } from './ArchiveProcedureProxy';
 
 export interface IArchive {
 
-  addModelProcedure(name: string, procedure: IModelProcedure): void;
-  addEntityProcedure(name: string, procedure: IEntityProcedure): void;
+  addProxy(...proxy: ArchiveProcedureProxy[]): void;
+  removeProxy(...proxy: ArchiveProcedureProxy[]): void;
+
+  addHook(...hook: ArchiveProcedureHook[]): void;
+  removeHook(...hook: ArchiveProcedureHook[]): void;
+
+  execute(procedureRequest: IModelProcedureRequest): MaybePromise<IModelProcedureResponse>;
+  execute(procedureRequest: IEntityProcedureRequest): MaybePromise<IEntityProcedureResponse>;
+
   query(queryRequest: QueryRequest): MaybePromise<QueryResponse>;
 
 }

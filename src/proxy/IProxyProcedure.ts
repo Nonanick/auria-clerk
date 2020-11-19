@@ -13,7 +13,8 @@ export type IProxyProcedure =
   | IProxyEntityProcedureResponse;
 
 interface IProxyProcedureBase {
-  procedure: string;
+  name: string;
+  procedure: string | string[];
   appliesTo: 'model' | 'entity';
   proxies: 'request' | 'response';
 }
@@ -47,4 +48,16 @@ export interface IProxyEntityProcedureResponse extends IProxyProcedureBase {
   appliesTo: 'entity';
   proxies: 'response';
   apply(response: IEntityProcedureResponse): Promise<IEntityProcedureResponse>;
+}
+
+export function implementsProxyProcedure(obj: any): obj is IProxyProcedure {
+  if (obj == null) {
+    return false;
+  }
+  return (
+    (typeof obj.procedure === 'string' || Array.isArray(obj.procedure))
+    && (obj.appliesTo === 'model' || obj.appliesTo === 'entity')
+    && (obj.proxies === 'request' || obj.proxies === 'response')
+    && typeof obj.apply === 'function'
+  );
 }

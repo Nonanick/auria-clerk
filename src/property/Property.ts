@@ -3,6 +3,7 @@ import { Model } from '../model/Model';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
 import { IProperty } from './IProperty';
+import { IPropertyRelation } from './relation/IPropertyRelation';
 import { ArrayBufferType } from './type/common/ArrayBufferType';
 import { BooleanType } from './type/common/BooleanType';
 import { DateType } from './type/common/DateType';
@@ -109,6 +110,14 @@ export class Property {
 
   hasDefault(): boolean {
     return this._info.default !== undefined;
+  }
+
+  hasRelation(): boolean {
+    return this._info.relatedTo != null;
+  }
+
+  getRelation(): IPropertyRelation | undefined {
+    return this._info.relatedTo;
   }
 
   /**

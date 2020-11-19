@@ -4,6 +4,7 @@ import { IModelProcedureResponse } from '../procedure/model/IModelProcedureRespo
 export type IHookProcedure = IHookEntityProcedure | IHookModelProcedure;
 
 interface IHookProcedureBase {
+  name: string;
   appliesTo: 'model' | 'entity';
   procedure: string;
 }

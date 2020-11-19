@@ -9,6 +9,7 @@ import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
 import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
 import { IModelProcedure } from '../procedure/model/IModelProcedure';
+import { IModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
 import { IPropertyIdentifier } from "../property/IProperty";
 import { Property } from '../property/Property';
 import {
@@ -122,11 +123,7 @@ export class Entity<T = any> {
   }
 
   query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
-    let query = new QueryRequest<T>(this);
-    if (request !== undefined) {
-      query.loadQueryRequest(request);
-    }
-    return query;
+    throw new Error('Entity must be initialized by a Store');
   }
 
   model(): ModelOf<T> {
@@ -156,44 +153,34 @@ export class Entity<T = any> {
     return model as ModelOf<T>;
   }
 
-  async execute(
-    procedure: string,
-    context: any
-  ): MaybePromise<IEntityProcedureResponse> {
+  async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {
+    throw new Error('Entity must be initialized by a Store');
+  }
 
-    if (this._procedures.entity[procedure] == null) {
-      return new UnknownEntityProcedure(
-        `Failed to execute procedure ${procedure} on entity ${this.name}, procedure not found!`
-      );
-    }
+  async executeOnModel(model: Model, procedure: string, context: any): MaybePromise<IModelProcedureResponse> {
+    throw new Error('Entity must be initialized by a Store');
+  }
 
-    let procedureExecuter = this._procedures.entity[procedure];
+  async applyRequestProxies(request: IEntityProcedureRequest, context?: any) {
+    let procedure = request.procedure;
 
-    let request: IEntityProcedureRequest<any> = {
-      context: context,
-      entity: this,
-      procedure
-    };
-
-    context = {
-      // Add more info?
-      ...context
-    };
-
-    // Apply request proxies from wildcard proxies
     for (let proxyName in this._proxies ?? {}) {
 
       const proxy = this._proxies[proxyName];
+      const proxyMatchesCurrentProcedure =
+        proxy.procedure === ProcedureProxyWildcard
+        || (
+          Array.isArray(proxy.procedure)
+            ? proxy.procedure.includes(procedure)
+            : proxy.procedure === procedure
+        );
 
       if (
         // Applies to entity
         proxy.appliesTo === "entity"
         && proxy.proxies === "request"
         // Wildcard procedure OR requested procedure
-        && (
-          proxy.procedure === ProcedureProxyWildcard
-          || proxy.procedure === procedure
-        )
+        && proxyMatchesCurrentProcedure
       ) {
         let newRequest = await (proxy as IProxyEntityProcedureRequest).apply(request, context);
         if (newRequest instanceof Error) {
@@ -203,25 +190,27 @@ export class Entity<T = any> {
       }
     }
 
-    const maybeResponse = await procedureExecuter.execute(this.archive, request);
-    if (maybeResponse instanceof Error) {
-      return maybeResponse;
-    }
-    let response = maybeResponse;
+    return request;
+  }
 
-    // Apply response proxies from wildcard proxies
+  async applyResponseProxies(response: IEntityProcedureResponse) {
+    let procedure = response.procedure;
+
     for (let proxyName in this._proxies ?? {}) {
       const proxy = this._proxies[proxyName];
-
+      const proxyMatchesCurrentProcedure =
+        proxy.procedure === ProcedureProxyWildcard
+        || (
+          Array.isArray(proxy.procedure)
+            ? proxy.procedure.includes(procedure)
+            : proxy.procedure === procedure
+        );
       if (
         // Applies to entity
         proxy.appliesTo === "entity"
         && proxy.proxies === "response"
         // Wildcard procedure OR requested procedure
-        && (
-          proxy.procedure === ProcedureProxyWildcard
-          || proxy.procedure === procedure
-        )
+        && proxyMatchesCurrentProcedure
       ) {
         let newResponse = await (proxy as IProxyEntityProcedureResponse).apply(response);
         if (newResponse instanceof Error) {
@@ -229,11 +218,9 @@ export class Entity<T = any> {
         }
         response = newResponse;
       }
-
     }
 
     return response;
-
   }
 
   // Apply all validations to model
@@ -266,7 +253,7 @@ export class Entity<T = any> {
   }
 
   addHook(name: string, hook: IHookProcedure) {
-
+    this._hooks[name] = hook;
   }
 
   addProxy(name: string, proxy: IProxyProcedure) {

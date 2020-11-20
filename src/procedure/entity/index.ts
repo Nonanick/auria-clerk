@@ -1,5 +1,4 @@
 export { EntityProcedureRequest as Request } from './EntityProcedureRequest';
-export { ExecuteEntityProcedure as Execute } from './ExecuteEntityProcedure';
 export {
   EntityProcedureFunction as ExecuteFunction,
   IEntityProcedure as IProcedure

@@ -119,6 +119,10 @@ class Model {
     return this.$_entity.source;
   }
 
+  $entity() {
+    return this.$_entity;
+  }
+
   $set(objectProperties: ModelValues): boolean;
   $set(property: string, value: ComparableValues): boolean;
   $set(propOrObj: string | ModelValues, value?: ComparableValues): boolean {

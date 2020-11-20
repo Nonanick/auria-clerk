@@ -34,7 +34,7 @@ export interface IEntity {
   // Entity procedures
   procedures?: {
     model?: {
-      [name: string]: IModelProcedure<any, any>;
+      [name: string]: IModelProcedure<any>;
     };
     entity?: {
       [name: string]: IEntityProcedure;

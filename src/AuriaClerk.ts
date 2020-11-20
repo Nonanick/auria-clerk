@@ -25,6 +25,7 @@ export { AppException } from './error/AppException';
 export { Maybe, MaybePromise } from './error/Maybe';
 
 export { IArchive } from './archive/IArchive';
+export { Archive } from './archive/Archive';
 
 export { Store } from './store/Store';
 

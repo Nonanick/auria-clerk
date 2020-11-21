@@ -20,6 +20,7 @@ export type ComparableValues =
   | Number[]
   | Boolean[]
   | Date[]
+  | Object
   | null
   | undefined
   ;

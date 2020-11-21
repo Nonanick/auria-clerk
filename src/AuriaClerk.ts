@@ -27,7 +27,7 @@ export { Maybe, MaybePromise } from './error/Maybe';
 export { IArchive } from './archive/IArchive';
 export { Archive } from './archive/Archive';
 
-export { Store } from './store/Store';
+export { ClassOfFactory, Store } from './store/Store';
 
 export { Model } from './model/Model';
 export { ModelOf } from './model/ModelOf';

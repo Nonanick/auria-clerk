@@ -45,11 +45,9 @@ export class Entity<T = any> {
     [name: string]: Property;
   } = {};
 
-  protected _proxies: EntityProxies = {
-  };
+  protected _proxies: EntityProxies = {};
 
-  protected _hooks: EntityHooks = {
-  };
+  protected _hooks: EntityHooks = {};
 
   get name(): string {
     return this._entity.name;
@@ -116,18 +114,29 @@ export class Entity<T = any> {
     this._procedures.model = init.procedures?.model ?? {};
 
     // Proxies
-    this._proxies = init.proxy ?? {};
+    for (let proxyName in init.proxy ?? {}) {
+      this._proxies[proxyName]! = {
+        name: proxyName,
+        ...init.proxy![proxyName]
+      } as IProxyProcedure;
+    }
 
     // Hooks
-    this._hooks = init.hooks ?? {};
+    for (let hookName in init.hooks ?? {}) {
+      this._hooks[hookName]! = {
+        name: hookName,
+        ...init.hooks![hookName]
+      } as IHookProcedure;
+    }
+
   }
 
   query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
     throw new Error('Entity must be initialized by a Store');
   }
 
-  model(): ModelOf<T> {
-    let model = new Model(this);
+  model<DTO = T>(): ModelOf<DTO> {
+    let model = new Model<DTO>(this);
 
     // push procedures
     for (let procedure in this._procedures.model) {
@@ -150,7 +159,7 @@ export class Entity<T = any> {
       }
     }
 
-    return model as ModelOf<T>;
+    return model as ModelOf<DTO>;
   }
 
   async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {
@@ -264,10 +273,10 @@ export class Entity<T = any> {
 
 type EntityProcedures = {
   model: {
-    [name: string]: IModelProcedure;
+    [name: string]: IModelProcedure | string;
   };
   entity: {
-    [name: string]: IEntityProcedure;
+    [name: string]: IEntityProcedure | string;
   };
 };
 

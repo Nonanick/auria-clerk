@@ -7,8 +7,10 @@ import { AppException } from "../error/AppException";
 import { Maybe, MaybePromise } from '../error/Maybe';
 import { IHookProcedure } from '../hook/IHookProcedure';
 import { Model } from '../model/Model';
+import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureRequest, implementsEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
 import { IEntityProcedureResponse, implementsEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
+import { IModelProcedure } from '../procedure/model/IModelProcedure';
 import { IModelProcedureRequest, implementsModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
 import { IModelProcedureResponse, implementsModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
 import { implementsProxyProcedure } from '../proxy/IProxyProcedure';
@@ -157,7 +159,7 @@ export class Store {
         continue;
       }
 
-      let createdEntity = new Entity(entity, this._defaultFactory);
+      let createdEntity = new Entity(entity, factory);
 
       // Inject store query alias fn
       createdEntity.query = (request: Omit<IQueryRequest, "entity">) => {
@@ -176,12 +178,20 @@ export class Store {
 
       // Add model procedures into archive
       for (let procName in entity.procedures?.model ?? {}) {
-        factory.archive.addModelProcedure(entity.procedures!.model?.[procName]!);
+        if (typeof entity.procedures!.model?.[procName]! === "object") {
+          factory.archive.addModelProcedure(
+            entity.procedures!.model?.[procName]! as IModelProcedure
+          );
+        }
       }
 
       // Add entity procedure into archive
       for (let procName in entity.procedures?.entity ?? {}) {
-        factory.archive.addEntityProcedure(entity.procedures!.entity?.[procName]!);
+        if (typeof entity.procedures!.model?.[procName]! === "object") {
+          factory.archive.addEntityProcedure(
+            entity.procedures!.entity?.[procName]! as IEntityProcedure
+          );
+        }
       }
 
       // Allow factory to manipulate entity
@@ -286,6 +296,6 @@ export class Store {
   }
 }
 
-type ClassOfFactory = new (...args: any[]) => Factory & Factory;
+export type ClassOfFactory = new (...args: any[]) => Factory & Factory;
 
 type CustomFactoryEntity = [entity: IEntity, factory: Factory | ClassOfFactory];

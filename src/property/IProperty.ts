@@ -8,7 +8,7 @@ import { IPropertyValidation, PropertyValidationFunction } from "./validation/IP
 
 export interface IProperty {
   name: string;
-  type: IPropertyType | StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor | ArrayBufferConstructor;
+  type: IPropertyType | StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor | ArrayBufferConstructor | ObjectConstructor;
   isIdentifier?: boolean;
   isDescriptive?: boolean;
   required?: boolean;

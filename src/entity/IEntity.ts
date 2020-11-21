@@ -34,21 +34,21 @@ export interface IEntity {
   // Entity procedures
   procedures?: {
     model?: {
-      [name: string]: IModelProcedure<any>;
+      [name: string]: IModelProcedure<any> | string;
     };
     entity?: {
-      [name: string]: IEntityProcedure;
+      [name: string]: IEntityProcedure | string;
     };
   };
 
   // Proxy entity/model procedures, intervene in the natural flow 
   proxy?: {
-    [name: string]: IProxyProcedure;
+    [name: string]: Omit<IProxyProcedure, "name">;
   };
 
   // Trigger actions without intervening in the life cycle 
   hooks?: {
-    [name: string]: IHookProcedure;
+    [name: string]: Omit<IHookProcedure, "name">;
   };
 
 }

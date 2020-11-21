@@ -17,14 +17,14 @@ import { IQueryRequest, QueryRequest } from '../query';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
-class Model {
+class Model<T = any> {
 
   [prop: string]: any;
 
   protected $_entity: Entity;
 
   protected $_procedures: {
-    [name: string]: IModelProcedure;
+    [name: string]: IModelProcedure | string;
   } = {};
 
   protected $_idProperty: IProperty;
@@ -57,15 +57,17 @@ class Model {
     return new Proxy(this, ProxiedModelHandler);
   }
 
-  $addProcedure(procedure: IModelProcedure) {
-    if (this.$_procedures[procedure.name] != null) {
+  $addProcedure(procedure: IModelProcedure | string) {
+    let procedureName = typeof procedure === "string" ? procedure : procedure.name;
+
+    if (this.$_procedures[procedureName] != null) {
       console.error(
         'Cannot add duplicated procedure in model -> ',
-        procedure.name
+        procedureName
       );
       return;
     }
-    this.$_procedures[procedure.name] = procedure;
+    this.$_procedures[procedureName] = procedure;
   }
 
   $proxyProcedure(proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse): void {
@@ -111,7 +113,7 @@ class Model {
     return this.$_entity.properties;
   }
 
-  $propertyExists(property: string): boolean {
+  $propertyExists(property: string | keyof T): boolean {
     return this.$properties()[property] != null;
   }
 
@@ -123,9 +125,9 @@ class Model {
     return this.$_entity;
   }
 
-  $set(objectProperties: ModelValues): boolean;
+  $set(objectProperties: Partial<T> & ModelValues): boolean;
   $set(property: string, value: ComparableValues): boolean;
-  $set(propOrObj: string | ModelValues, value?: ComparableValues): boolean {
+  $set(propOrObj: string | (Partial<T> & ModelValues), value?: ComparableValues): boolean {
 
     // Iterate though each property in the object!
     if (typeof propOrObj === 'object') {
@@ -173,7 +175,7 @@ class Model {
     return true;
   }
 
-  $get(property: string): any {
+  $get(property: keyof T | string): any {
 
     if (!this.$propertyExists(property)) {
       return undefined;
@@ -322,7 +324,8 @@ class Model {
       request = req;
     }
 
-    const maybeResponse = await this.$_procedures[procedure].execute(this.$_entity.archive, request, {});
+
+    const maybeResponse = await this.$entity().archive.digestRequest(request, context);
     if (maybeResponse instanceof Error) {
       return maybeResponse;
     }

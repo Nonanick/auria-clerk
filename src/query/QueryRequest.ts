@@ -201,4 +201,20 @@ export class QueryRequest<T = {}> {
 
     return models[0];
   }
+
+  async exists(): Promise<boolean> {
+    this.limit = {
+      amount: 1,
+      offset: 0
+    };
+
+    let response = await this._entity.archive.query(this);
+
+    if (response instanceof Error) {
+      return false;
+    }
+
+    return response.rows().length > 0;
+  }
+
 }

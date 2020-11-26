@@ -5,6 +5,7 @@ import { IHookProcedure } from '../hook/IHookProcedure';
 import { Model } from "../model/Model";
 import { ModelOf } from '../model/ModelOf';
 import { IModelValidation } from '../model/validate/IModelValidation';
+import { UniqueConstraint } from '../model/validate/UniqueConstraint';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
 import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
@@ -98,13 +99,18 @@ export class Entity<T = any> {
     this._factory = factory;
 
     // Properties
+    let hasUnique: boolean = false;
+
     let idProp = new Property(init.identifier ?? this._factory.defaultIdentifier);
     this._properties[idProp.name] = idProp;
     for (let propName in this._entity.properties) {
       this._properties[propName] = new Property({
         name: propName,
         ...this._entity.properties[propName]
-      });;
+      });
+      if (this._properties[propName].isUnique()) {
+        hasUnique = true;
+      }
     }
 
     this._archive = factory.archive;
@@ -129,11 +135,16 @@ export class Entity<T = any> {
       } as IHookProcedure;
     }
 
+    // Unique constraint validation?
+    if (hasUnique) {
+      this.addProxy('unique-constraint', UniqueConstraint);
+    }
+
   }
 
   query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
     throw new Error('Entity must be initialized by a Store');
-  }
+  };
 
   model<DTO = T>(): ModelOf<DTO> {
     let model = new Model<DTO>(this);
@@ -164,11 +175,11 @@ export class Entity<T = any> {
 
   async execute(procedure: string, context: any): MaybePromise<IEntityProcedureResponse> {
     throw new Error('Entity must be initialized by a Store');
-  }
+  };
 
   async executeOnModel(model: Model, procedure: string, context: any): MaybePromise<IModelProcedureResponse> {
     throw new Error('Entity must be initialized by a Store');
-  }
+  };
 
   async applyRequestProxies(request: IEntityProcedureRequest, context?: any) {
     let procedure = request.procedure;
@@ -235,6 +246,7 @@ export class Entity<T = any> {
   // Apply all validations to model
   async validate(model: Model): MaybePromise<true> {
 
+
     if (this._entity.validate == null) {
       return true;
     }
@@ -249,7 +261,7 @@ export class Entity<T = any> {
     for (let validation of validations) {
       let isValid = validation.validation(model);
 
-      if (isValid instanceof Promise) {
+      while (isValid instanceof Promise) {
         isValid = await isValid;
       }
 
@@ -258,7 +270,7 @@ export class Entity<T = any> {
       }
     }
 
-    return true;
+    return true as true;
   }
 
   addHook(name: string, hook: IHookProcedure) {

@@ -290,6 +290,12 @@ class Model<T = any> {
   }
 
   async $execute(procedure: string, context?: IModelProcedureContext) {
+
+    let isValid = await this.$commit(true);
+    if (isValid instanceof Error) {
+      return isValid;
+    }
+
     if (this.$_procedures[procedure] == null) {
       throw new Error(
         `Procedure ${procedure} was not added to models of entity ${this.$_entity.name}!`

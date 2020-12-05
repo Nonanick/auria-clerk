@@ -1,8 +1,8 @@
-export { EntityProcedureRequest as Request } from './EntityProcedureRequest';
+export { EntityProcedureRequest } from './EntityProcedureRequest';
 export {
-  EntityProcedureFunction as ExecuteFunction,
-  IEntityProcedure as IProcedure
+  EntityProcedureFunction,
+  IEntityProcedure
 } from './IEntityProcedure';
-export { IEntityProcedureContext as IContext } from './IEntityProcedureContext';
-export { IEntityProcedureRequest as IRequest } from './IEntityProcedureRequest';
-export { IEntityProcedureResponse as IResponse } from './IEntityProcedureResponse';
+export { IEntityProcedureContext } from './IEntityProcedureContext';
+export { IEntityProcedureRequest } from './IEntityProcedureRequest';
+export { IEntityProcedureResponse } from './IEntityProcedureResponse';

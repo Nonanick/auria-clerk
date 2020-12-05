@@ -24,4 +24,4 @@ export interface IProperty {
   };
 }
 
-export type IPropertyIdentifier = Omit<IProperty, "isIdentifier" | "relatedTo" | "required">;
+export type IPropertyIdentifier = Omit<IProperty, "isIdentifier" | "relatedTo" | "required"> & {};

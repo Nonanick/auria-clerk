@@ -21,8 +21,8 @@ export interface IArchive {
   addHook(...hook: ArchiveProcedureHook[]): void;
   removeHook(...hook: ArchiveProcedureHook[]): void;
 
-  digestRequest(procedureRequest: IModelProcedureRequest, context: any): MaybePromise<IModelProcedureResponse>;
-  digestRequest(procedureRequest: IEntityProcedureRequest, context: any): MaybePromise<IEntityProcedureResponse>;
+  resolveRequest(procedureRequest: IModelProcedureRequest, context: any): MaybePromise<IModelProcedureResponse>;
+  resolveRequest(procedureRequest: IEntityProcedureRequest, context: any): MaybePromise<IEntityProcedureResponse>;
 
   proxyProcedureRequest(req: IModelProcedureRequest, context: any): MaybePromise<IModelProcedureRequest>;
   proxyProcedureRequest(req: IEntityProcedureRequest, context: any): MaybePromise<IEntityProcedureRequest>;

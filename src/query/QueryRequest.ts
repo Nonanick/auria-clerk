@@ -21,6 +21,8 @@ export class QueryRequest<T = {}> {
 
   protected _ordering: IOrderBy[] = [];
 
+  protected _include: string[] = [];
+
   protected _limit: ILimitQuery = {
     amount: QueryRequest.MAX_ROWS_PER_QUERY,
     offset: 0
@@ -40,6 +42,28 @@ export class QueryRequest<T = {}> {
 
   set filters(filters: IFilterQuery) {
     this._filters = filters;
+  }
+
+  get includes() {
+    return this._include;
+  }
+
+  set includes(includes: string[]) {
+    if (!this.checkIncludes(includes)) {
+      return;
+    }
+    this._include = includes;
+  }
+
+  protected checkIncludes(includes: string[]) {
+    for (let include of includes) {
+      let prop = this.entity.properties[include];
+      if (prop == null || !prop?.hasRelation()) {
+        console.warn('Included property "' + include + '" does not have a relation!');
+        return false;
+      }
+    }
+    return true;
   }
 
   addFilter(filterName: string, filter: IFilterQuery | FilterComparison | FilterComparison[]) {
@@ -93,6 +117,7 @@ export class QueryRequest<T = {}> {
   }
 
   constructor(queriedEntity: Entity) {
+
     this._entity = queriedEntity;
 
     // import filters to query
@@ -131,6 +156,11 @@ export class QueryRequest<T = {}> {
       ...this.filters,
     };
 
+    // Includes 
+    if (Array.isArray(request.include)) {
+      this.include(...request.include);
+    }
+
     // Ordering
     if (request.order != null) {
       if (Array.isArray(request.order)) {
@@ -161,6 +191,10 @@ export class QueryRequest<T = {}> {
     return this._ordering.length > 0;
   }
 
+  hasIncludes(): boolean {
+    return this._include.length > 0;
+  }
+
   set properties(props: string[]) {
     this._properties = props;
   }
@@ -172,6 +206,15 @@ export class QueryRequest<T = {}> {
   addProperties(...property: string[]) {
     this._properties = [...this._properties ?? [], ...property];
     return this;
+  }
+
+  include(...property: string[]) {
+    if (!this.checkIncludes(property)) {
+      console.log('Check included properties failed!');
+      return false;
+    }
+    this._include = [...this._include ?? [], ...property];
+    return true;
   }
 
   async fetch(): MaybePromise<ModelOf<T>[]> {
@@ -201,6 +244,7 @@ export class QueryRequest<T = {}> {
 
     return models[0];
   }
+
 
   async exists(): Promise<boolean> {
     this.limit = {

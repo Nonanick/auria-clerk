@@ -1,2 +1,2 @@
-export * as OfEntity from './entity';
-export * as OfModel from './model';
+export * from './entity';
+export * from './model';

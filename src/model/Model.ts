@@ -17,7 +17,7 @@ import { IQueryRequest, QueryRequest } from '../query';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
-class Model<T = any> {
+class Model<T = {}> {
 
   [prop: string]: any;
 
@@ -331,7 +331,7 @@ class Model<T = any> {
     }
 
 
-    const maybeResponse = await this.$entity().archive.digestRequest(request, context);
+    const maybeResponse = await this.$entity().archive.resolveRequest(request, context);
     if (maybeResponse instanceof Error) {
       return maybeResponse;
     }

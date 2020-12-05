@@ -1,8 +1,8 @@
-export { IModelProcedureContext as IContext } from './context/IModelProcedureContext';
-export { IModelProcedureHook as IHook } from './hook/IModelProcedureHook';
+export { IModelProcedureContext as IProcedureContext } from './context/IModelProcedureContext';
+export { IModelProcedureHook as IProcedureHook } from './hook/IModelProcedureHook';
 export {
-  ExecuteModelProcedureFunction as ExecuteFunction,
-  IModelProcedure as IProcedure
+  ExecuteModelProcedureFunction as ExecuteProcedureFunction,
+  IModelProcedure
 } from './IModelProcedure';
-export { IModelProcedureRequest as IRequest } from './IModelProcedureRequest';
-export { IModelProcedureResponse as IResponse } from './IModelProcedureResponse';
+export { IModelProcedureRequest as IProcedureRequest } from './IModelProcedureRequest';
+export { IModelProcedureResponse as IProcedureResponse } from './IModelProcedureResponse';

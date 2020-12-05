@@ -1,7 +1,7 @@
 import { AppError } from "../../../error/AppError";
 import { IPropertyType } from "../IPropertyType";
 
-export const StringType: IPropertyType = {
+export const StringType: IPropertyType & Partial<IStringType> = {
   name: 'String',
   raw: String,
   encode: (v: any) => String(v),
@@ -10,3 +10,12 @@ export const StringType: IPropertyType = {
     validate: (v: any) => typeof v === "string" ? true : new AppError('String type expects a string value!'),
   },
 };
+
+export type IStringType = {
+  minLength: number;
+  maxLength: number;
+  pattern: string;
+  format: typeof StringTypeFormat[number] | (typeof StringTypeFormat[number])[];
+};
+
+export const StringTypeFormat = ["time", "date", "date-time", "uri", "email", "hostname", "ipv4", "ipv6", "regex"] as const;

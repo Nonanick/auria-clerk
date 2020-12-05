@@ -19,7 +19,7 @@ export interface IEntity {
 
   // All properties of the models of this entity
   properties: {
-    [name: string]: Omit<IProperty, "name">;
+    [name: string]: Omit<IProperty, "name"> & {};
   };
 
   // Entity will be naturally ordered by...
@@ -33,22 +33,22 @@ export interface IEntity {
 
   // Entity procedures
   procedures?: {
-    model?: {
+    ofModel?: {
       [name: string]: IModelProcedure<any> | string;
     };
-    entity?: {
+    ofEntity?: {
       [name: string]: IEntityProcedure | string;
     };
   };
 
   // Proxy entity/model procedures, intervene in the natural flow 
   proxy?: {
-    [name: string]: Omit<IProxyProcedure, "name">;
+    [name: string]: Omit<IProxyProcedure, "name"> & {};
   };
 
   // Trigger actions without intervening in the life cycle 
   hooks?: {
-    [name: string]: Omit<IHookProcedure, "name">;
+    [name: string]: Omit<IHookProcedure, "name"> & {};
   };
 
 }

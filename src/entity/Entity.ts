@@ -1,5 +1,4 @@
 import { IArchive } from '../archive/IArchive';
-import { UnknownEntityProcedure } from '../error/entity/UnknownEntityProcedure';
 import { MaybePromise } from '../error/Maybe';
 import { IHookProcedure } from '../hook/IHookProcedure';
 import { Model } from "../model/Model";
@@ -22,10 +21,11 @@ import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IQueryRequest } from '../query/IQueryRequest';
 import { IOrderBy } from "../query/order/IOrderBy";
 import { QueryRequest } from "../query/QueryRequest";
+import { Store } from '../store/Store';
 import { Factory } from "./Factory";
 import { IEntity } from "./IEntity";
 
-export class Entity<T = any> {
+export class Entity<T = {}> {
 
   protected _factory: Factory;
 
@@ -116,8 +116,8 @@ export class Entity<T = any> {
     this._archive = factory.archive;
 
     // Procedures
-    this._procedures.entity = init.procedures?.entity ?? {};
-    this._procedures.model = init.procedures?.model ?? {};
+    this._procedures.entity = init.procedures?.ofEntity ?? {};
+    this._procedures.model = init.procedures?.ofModel ?? {};
 
     // Proxies
     for (let proxyName in init.proxy ?? {}) {
@@ -142,7 +142,11 @@ export class Entity<T = any> {
 
   }
 
-  query<T = any>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
+  store(): Store {
+    throw new Error('Entity must be initialized by a Store');
+  }
+
+  query<T = {}>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
     throw new Error('Entity must be initialized by a Store');
   };
 

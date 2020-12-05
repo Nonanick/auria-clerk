@@ -1,9 +1,10 @@
-import { MaybePromise, Procedure } from '../AuriaClerk';
+import { MaybePromise } from '../AuriaClerk';
 import { ProcedureProxyWildcard } from '../entity/Entity';
 import { Maybe } from '../error/Maybe';
+import { IProcedureRequest, IProcedureResponse } from '../procedure';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
-import { implementsEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
-import { implementsEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
+import { IEntityProcedureRequest, implementsEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
+import { IEntityProcedureResponse, implementsEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
 import { IModelProcedure } from '../procedure/model/IModelProcedure';
 import { implementsModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
 import { implementsModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
@@ -12,24 +13,24 @@ import { ArchiveProcedureHook } from './ArchiveProcedureHook';
 import { ArchiveProcedureProxy } from './ArchiveProcedureProxy';
 import { IArchive } from './IArchive';
 
-type ModelRequest = Procedure.OfModel.IRequest;
-type ModelResponse = Procedure.OfModel.IResponse;
+type ModelRequest = IProcedureRequest;
+type ModelResponse = IProcedureResponse;
 
-type EntityRequest = Procedure.OfEntity.IRequest;
-type EntityResponse = Procedure.OfEntity.IResponse;
+type EntityRequest = IEntityProcedureRequest;
+type EntityResponse = IEntityProcedureResponse;
 
 export abstract class Archive implements IArchive {
 
   protected _modelProcedures: Set<IModelProcedure> = new Set();
   protected _entityProcedures: Set<IEntityProcedure> = new Set();
 
-  addModelProcedure(...procedures: Procedure.OfModel.IProcedure[]): void {
+  addModelProcedure(...procedures: IModelProcedure[]): void {
     for (let procedure of procedures) {
       this._modelProcedures.add(procedure);
     }
   }
 
-  addEntityProcedure(...procedures: Procedure.OfEntity.IProcedure[]): void {
+  addEntityProcedure(...procedures: IEntityProcedure[]): void {
     for (let procedure of procedures) {
       this._entityProcedures.add(procedure);
     }
@@ -144,9 +145,9 @@ export abstract class Archive implements IArchive {
     this._hooks = this._hooks.filter(h => !hook.includes(h));
   }
 
-  async digestRequest(request: ModelRequest, context: any): MaybePromise<ModelResponse>;
-  async digestRequest(request: EntityRequest, context: any): MaybePromise<EntityResponse>;
-  async digestRequest(request: ModelRequest | EntityRequest, context: any): MaybePromise<ModelResponse | EntityResponse> {
+  async resolveRequest(request: ModelRequest, context: any): MaybePromise<ModelResponse>;
+  async resolveRequest(request: EntityRequest, context: any): MaybePromise<EntityResponse>;
+  async resolveRequest(request: ModelRequest | EntityRequest, context: any): MaybePromise<ModelResponse | EntityResponse> {
 
     const maybeRequest = await this.proxyProcedureRequest(request as any, context);
     if (maybeRequest instanceof Error) {
@@ -190,6 +191,6 @@ export abstract class Archive implements IArchive {
   }
 
 
-  abstract async query<T = any>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
+  abstract query<T = any>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
 
 }

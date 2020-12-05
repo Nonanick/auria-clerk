@@ -1,7 +1,7 @@
 import { InvalidProperty } from '../../../error/type/InvalidProperty';
 import { IPropertyType } from '../IPropertyType';
 
-export const NumberType: IPropertyType = {
+export const NumberType: IPropertyType & Partial<INumberType> = {
   name: 'Number',
   raw: Number,
   sanitize: {
@@ -14,4 +14,12 @@ export const NumberType: IPropertyType = {
       ? true
       : new InvalidProperty("Property expected numeric value!")
   }
+};
+
+export type INumberType = {
+  multipleOf: number;
+  maximum: number;
+  exclusiveMaximum: number;
+  minimum: number;
+  exclusiveMinimum: number;
 };

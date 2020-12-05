@@ -98,41 +98,33 @@ export class Store {
     let request: IModelProcedureRequest | IEntityProcedureRequest;
 
     if (on instanceof Entity) {
-      request = {
-        procedure,
-        entity,
-        context
-      };
+      request = { procedure, entity, context };
     }
 
     if (on instanceof Model) {
-      request = {
-        model: on,
-        context,
-        entity,
-        procedure
-      };
+      request = { model: on, context, entity, procedure };
     }
 
     if (request! == null) {
       throw new AppException('Unknown procedure target, expecting Entity or Model instances!');
     }
 
-    const proxiedReq = await this.applyRequestProxies(request, context);
-    if (proxiedReq instanceof Error) {
-      return proxiedReq;
+    const proxiedRequest = await this.applyRequestProxies(request, context);
+    if (proxiedRequest instanceof Error) {
+      return proxiedRequest;
     }
 
-    const maybeResponse = await entity.archive.digestRequest(request as any, context);
+    const maybeResponse = await entity.archive.resolveRequest(request as any, context);
     if (maybeResponse instanceof Error) {
       return maybeResponse;
     }
 
-    const proxiedRes = await this.applyResponseProxies(maybeResponse);
-    if (proxiedRes instanceof Error) {
-      return proxiedRes;
+    const proxiedResponse = await this.applyResponseProxies(maybeResponse);
+    if (proxiedResponse instanceof Error) {
+      return proxiedResponse;
     }
-    return proxiedRes;
+
+    return proxiedResponse;
   }
 
   add(...entities: (IEntity | CustomFactoryEntity)[]) {
@@ -155,7 +147,7 @@ export class Store {
       }
 
       if (this._entities[entity.name] != null) {
-        console.warn('Tried to add duplicated entity with name ', entity.name);
+        console.warn('[Store] Tried to add duplicated entity with name ', entity.name);
         continue;
       }
 
@@ -176,20 +168,23 @@ export class Store {
         return this.execute(procedure, model, context ?? {});
       };
 
+      // Inject store 
+      createdEntity.store = () => this;
+
       // Add model procedures into archive
-      for (let procName in entity.procedures?.model ?? {}) {
-        if (typeof entity.procedures!.model?.[procName]! === "object") {
+      for (let procedureName in entity.procedures?.ofModel ?? {}) {
+        if (typeof entity.procedures!.ofModel?.[procedureName]! === "object") {
           factory.archive.addModelProcedure(
-            entity.procedures!.model?.[procName]! as IModelProcedure
+            entity.procedures!.ofModel?.[procedureName]! as IModelProcedure
           );
         }
       }
 
       // Add entity procedure into archive
-      for (let procName in entity.procedures?.entity ?? {}) {
-        if (typeof entity.procedures!.model?.[procName]! === "object") {
+      for (let procName in entity.procedures?.ofEntity ?? {}) {
+        if (typeof entity.procedures!.ofModel?.[procName]! === "object") {
           factory.archive.addEntityProcedure(
-            entity.procedures!.entity?.[procName]! as IEntityProcedure
+            entity.procedures!.ofEntity?.[procName]! as IEntityProcedure
           );
         }
       }
@@ -210,7 +205,14 @@ export class Store {
     }
   }
 
-  entity(name: string): Entity | undefined {
+  hasEntity(name: string): boolean {
+    return this._entities[name] != null;
+  }
+
+  entity(name: string): Entity {
+    if (this._entities[name] == null) {
+      throw new Error('Tried to reach unknown entity "' + name + '"! Was it added to the Store?');
+    }
     return this._entities[name];
   }
 

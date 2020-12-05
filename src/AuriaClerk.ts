@@ -13,6 +13,7 @@ export { PropertyGetProxy as IPropertyGetProxy } from './property/proxy/Property
 export { PropertySetProxy as IPropertySetProxy } from './property/proxy/PropertySetProxy';
 export { IPropertyRelation } from './property/relation/IPropertyRelation';
 export { IPropertySanitization, PropertySanitizationFunction } from './property/sanitize/IPropertySanitization';
+export { PropertyComparison, PropertyComparisonArray } from './property/comparison/PropertyComparison';
 export { IPropertyType } from './property/type/IPropertyType';
 export { BooleanType } from './property/type/common/BooleanType';
 export { DateType } from './property/type/common/DateType';
@@ -34,6 +35,6 @@ export { ModelOf } from './model/ModelOf';
 export { ValueHistory } from './model/history/ValueHistory';
 export { IModelValidation, ModelValidationFunction } from './model/validate/IModelValidation';
 
-export * as Procedure from './procedure';
+export * from './procedure';
 
 export * from './query';

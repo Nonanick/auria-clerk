@@ -43,4 +43,19 @@ export class QueryResponse<T = {}> {
   rows() {
     return [...this._rows];
   }
+
+  rowsWithPublicProps(forEntity: Entity) {
+
+    let publicProps = Object.entries(forEntity.properties)
+      .filter(([name, prop]) => !prop.isPrivate())
+      .map(([name, prop]) => name);
+
+    return this._rows.map(row => {
+      let newRow: any = {};
+      for (let prop of publicProps) {
+        newRow[prop] = row[prop];
+      }
+      return newRow;
+    });
+  }
 }

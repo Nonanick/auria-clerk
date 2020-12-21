@@ -8,7 +8,7 @@ import { IPropertyValidation, PropertyValidationFunction } from "./validation/IP
 
 export interface IProperty {
   name: string;
-  type: IPropertyType | StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor | ArrayBufferConstructor | ObjectConstructor;
+  type: ValidPropertyType;
   isIdentifier?: boolean;
   isDescriptive?: boolean;
   required?: boolean;
@@ -23,5 +23,7 @@ export interface IProperty {
     set?: PropertySetProxy[];
   };
 }
+
+export type ValidPropertyType = IPropertyType | StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor | ObjectConstructor;
 
 export type IPropertyIdentifier = Omit<IProperty, "isIdentifier" | "relatedTo" | "required"> & {};

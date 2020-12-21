@@ -217,7 +217,7 @@ export class QueryRequest<T = {}> {
     return true;
   }
 
-  async fetch(): MaybePromise<ModelOf<T>[]> {
+  async fetch(raw = false): MaybePromise<ModelOf<T>[]> {
 
     let response = await this._entity.archive.query(this);
 
@@ -225,11 +225,13 @@ export class QueryRequest<T = {}> {
       return response;
     }
 
-    return await response.rowsAsModels(this._entity);
+    return raw
+      ? response.rowsWithPublicProps(this._entity)
+      : await response.rowsAsModels(this._entity);
   }
 
   // Ignores limiter
-  async fetchOne(): MaybePromise<ModelOf<T> | undefined> {
+  async fetchOne(raw = false): MaybePromise<ModelOf<T> | undefined> {
     this.limit = {
       amount: 1,
       offset: 0
@@ -240,7 +242,9 @@ export class QueryRequest<T = {}> {
       return response;
     }
 
-    let models = await response.rowsAsModels(this._entity);
+    let models = raw
+      ? response.rowsWithPublicProps(this._entity)
+      : await response.rowsAsModels(this._entity);
 
     return models[0];
   }

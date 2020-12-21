@@ -5,7 +5,7 @@ import { IPropertyValidation } from "../validation/IPropertyValidation";
 
 export interface IPropertyType {
   name: string;
-  raw: StringConstructor | BooleanConstructor | DateConstructor | NumberConstructor | ArrayBufferConstructor | ObjectConstructor;
+  raw: StringConstructor | BooleanConstructor | DateConstructor | NumberConstructor | ArrayConstructor | ObjectConstructor;
   validate?: IPropertyValidation | IPropertyValidation[];
   sanitize?: IPropertySanitization;
   encode?: IPropertyEncode;

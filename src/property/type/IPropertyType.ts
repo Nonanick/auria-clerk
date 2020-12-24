@@ -11,3 +11,19 @@ export interface IPropertyType {
   encode?: IPropertyEncode;
   decode?: IPropertyDecode;
 }
+
+export function isPropertyType(obj: any): obj is IPropertyType {
+  return (
+    // Name
+    typeof obj.name === "string"
+    // Raw
+    && typeof obj.raw === "object"
+    // Validate
+    && (
+      obj.validate != null
+      && (Array.isArray(obj.validate) || typeof obj.validate === "function")
+    ) || obj.validate == null
+    // Sanitize
+    && (obj.sanitize != null && typeof obj.sanitize === "function") || obj.sanitize == null
+  );
+}

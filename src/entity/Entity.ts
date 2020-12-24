@@ -1,3 +1,5 @@
+import { IPropertyType } from 'property';
+import { isPropertyType } from 'property/type/IPropertyType';
 import { IArchive } from '../archive/IArchive';
 import { MaybePromise } from '../error/Maybe';
 import { IHookProcedure } from '../hook/IHookProcedure';
@@ -10,7 +12,7 @@ import { IEntityProcedureRequest } from '../procedure/entity/IEntityProcedureReq
 import { IEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
 import { IModelProcedure } from '../procedure/model/IModelProcedure';
 import { IModelProcedureResponse } from '../procedure/model/IModelProcedureResponse';
-import { IPropertyIdentifier } from "../property/IProperty";
+import { IProperty, IPropertyIdentifier, ValidPropertyType } from "../property/IProperty";
 import { Property } from '../property/Property';
 import {
   IProxyEntityProcedureRequest,
@@ -104,13 +106,28 @@ export class Entity<T = {}> {
     let idProp = new Property(init.identifier ?? this._factory.defaultIdentifier);
     this._properties[idProp.name] = idProp;
     for (let propName in this._entity.properties) {
-      this._properties[propName] = new Property({
-        name: propName,
-        ...this._entity.properties[propName]
-      });
+      let mustBeProp: ValidPropertyType | (Omit<IProperty, "name"> & {}) = this._entity.properties[propName];
+
+      if (isPropertyType(mustBeProp) ||
+        [String, Number, Boolean, Object, Date].includes(mustBeProp as any)
+      ) {
+        mustBeProp = {
+          name: propName,
+          type: mustBeProp as ValidPropertyType
+        };
+      } else {
+        mustBeProp = {
+          name: propName,
+          ...mustBeProp as (Omit<IProperty, "name">)
+        };
+      }
+
+      this._properties[propName] = new Property(mustBeProp as IProperty);
+
       if (this._properties[propName].isUnique()) {
         hasUnique = true;
       }
+
     }
 
     this._archive = factory.archive;

@@ -1,8 +1,9 @@
+import { IPropertyType } from 'property';
 import { IHookProcedure } from '../hook/IHookProcedure';
 import { IModelValidation } from '../model/validate/IModelValidation';
 import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
-import { IProperty, IPropertyIdentifier } from "../property/IProperty";
+import { IProperty, IPropertyIdentifier, ValidPropertyType } from "../property/IProperty";
 import { IProxyProcedure } from '../proxy/IProxyProcedure';
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IOrderBy } from "../query/order/IOrderBy";
@@ -19,7 +20,7 @@ export interface IEntity {
 
   // All properties of the models of this entity
   properties: {
-    [name: string]: Omit<IProperty, "name"> & {};
+    [name: string]: (Omit<IProperty, "name"> & {}) | ValidPropertyType;
   };
 
   // Entity will be naturally ordered by...

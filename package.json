@@ -1,9 +1,9 @@
 {
-  "name": "auria-clerk",
+  "name": "clerk",
   "version": "0.0.1",
-  "description": "Auria Clerk - Data management",
-  "main": "dist/AuriaClerk.js",
-  "types": "dist/AuriaClerk.d.ts",
+  "description": "Clerk - Data management",
+  "main": "dist/Clerk.js",
+  "types": "dist/Clerk.d.ts",
   "author": "Nicholas Frai",
   "license": "MIT",
   "private": false,

@@ -1,4 +1,4 @@
-import { MaybePromise } from '../AuriaClerk';
+import { MaybePromise } from '../Clerk';
 import { ProcedureProxyWildcard } from '../entity/Entity';
 import { Maybe } from '../error/Maybe';
 import { IProcedureRequest, IProcedureResponse } from '../procedure';

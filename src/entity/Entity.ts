@@ -1,5 +1,4 @@
-import { IPropertyType } from 'property';
-import { isPropertyType } from 'property/type/IPropertyType';
+import { isPropertyType } from '../property/type/IPropertyType';
 import { IArchive } from '../archive/IArchive';
 import { MaybePromise } from '../error/Maybe';
 import { IHookProcedure } from '../hook/IHookProcedure';
@@ -16,8 +15,8 @@ import { IProperty, IPropertyIdentifier, ValidPropertyType } from "../property/I
 import { Property } from '../property/Property';
 import {
   IProxyEntityProcedureRequest,
-  IProxyProcedure,
-  IProxyEntityProcedureResponse
+
+  IProxyEntityProcedureResponse, IProxyProcedure
 } from '../proxy/IProxyProcedure';
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IQueryRequest } from '../query/IQueryRequest';

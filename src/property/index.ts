@@ -8,7 +8,7 @@ export { PropertyGetProxy } from './proxy/PropertyGetProxy';
 export { PropertySetProxy } from './proxy/PropertySetProxy';
 export { IPropertyRelation } from './relation/IPropertyRelation';
 export { IPropertySanitization, PropertySanitizationFunction } from './sanitize/IPropertySanitization';
-export { IPropertyType } from './type/IPropertyType';
+export { IPropertyType,isPropertyType } from './type/IPropertyType';
 export { ArrayType } from './type/common/ArrayType';
 export { BooleanType } from './type/common/BooleanType';
 export { DateType } from './type/common/DateType';

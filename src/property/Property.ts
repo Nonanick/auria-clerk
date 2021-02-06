@@ -175,6 +175,13 @@ export function normalizePropertyType(type: IProperty['type']): IPropertyType {
     return DateType;
   }
 
+  if(type === Object) {
+    return {
+      name : 'Object',
+      raw : Object,
+    };
+  }
+
   return type as IPropertyType;
 
 }

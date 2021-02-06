@@ -1,10 +1,14 @@
-import { IPropertyType } from 'property';
-import { IHookProcedure } from '../hook/IHookProcedure';
-import { IModelValidation } from '../model/validate/IModelValidation';
+import { isPropertyType } from "../property";
+import { IHookProcedure } from "../hook/IHookProcedure";
+import { IModelValidation } from "../model/validate/IModelValidation";
 import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
-import { IProperty, IPropertyIdentifier, ValidPropertyType } from "../property/IProperty";
-import { IProxyProcedure } from '../proxy/IProxyProcedure';
+import {
+  IProperty,
+  IPropertyIdentifier,
+  ValidPropertyType
+} from "../property/IProperty";
+import { IProxyProcedure } from "../proxy/IProxyProcedure";
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IOrderBy } from "../query/order/IOrderBy";
 
@@ -42,18 +46,47 @@ export interface IEntity {
     };
   };
 
-  // Proxy entity/model procedures, intervene in the natural flow 
+  // Proxy entity/model procedures, intervene in the natural flow
   proxy?: {
     [name: string]: Omit<IProxyProcedure, "name"> & {};
   };
 
-  // Trigger actions without intervening in the life cycle 
+  // Trigger actions without intervening in the life cycle
   hooks?: {
     [name: string]: Omit<IHookProcedure, "name"> & {};
   };
-
 }
 
+export function getAsIProperty(
+  name: string,
+  prop: (Omit<IProperty, "name"> & {}) | ValidPropertyType,
+): IProperty {
+
+  if (
+    prop === String ||
+    prop === Object ||
+    prop === Number ||
+    prop === Boolean ||
+    prop === Date 
+  ) {
+    return {
+      name,
+      type : prop
+    };
+  }
+
+  if( isPropertyType(prop) ) {
+    return {
+      name,
+      type : prop
+    }
+  }
+
+  return {
+    name,
+    ...(prop as Omit<IProperty, "name"> & {})
+  }
+}
 
 export type EntityDefaultFilter = IFilterQuery & {
   locked?: boolean;

@@ -26,7 +26,7 @@ import { Store } from '../store/Store';
 import { Factory } from "./Factory";
 import { IEntity } from "./IEntity";
 
-export class Entity<T = {}> {
+export class Entity<T = any> {
 
   protected _factory: Factory;
 

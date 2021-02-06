@@ -296,6 +296,10 @@ export class Store {
   async applyQueryProxies(queryReq: QueryRequest): MaybePromise<QueryRequest> {
     return queryReq;
   }
+
+  allEntities() {
+    return Object.entries(this._entities).map(([name, ent]) => ent);
+  }
 }
 
 export type ClassOfFactory = new (...args: any[]) => Factory & Factory;

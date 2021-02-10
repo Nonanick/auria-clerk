@@ -30,6 +30,6 @@ export interface IArchive {
   proxyProcedureResponse(res: IModelProcedureResponse): MaybePromise<IModelProcedureResponse>;
   proxyProcedureResponse(res: IEntityProcedureResponse): MaybePromise<IEntityProcedureResponse>;
 
-  query<T = any>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
+  query<T = unknown>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
 
 }

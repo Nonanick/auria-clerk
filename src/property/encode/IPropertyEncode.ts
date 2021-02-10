@@ -1,1 +1,1 @@
-export type IPropertyEncode<From = any, To = any> = (value: From) => To | Promise<To>
+export type IPropertyEncode<From = unknown, To = unknown> = (value: From) => To | Promise<To>

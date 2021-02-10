@@ -203,7 +203,7 @@ class Model<T = {}> {
     return [...this.$_changedProperties];
   }
 
-  async $json<T = any>(includePrivate: string[] = []): Promise<T> {
+  async $json<T = unknown>(includePrivate: string[] = []): Promise<T> {
     let ret: any = {};
 
     for (let prop in this.$_properties) {

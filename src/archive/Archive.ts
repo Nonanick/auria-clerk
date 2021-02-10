@@ -191,6 +191,6 @@ export abstract class Archive implements IArchive {
   }
 
 
-  abstract query<T = any>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
+  abstract query<T = unknown>(queryRequest: QueryRequest<T>): MaybePromise<QueryResponse<T>>;
 
 }

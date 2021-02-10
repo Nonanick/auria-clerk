@@ -28,7 +28,7 @@ export class QueryResponse<T = {}> {
     return this;
   }
 
-  async rowsAsModels<T = any>(forEntity: Entity) {
+  async rowsAsModels<T = unknown>(forEntity: Entity) {
     return Promise.all(
       this._rows.map(row => {
         let model = forEntity.model();

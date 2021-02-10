@@ -1,1 +1,1 @@
-export type IPropertyDecode<To = any> = (value: any) => To | Promise<To>;
+export type IPropertyDecode<To = unknown> = (value: any) => To | Promise<To>;

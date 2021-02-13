@@ -15,7 +15,7 @@ export type IStringType = {
   minLength: number;
   maxLength: number;
   pattern: string;
-  format: typeof StringTypeFormat[number] | (typeof StringTypeFormat[number])[];
+  format: typeof StringTypeFormat[number];
 };
 
 export const StringTypeFormat = ["time", "date", "date-time", "uri", "email", "hostname", "ipv4", "ipv6", "regex"] as const;

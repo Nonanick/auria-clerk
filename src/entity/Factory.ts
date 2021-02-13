@@ -1,7 +1,7 @@
 import { IArchive } from '../archive/IArchive';
 import { Maybe } from '../error/Maybe';
 import { IPropertyIdentifier } from "../property/IProperty";
-import { Entity } from './Entity';
+import { StoredEntity } from './StoredEntity';
 
 export abstract class Factory {
 
@@ -9,6 +9,6 @@ export abstract class Factory {
 
   abstract get archive(): IArchive;
 
-  abstract hydrateEntity(entity: Entity): Maybe<Entity>;
+  abstract hydrateEntity(entity: StoredEntity): Maybe<StoredEntity>;
 
 }

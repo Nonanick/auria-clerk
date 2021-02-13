@@ -1,23 +1,20 @@
-import { Entity, ProcedureProxyWildcard } from "../entity/Entity";
-import { UnknownEntityProcedure } from '../error/entity/UnknownEntityProcedure';
-import { UnknownEntityProperty } from '../error/entity/UnknownEntityProperty';
-import { UnrelatedProperty } from '../error/entity/UnrelatedProperty';
+import { Entity } from "../entity/Entity";
 import { MaybePromise } from '../error/Maybe';
-import { IHookModelProcedure } from '../hook/IHookProcedure';
-import { IModelProcedureContext } from '../procedure/model/context/IModelProcedureContext';
-import { IModelProcedureHook } from '../procedure/model/hook/IModelProcedureHook';
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
-import { IModelProcedureRequest } from '../procedure/model/IModelProcedureRequest';
-import { IProperty } from "../property/IProperty";
+import { IProperty, IPropertyIdentifier } from "../property/IProperty";
 import { Property } from '../property/Property';
 import { PropertyGetProxy } from "../property/proxy/PropertyGetProxy";
 import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
-import { IProxyModelProcedureRequest, IProxyModelProcedureResponse } from '../proxy/IProxyProcedure';
-import { IQueryRequest, QueryRequest } from '../query';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
-class Model<T = {}> {
+export const ModelDefaultIdentifier : IPropertyIdentifier = {
+  name : '_id',
+  type : Number,
+  unique : true,
+}
+
+class Model<T = unknown> {
 
   [prop: string]: any;
 
@@ -32,7 +29,6 @@ class Model<T = {}> {
   protected $_proxies: ModelProxies = {
     get: {},
     set: {},
-    procedures: {}
   };
 
   get $__proxies() {
@@ -47,12 +43,12 @@ class Model<T = {}> {
 
   protected $_changedProperties: string[] = [];
 
-  protected $_hooks: ModelHooks = {};
-
   constructor(entity: Entity) {
     this.$_entity = entity;
+    
     this.$_properties = entity.properties;
-    this.$_idProperty = entity.identifier;
+
+    this.$_idProperty = entity.identifier ?? {...ModelDefaultIdentifier};
 
     return new Proxy(this, ProxiedModelHandler);
   }
@@ -70,44 +66,6 @@ class Model<T = {}> {
     this.$_procedures[procedureName] = procedure;
   }
 
-  $proxyProcedure(proxy: IProxyModelProcedureRequest | IProxyModelProcedureResponse): void {
-
-    let procedure = proxy.procedure;
-
-    if (typeof procedure === 'string') {
-      procedure = [procedure];
-    }
-
-    for (let proc of procedure) {
-
-      if (this.$_proxies.procedures[proc] == null) {
-        this.$_proxies.procedures[proc] = { request: [], response: [] };
-      }
-
-      switch (proxy.proxies) {
-        case 'request':
-          this.$_proxies.procedures[proc].request.push(proxy as IProxyModelProcedureRequest);
-          break;
-        case 'response':
-          this.$_proxies.procedures[proc].response.push(proxy as IProxyModelProcedureResponse);
-          break;
-      }
-    }
-
-  }
-
-  $hookProcedure(
-    hook: IHookModelProcedure
-  ): Model {
-    const procedure = hook.procedure;
-
-    if (this.$_hooks[procedure] == null) {
-      this.$_hooks[procedure] = [];
-    }
-
-    this.$_hooks[procedure].push(hook);
-    return this;
-  }
 
   $properties() {
     return this.$_entity.properties;
@@ -269,7 +227,7 @@ class Model<T = {}> {
   }
 
   async $id(): Promise<ComparableValues> {
-    return await this.$get(this.$_entity.identifier.name);
+    return await this.$get(this.$_entity.identifier?.name ?? '_id');
   };
 
   $history(): ValueHistory[] {
@@ -289,114 +247,11 @@ class Model<T = {}> {
     return false;
   }
 
-  async $execute(procedure: string, context?: IModelProcedureContext) {
-
-    let isValid = await this.$commit(true);
-    if (isValid instanceof Error) {
-      return isValid;
-    }
-
-    if (this.$_procedures[procedure] == null) {
-      throw new Error(
-        `Procedure ${procedure} was not added to models of entity ${this.$_entity.name}!`
-      );
-    }
-
-    let request: IModelProcedureRequest = {
-      entity: this.$_entity,
-      procedure: procedure,
-      model: this,
-    };
-
-    context = {
-      ...context
-    };
-
-    // Apply request wildcard proxies
-    for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.request ?? []) {
-      let req = await modelProxy.apply(request, context);
-      if (req instanceof Error) {
-        return req;
-      }
-      request = req;
-    }
-
-    // Apply request specific proxies
-    for (let modelProxy of this.$_proxies.procedures[procedure]?.request ?? []) {
-      let req = await modelProxy.apply(request, context);
-      if (req instanceof Error) {
-        return req;
-      }
-      request = req;
-    }
-
-
-    const maybeResponse = await this.$entity().archive.resolveRequest(request, context);
-    if (maybeResponse instanceof Error) {
-      return maybeResponse;
-    }
-
-    let response = maybeResponse;
-
-    // Apply response wildcard proxies
-    for (let modelProxy of this.$_proxies.procedures[procedure]?.response ?? []) {
-      let res = await modelProxy.apply(response);
-      if (res instanceof Error) {
-        return res;
-      }
-      response = res;
-    }
-
-    // Apply response wildcard proxies
-    for (let modelProxy of this.$_proxies.procedures[ProcedureProxyWildcard]?.response ?? []) {
-      let res = await modelProxy.apply(response);
-      if (res instanceof Error) {
-        return res;
-      }
-      response = res;
-    }
-
-    return response;
-
-  }
-
-  async $related(propertyName: string, query?: Partial<IQueryRequest>) {
-
-    if (this.$_properties[propertyName] == null) {
-      return new UnknownEntityProperty(
-        'Unknown property ' + propertyName + ' in model of entity ' + this.$_entity.name
-      );
-    }
-    const property = this.$_properties[propertyName];
-    if (!property.hasRelation()) {
-      return new UnrelatedProperty(
-        'Cannot fetch related data of property ' + propertyName + ' as it doesn\'t seem to have its relation declared!'
-      );
-    }
-
-    const relation = property.getRelation()!;
-
-    const fetchRelationQuery: IQueryRequest = {
-      entity: relation.entity,
-      properties: relation.returning,
-      filters: {
-        'associate': [relation.property, '=', this.$get(propertyName)],
-        ...relation.filters,
-      },
-      limit: relation.limit,
-      order: relation.order,
-      ...query
-    };
-
-    return fetchRelationQuery;
-
-  }
-
 }
 
 const ProxiedModelHandler: ProxyHandler<Model> = {
 
-  get: (model, prop, receiver) => {
+  get: (model, prop) => {
 
     if (
       String(prop).indexOf('$') === 0
@@ -407,7 +262,7 @@ const ProxiedModelHandler: ProxyHandler<Model> = {
     return model.$get(String(prop));
   },
 
-  set: (model, prop, value, receiver) => {
+  set: (model, prop, value) => {
     if (
       String(prop).indexOf('$') === 0
     ) {
@@ -426,16 +281,6 @@ type ModelProxies = {
   set: {
     [propertyName: string]: PropertySetProxy[];
   };
-  procedures: {
-    [name: string]: {
-      request: IProxyModelProcedureRequest[];
-      response: IProxyModelProcedureResponse[];
-    };
-  };
-};
-
-type ModelHooks = {
-  [procedureName: string]: IModelProcedureHook[];
 };
 
 export type ModelValues = {

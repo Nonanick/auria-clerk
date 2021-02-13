@@ -24,7 +24,7 @@ export interface IEntity {
 
   // All properties of the models of this entity
   properties: {
-    [name: string]: (Omit<IProperty, "name"> & {}) | ValidPropertyType;
+    [name: string]: PropertyInDictionary | ValidPropertyType;
   };
 
   // Entity will be naturally ordered by...
@@ -59,7 +59,7 @@ export interface IEntity {
 
 export function getAsIProperty(
   name: string,
-  prop: (Omit<IProperty, "name"> & {}) | ValidPropertyType,
+  prop: PropertyInDictionary | ValidPropertyType,
 ): IProperty {
 
   if (
@@ -84,9 +84,14 @@ export function getAsIProperty(
 
   return {
     name,
-    ...(prop as Omit<IProperty, "name"> & {})
+    ...(prop as PropertyInDictionary)
   }
 }
+
+export type PropertyInDictionary = Omit<IProperty, "name"> & {};
+export type PropertyDictionary = {
+  [name : string] : PropertyInDictionary;
+};
 
 export type EntityDefaultFilter = IFilterQuery & {
   locked?: boolean;

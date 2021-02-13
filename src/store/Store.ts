@@ -1,12 +1,14 @@
 import { ArchiveProcedureHook } from '../archive/ArchiveProcedureHook';
 import { ArchiveProcedureProxy } from '../archive/ArchiveProcedureProxy';
-import { Entity, ProcedureProxyWildcard } from "../entity/Entity";
+import { Entity } from "../entity/Entity";
 import { Factory } from "../entity/Factory";
 import { IEntity } from "../entity/IEntity";
+import { ProcedureProxyWildcard, StoredEntity } from '../entity/StoredEntity';
 import { AppException } from "../error/AppException";
 import { Maybe, MaybePromise } from '../error/Maybe';
 import { IHookProcedure } from '../hook/IHookProcedure';
 import { Model } from '../model/Model';
+import { StoredModel } from '../model/StoredModel';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';
 import { IEntityProcedureRequest, implementsEntityProcedureRequest } from '../procedure/entity/IEntityProcedureRequest';
 import { IEntityProcedureResponse, implementsEntityProcedureResponse } from '../procedure/entity/IEntityProcedureResponse';
@@ -21,7 +23,7 @@ import { QueryRequest } from "../query/QueryRequest";
 export class Store {
 
   protected _entities: {
-    [name: string]: Entity;
+    [name: string]: StoredEntity;
   } = {};
 
   protected _defaultFactory: Factory;
@@ -78,15 +80,15 @@ export class Store {
     this._procedureHooks = this._procedureHooks.filter(h => !hooks.includes(h));
   }
 
-  async execute(procedure: string, on: Model, context: any): MaybePromise<IModelProcedureResponse>;
-  async execute(procedure: string, on: Entity, context: any): MaybePromise<IEntityProcedureResponse>;
+  async execute(procedure: string, on: StoredModel, context: any): MaybePromise<IModelProcedureResponse>;
+  async execute(procedure: string, on: StoredEntity, context: any): MaybePromise<IEntityProcedureResponse>;
   async execute(
     procedure: string,
-    on: Model | Entity,
+    on: StoredEntity | StoredModel,
     context: any
   ): MaybePromise<IEntityProcedureResponse | IModelProcedureResponse> {
 
-    let entity = on instanceof Entity ? on : on.$entity();
+    let entity = on instanceof StoredEntity ? on : on.$entity();
     let procedureAppliesTo: 'entity' | 'model' = on instanceof Entity ? 'entity' : 'model';
 
     if (entity.proceduresFor[procedureAppliesTo][procedure] == null) {
@@ -151,43 +153,7 @@ export class Store {
         continue;
       }
 
-      let createdEntity = new Entity(entity, factory);
-
-      // Inject store query alias fn
-      createdEntity.query = (request: Omit<IQueryRequest, "entity">) => {
-        return this.query(entity.name, request);
-      };
-
-      // Inject store execute entity procedure alias fn
-      createdEntity.execute = async (procedure: string, context: any) => {
-        return this.execute(procedure, createdEntity, context);
-      };
-
-      // Inject store execute model procedure alias fn
-      createdEntity.executeOnModel = async (model: Model, procedure: string, context?: any) => {
-        return this.execute(procedure, model, context ?? {});
-      };
-
-      // Inject store 
-      createdEntity.store = () => this;
-
-      // Add model procedures into archive
-      for (let procedureName in entity.procedures?.ofModel ?? {}) {
-        if (typeof entity.procedures!.ofModel?.[procedureName]! === "object") {
-          factory.archive.addModelProcedure(
-            entity.procedures!.ofModel?.[procedureName]! as IModelProcedure
-          );
-        }
-      }
-
-      // Add entity procedure into archive
-      for (let procName in entity.procedures?.ofEntity ?? {}) {
-        if (typeof entity.procedures!.ofModel?.[procName]! === "object") {
-          factory.archive.addEntityProcedure(
-            entity.procedures!.ofEntity?.[procName]! as IEntityProcedure
-          );
-        }
-      }
+      let createdEntity = new StoredEntity(entity, this, factory);
 
       // Allow factory to manipulate entity
       let hydratedEntity = factory.hydrateEntity(createdEntity);
@@ -198,6 +164,24 @@ export class Store {
           '\nFactory generated error ', hydratedEntity.message,
         );
         continue;
+      }
+
+       // Add model procedures into archive
+       for (let procedureName in hydratedEntity.proceduresFor?.model ?? {}) {
+        if (typeof hydratedEntity.proceduresFor.model[procedureName]! === "object") {
+          factory.archive.addModelProcedure(
+            hydratedEntity.proceduresFor.model[procedureName]! as IModelProcedure
+          );
+        }
+      }
+
+      // Add entity procedure into archive
+      for (let procName in hydratedEntity.proceduresFor?.entity?? {}) {
+        if (typeof hydratedEntity.proceduresFor?.entity[procName]! === "object") {
+          factory.archive.addEntityProcedure(
+            hydratedEntity.proceduresFor?.entity[procName]! as IEntityProcedure
+          );
+        }
       }
 
       this._entities[entity.name] = hydratedEntity;
@@ -298,7 +282,7 @@ export class Store {
   }
 
   allEntities() {
-    return Object.entries(this._entities).map(([name, ent]) => ent);
+    return Object.entries(this._entities).map(([_, ent]) => ent);
   }
 }
 

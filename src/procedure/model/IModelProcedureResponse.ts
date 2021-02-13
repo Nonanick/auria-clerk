@@ -1,10 +1,11 @@
 import { Model } from '../../model/Model';
+import { StoredModel } from '../../model/StoredModel';
 import { IModelProcedureRequest } from "./IModelProcedureRequest";
 
 export interface IModelProcedureResponse {
   procedure: string;
   request: IModelProcedureRequest;
-  model: Model;
+  model: StoredModel;
   success: boolean;
   errors?: string | string[];
 }

@@ -13,10 +13,7 @@ export { Archive } from './archive/Archive';
 
 export { ClassOfFactory, Store } from './store/Store';
 
-export { Model } from './model/Model';
-export { ModelOf } from './model/ModelOf';
-export { ValueHistory } from './model/history/ValueHistory';
-export { IModelValidation, ModelValidationFunction } from './model/validate/IModelValidation';
+export * from './model';
 
 export * from './entity';
 

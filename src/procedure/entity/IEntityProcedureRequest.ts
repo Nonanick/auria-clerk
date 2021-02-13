@@ -1,9 +1,9 @@
-import { Entity } from '../../entity/Entity';
+import { StoredEntity } from '../../entity/StoredEntity';
 import { IEntityProcedureContext } from './IEntityProcedureContext';
 
 export interface IEntityProcedureRequest<Context extends IEntityProcedureContext = IEntityProcedureContext> {
   procedure: string;
-  entity: Entity;
+  entity: StoredEntity;
   context: Context;
 }
 
@@ -12,7 +12,7 @@ export function implementsEntityProcedureRequest(obj: any): obj is IEntityProced
 
   return (
     typeof obj.procedure === 'string'
-    && obj.entity instanceof Entity
+    && obj.entity instanceof StoredEntity
     && typeof obj.context === 'object'
   );
 

@@ -1,5 +1,5 @@
 import { MaybePromise } from '../Clerk';
-import { ProcedureProxyWildcard } from '../entity/Entity';
+import { ProcedureProxyWildcard } from '../entity/StoredEntity';
 import { Maybe } from '../error/Maybe';
 import { IProcedureRequest, IProcedureResponse } from '../procedure';
 import { IEntityProcedure } from '../procedure/entity/IEntityProcedure';

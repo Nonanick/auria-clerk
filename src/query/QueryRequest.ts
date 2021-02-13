@@ -6,12 +6,13 @@ import { IOrderBy } from "./order/IOrderBy";
 import { FilterComparison } from './filter/FilterComparison';
 import { MaybePromise } from '../error/Maybe';
 import { ModelOf } from '../model/ModelOf';
+import { StoredEntity } from '../entity/StoredEntity';
 
 export class QueryRequest<T = {}> {
 
   static MAX_ROWS_PER_QUERY = 1000;
 
-  protected _entity: Entity;
+  protected _entity: StoredEntity;
 
   protected _properties?: string[] = [];
 
@@ -28,7 +29,7 @@ export class QueryRequest<T = {}> {
     offset: 0
   };
 
-  get entity(): Entity {
+  get entity(): StoredEntity {
     return this._entity;
   }
 
@@ -116,7 +117,7 @@ export class QueryRequest<T = {}> {
     return this;
   }
 
-  constructor(queriedEntity: Entity) {
+  constructor(queriedEntity: StoredEntity) {
 
     this._entity = queriedEntity;
 

@@ -1,4 +1,3 @@
-export { EntityProcedureRequest } from './EntityProcedureRequest';
 export {
   EntityProcedureFunction,
   IEntityProcedure

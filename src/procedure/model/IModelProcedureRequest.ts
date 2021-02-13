@@ -1,10 +1,12 @@
 import { Entity } from '../../entity/Entity';
+import { StoredEntity } from '../../entity/StoredEntity';
 import { Model } from '../../model/Model';
+import { StoredModel } from '../../model/StoredModel';
 
 export interface IModelProcedureRequest {
   procedure: string;
-  entity: Entity;
-  model: Model;
+  entity: StoredEntity;
+  model: StoredModel;
 }
 
 export function implementsModelProcedureRequest(obj: any): obj is IModelProcedureRequest {

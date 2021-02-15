@@ -189,7 +189,7 @@ class Model<T = unknown> {
     return ret as T;
   }
 
-  async $commit<T extends ModelValues = ModelValues>(validate = true): MaybePromise<T> {
+  async $commit(validate = true): MaybePromise<T & ModelValues> {
 
     // Use default values for undefined props
     for (let p in this.$_properties) {
@@ -249,7 +249,7 @@ class Model<T = unknown> {
 
 }
 
-const ProxiedModelHandler: ProxyHandler<Model> = {
+const ProxiedModelHandler: ProxyHandler<Model<any>> = {
 
   get: (model, prop) => {
 

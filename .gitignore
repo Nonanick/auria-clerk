@@ -111,3 +111,5 @@ package-lock.json
 
 # ignore generated test js files
 __tests/**/*.js
+yarn.lock
+yarn.lock

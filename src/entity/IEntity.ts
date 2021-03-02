@@ -49,7 +49,7 @@ export interface IEntity {
   // Proxy entity/model procedures, intervene in the natural flow
   proxy?: {
     [name: string]: Omit<IProxyProcedure, "name"> & {};
-  };
+  } | IProxyProcedure[];
 
   // Trigger actions without intervening in the life cycle
   hooks?: {

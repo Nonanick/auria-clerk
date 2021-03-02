@@ -21,4 +21,6 @@ export * from './procedure';
 
 export * from './property';
 
+export * from './proxy';
+
 export * from './query';

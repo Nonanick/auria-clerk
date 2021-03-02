@@ -12,7 +12,7 @@ import {
   IModelProcedure,
 } from "../procedure";
 import { IModelProcedureResponse } from "../procedure/model/IModelProcedureResponse";
-import { IPropertyIdentifier } from "../property";
+import { IPropertyIdentifier, Property } from "../property";
 import {
   IProxyEntityProcedureRequest,
   IProxyEntityProcedureResponse,
@@ -47,16 +47,28 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     this.#store = store;
     this.#archive = factory.archive;
 
+    if(entityInfo.identifier == null) {
+      this._properties[factory.defaultIdentifier.name] = new Property({... factory.defaultIdentifier});
+    }
+
     // Procedures
     this.#procedures.entity = entityInfo.procedures?.ofEntity ?? {};
     this.#procedures.model = entityInfo.procedures?.ofModel ?? {};
 
     // Proxies
-    for (let proxyName in entityInfo.proxy ?? {}) {
-      this.#proxies[proxyName]! = {
-        name: proxyName,
-        ...entityInfo.proxy![proxyName],
-      } as IProxyProcedure;
+    if (Array.isArray(entityInfo.proxy)) {
+      for (let proxy of entityInfo.proxy ?? []) {
+        this.#proxies[proxy.name]! = {
+          ...proxy,
+        } as IProxyProcedure;
+      }
+    } else {
+      for (let proxyName in entityInfo.proxy ?? {}) {
+        this.#proxies[proxyName]! = {
+          name: proxyName,
+          ...entityInfo.proxy![proxyName],
+        } as IProxyProcedure;
+      }
     }
 
     // Hooks
@@ -186,7 +198,7 @@ export class StoredEntity<T = unknown> extends Entity<T> {
   }
 
   async executeOnModel(
-    model: Model,
+    model: StoredModel,
     procedure: string,
     context: any,
   ): MaybePromise<IModelProcedureResponse> {
@@ -194,7 +206,7 @@ export class StoredEntity<T = unknown> extends Entity<T> {
   }
 
   model<DTO = T>(): ModelOf<DTO> {
-    let model = super.model() as ModelOf<DTO>;
+    let model = new StoredModel(this) as StoredModelOf<DTO>;
 
     // push procedures
     for (let procedure in this.#procedures.model) {

@@ -66,7 +66,9 @@ export class Entity<T = unknown> {
   }
 
   get properties(): { [name: string]: Property } {
-    return this._properties;
+    return {
+      ...this._properties
+    };
   }
 
   private initProperties(props: {

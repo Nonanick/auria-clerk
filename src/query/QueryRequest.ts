@@ -6,7 +6,7 @@ import { IOrderBy } from "./order/IOrderBy";
 import { FilterComparison } from './filter/FilterComparison';
 import { MaybePromise } from '../error/Maybe';
 import { ModelOf } from '../model/ModelOf';
-import { StoredEntity } from '../entity/StoredEntity';
+import { StoredEntity, StoredModelOf } from '../entity/StoredEntity';
 
 export class QueryRequest<T = {}> {
 
@@ -218,7 +218,7 @@ export class QueryRequest<T = {}> {
     return true;
   }
 
-  async fetch(raw = false): MaybePromise<ModelOf<T>[]> {
+  async fetch(raw = false): MaybePromise<StoredModelOf<T>[]> {
 
     let response = await this._entity.archive.query(this);
 
@@ -232,7 +232,7 @@ export class QueryRequest<T = {}> {
   }
 
   // Ignores limiter
-  async fetchOne(raw = false): MaybePromise<ModelOf<T> | undefined> {
+  async fetchOne(raw = false): MaybePromise<StoredModelOf<T> | undefined> {
     this.limit = {
       amount: 1,
       offset: 0

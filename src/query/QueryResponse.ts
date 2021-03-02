@@ -47,8 +47,8 @@ export class QueryResponse<T = {}> {
   rowsWithPublicProps(forEntity: Entity) {
 
     let publicProps = Object.entries(forEntity.properties)
-      .filter(([name, prop]) => !prop.isPrivate())
-      .map(([name, prop]) => name);
+      .filter(([_, prop]) => !prop.isPrivate())
+      .map(([name]) => name);
 
     return this._rows.map(row => {
       let newRow: any = {};

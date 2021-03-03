@@ -15,15 +15,20 @@ import { IEntity, PropertyInDictionary } from "./IEntity";
 
 export class Entity<T = unknown> {
 
-  private static instances : {
-    [name : string] : Entity
+  private static instances: {
+    [name: string]: Entity;
   } = {};
 
-  static instance(entity : IEntity) {
-    if(Entity.instances[entity.name] == null) {
+  static instance(entity: IEntity) {
+    if (Entity.instances[entity.name] == null) {
       Entity.instances[entity.name] = new Entity(entity);
     }
     return Entity.instances[entity.name];
+  }
+
+  static define<T extends IEntity = IEntity>(entity: T): {
+    readonly [key in keyof T]: T[key] } {
+    return { ...entity } as const;
   }
 
   protected _entity: IEntity;
@@ -36,7 +41,7 @@ export class Entity<T = unknown> {
     return this._entity.name;
   }
 
-  get filters(): IFilterQuery {
+  filters(): IFilterQuery {
     return this._entity.filters ?? {};
   }
 
@@ -65,7 +70,7 @@ export class Entity<T = unknown> {
     return this._entity.source ?? this._entity.name;
   }
 
-  get properties(): { [name: string]: Property } {
+  get properties(): { [name: string]: Property; } {
     return {
       ...this._properties
     };
@@ -125,7 +130,7 @@ export class Entity<T = unknown> {
     let model = new Model<DTO>(this);
 
     return model as ModelOf<DTO>;
-  }
+  };
 
   // Apply all validations to model
   async validate(model: Model): MaybePromise<true> {

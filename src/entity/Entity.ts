@@ -26,7 +26,7 @@ export class Entity<T = unknown> {
     return Entity.instances[entity.name];
   }
 
-  static define<T extends IEntity = IEntity>(entity: T): {
+  static define<T extends IEntity = IEntity>(entity: T): IEntity & {
     readonly [key in keyof T]: T[key] } {
     return { ...entity } as const;
   }
@@ -41,7 +41,7 @@ export class Entity<T = unknown> {
     return this._entity.name;
   }
 
-  filters(): IFilterQuery {
+  get filters(): IFilterQuery {
     return this._entity.filters ?? {};
   }
 

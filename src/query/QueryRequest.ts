@@ -1,12 +1,10 @@
-import { Entity } from "../entity/Entity";
+import { StoredEntity, StoredModelOf } from '../entity/StoredEntity';
+import { MaybePromise } from '../error/Maybe';
+import { FilterComparison } from './filter/FilterComparison';
 import { IFilterQuery, implementsFilterComparison } from "./filter/IFilterQuery";
 import { IQueryRequest } from "./IQueryRequest";
 import { ILimitQuery } from "./limit/ILimitQuery";
 import { IOrderBy } from "./order/IOrderBy";
-import { FilterComparison } from './filter/FilterComparison';
-import { MaybePromise } from '../error/Maybe';
-import { ModelOf } from '../model/ModelOf';
-import { StoredEntity, StoredModelOf } from '../entity/StoredEntity';
 
 export class QueryRequest<T = {}> {
 

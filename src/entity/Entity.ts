@@ -19,7 +19,7 @@ export class Entity<T = unknown> {
     [name: string]: Entity;
   } = {};
 
-  static instance(entity: IEntity) {
+  static instance<T = unknown>(entity: IEntity) : Entity<T> {
     if (Entity.instances[entity.name] == null) {
       Entity.instances[entity.name] = new Entity(entity);
     }
@@ -41,7 +41,7 @@ export class Entity<T = unknown> {
     return this._entity.name;
   }
 
-  filters(): IFilterQuery {
+  get filters(): IFilterQuery {
     return this._entity.filters ?? {};
   }
 

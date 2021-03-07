@@ -161,7 +161,7 @@ class Model<T = unknown> {
     return [...this.$_changedProperties];
   }
 
-  async $json<T = unknown>(includePrivate: string[] = []): Promise<T> {
+  async $json<R = T>(includePrivate: string[] = []): Promise<R> {
     let ret: any = {};
 
     for (let prop in this.$_properties) {
@@ -186,10 +186,10 @@ class Model<T = unknown> {
 
     }
 
-    return ret as T;
+    return ret as R;
   }
 
-  async $commit(validate = true): MaybePromise<T & ModelValues> {
+  async $commit(validate = true): MaybePromise<T> {
 
     // Use default values for undefined props
     for (let p in this.$_properties) {

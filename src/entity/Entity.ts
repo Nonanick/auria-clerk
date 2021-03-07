@@ -19,7 +19,7 @@ export class Entity<T = unknown> {
     [name: string]: Entity;
   } = {};
 
-  static instance(entity: IEntity) {
+  static instance<T = unknown>(entity: IEntity) : Entity<T> {
     if (Entity.instances[entity.name] == null) {
       Entity.instances[entity.name] = new Entity(entity);
     }

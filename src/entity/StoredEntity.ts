@@ -205,7 +205,7 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     throw new Error("Entity must be initialized by a Store");
   }
 
-  model<DTO = T>(): ModelOf<DTO> {
+  model<DTO = T>(): StoredModelOf<DTO> {
     let model = new StoredModel(this) as StoredModelOf<DTO>;
 
     // push procedures

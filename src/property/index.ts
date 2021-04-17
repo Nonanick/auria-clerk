@@ -12,6 +12,7 @@ export { IPropertyType,isPropertyType } from './type/IPropertyType';
 export { ArrayType } from './type/common/ArrayType';
 export { BooleanType } from './type/common/BooleanType';
 export { DateType } from './type/common/DateType';
+export { ObjectType } from './type/common/ObjectType';
 export { EnumOf } from './type/common/EnumOf';
 export { IntegerType } from './type/common/IntegerType';
 export { INumberType, NumberType } from './type/common/NumberType';

@@ -209,7 +209,7 @@ export class QueryRequest<T = {}> {
 
   include(...property: string[]) {
     if (!this.checkIncludes(property)) {
-      console.log('Check included properties failed!');
+      console.error('[QueryRequest] Check included properties failed!');
       return false;
     }
     this._include = [...this._include ?? [], ...property];

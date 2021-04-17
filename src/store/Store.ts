@@ -111,7 +111,19 @@ export class Store {
       throw new AppException('Unknown procedure target, expecting Entity or Model instances!');
     }
 
-    const proxiedRequest = await this.applyRequestProxies(request, context);
+    // Let Entiti proxy the request
+    let proxiedByEntity : any;
+    if(implementsModelProcedureRequest(request)) {
+      proxiedByEntity = request.entity.applyRequestModelProxies(request, context);
+    } else {
+      proxiedByEntity = request.entity.applyRequestProxies(request, context);
+    }
+    if(proxiedByEntity instanceof Error) {
+      return proxiedByEntity
+    }
+
+    // Let store proxy the request
+    const proxiedRequest = await this.applyRequestProxies(proxiedByEntity, context);
     if (proxiedRequest instanceof Error) {
       return proxiedRequest;
     }
@@ -126,7 +138,15 @@ export class Store {
       return proxiedResponse;
     }
 
-    return proxiedResponse;
+    let responseProxiedByEntity : MaybePromise<IModelProcedureResponse | IEntityProcedureResponse>;
+
+    if(implementsModelProcedureResponse(proxiedResponse)) {
+      responseProxiedByEntity = request.entity.applyResponseModelProxies(proxiedResponse);
+    } else {
+      responseProxiedByEntity = request.entity.applyResponseProxies(proxiedResponse);
+    }
+
+    return responseProxiedByEntity;
   }
 
   add(...entities: (IEntity | CustomFactoryEntity)[]) {
@@ -166,8 +186,8 @@ export class Store {
         continue;
       }
 
-       // Add model procedures into archive
-       for (let procedureName in hydratedEntity.proceduresFor?.model ?? {}) {
+      // Add model procedures into archive
+      for (let procedureName in hydratedEntity.proceduresFor?.model ?? {}) {
         if (typeof hydratedEntity.proceduresFor.model[procedureName]! === "object") {
           factory.archive.addModelProcedure(
             hydratedEntity.proceduresFor.model[procedureName]! as IModelProcedure
@@ -176,7 +196,7 @@ export class Store {
       }
 
       // Add entity procedure into archive
-      for (let procName in hydratedEntity.proceduresFor?.entity?? {}) {
+      for (let procName in hydratedEntity.proceduresFor?.entity ?? {}) {
         if (typeof hydratedEntity.proceduresFor?.entity[procName]! === "object") {
           factory.archive.addEntityProcedure(
             hydratedEntity.proceduresFor?.entity[procName]! as IEntityProcedure
@@ -201,7 +221,6 @@ export class Store {
   }
 
   async applyRequestProxies(request: IModelProcedureRequest | IEntityProcedureRequest, context: any): MaybePromise<IModelProcedureRequest | IEntityProcedureRequest> {
-
     for (let proxy of this._procedureProxies) {
 
       if (proxy.proxies !== 'request') continue;
@@ -227,6 +246,7 @@ export class Store {
         && proxiesThisProcedure
       ) {
         newRequest = await proxy.apply(request, context);
+      } else {
       }
 
       if (newRequest! !== undefined) {

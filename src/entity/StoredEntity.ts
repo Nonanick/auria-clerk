@@ -10,12 +10,16 @@ import {
   IEntityProcedureRequest,
   IEntityProcedureResponse,
   IModelProcedure,
+  IModelProcedureContext,
+  IModelProcedureRequest,
 } from "../procedure";
 import { IModelProcedureResponse } from "../procedure/model/IModelProcedureResponse";
 import { IPropertyIdentifier, Property } from "../property";
 import {
   IProxyEntityProcedureRequest,
   IProxyEntityProcedureResponse,
+  IProxyModelProcedureRequest,
+  IProxyModelProcedureResponse,
   IProxyProcedure,
 } from "../proxy/IProxyProcedure";
 import { ComparableValues, IQueryRequest, QueryRequest } from "../query";
@@ -124,6 +128,14 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     this.#proxies[name] = proxy;
   }
 
+  get requestProxies() {
+    return Object.values(this.#proxies).filter(proxy => proxy.proxies === "request");
+  }
+
+  get responseProxies() {
+    return Object.values(this.#proxies).filter(proxy => proxy.proxies === "response");
+  }
+
   async applyRequestProxies(request: IEntityProcedureRequest, context?: any) {
     let procedure = request.procedure;
 
@@ -178,6 +190,72 @@ export class StoredEntity<T = unknown> extends Entity<T> {
         proxyMatchesCurrentProcedure
       ) {
         let newResponse = await (proxy as IProxyEntityProcedureResponse).apply(
+          response,
+        );
+        if (newResponse instanceof Error) {
+          return newResponse;
+        }
+        response = newResponse;
+      }
+    }
+
+    return response;
+  }
+
+  async applyRequestModelProxies(request: IModelProcedureRequest, context : IModelProcedureContext) {
+    let procedure = request.procedure;
+
+    for (let proxyName in this.#proxies ?? {}) {
+      const proxy = this.#proxies[proxyName];
+      const proxyMatchesCurrentProcedure =
+        proxy.procedure === ProcedureProxyWildcard ||
+        (
+          Array.isArray(proxy.procedure)
+            ? proxy.procedure.includes(procedure)
+            : proxy.procedure === procedure
+        );
+
+      if (
+        // Applies to entity
+        proxy.appliesTo === "model" &&
+        proxy.proxies === "request" &&
+        // Wildcard procedure OR requested procedure
+        proxyMatchesCurrentProcedure
+      ) {
+        let newRequest = await (proxy as IProxyModelProcedureRequest).apply(
+          request,
+          context,
+        );
+        if (newRequest instanceof Error) {
+          return newRequest;
+        }
+        request = newRequest as IModelProcedureRequest;
+      }
+    }
+
+    return request;
+  }
+
+  async applyResponseModelProxies(response: IModelProcedureResponse) {
+    let procedure = response.procedure;
+
+    for (let proxyName in this.#proxies ?? {}) {
+      const proxy = this.#proxies[proxyName];
+      const proxyMatchesCurrentProcedure =
+        proxy.procedure === ProcedureProxyWildcard ||
+        (
+          Array.isArray(proxy.procedure)
+            ? proxy.procedure.includes(procedure)
+            : proxy.procedure === procedure
+        );
+      if (
+        // Applies to entity
+        proxy.appliesTo === "model" &&
+        proxy.proxies === "response" &&
+        // Wildcard procedure OR requested procedure
+        proxyMatchesCurrentProcedure
+      ) {
+        let newResponse = await (proxy as IProxyModelProcedureResponse).apply(
           response,
         );
         if (newResponse instanceof Error) {

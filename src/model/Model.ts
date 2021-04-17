@@ -8,10 +8,10 @@ import { PropertySetProxy } from "../property/proxy/PropertySetProxy";
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { ValueHistory } from './history/ValueHistory';
 
-export const ModelDefaultIdentifier : IPropertyIdentifier = {
-  name : '_id',
-  type : Number,
-  unique : true,
+export const ModelDefaultIdentifier: IPropertyIdentifier = {
+  name: '_id',
+  type: Number,
+  unique: true,
 }
 
 class Model<T = unknown> {
@@ -45,10 +45,10 @@ class Model<T = unknown> {
 
   constructor(entity: Entity) {
     this.$_entity = entity;
-    
+
     this.$_properties = entity.properties;
 
-    this.$_idProperty = entity.identifier ?? {...ModelDefaultIdentifier};
+    this.$_idProperty = entity.identifier ?? { ...ModelDefaultIdentifier };
 
     return new Proxy(this, ProxiedModelHandler);
   }
@@ -161,17 +161,18 @@ class Model<T = unknown> {
     return [...this.$_changedProperties];
   }
 
-  async $json<R = T>(includePrivate: string[] = []): Promise<R> {
+  async $json<R = T>(includePrivate: string[] | '*' = []): Promise<R> {
     let ret: any = {};
 
     for (let prop in this.$_properties) {
 
       let p = this.$_properties[prop];
 
-      // do not include non-explicitly required private properties
+      // do not include non-explicitly required private properties, '*' == include all
       if (
         p.isPrivate()
-        && !includePrivate.includes(prop)) {
+        && (includePrivate != '*' && !includePrivate.includes(prop))
+      ) {
         continue;
       }
 

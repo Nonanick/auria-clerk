@@ -193,7 +193,7 @@ export class Store {
     return this._entities[name] != null;
   }
 
-  entity(name: string): StoredEntity {
+  entity<T = unknown>(name: string): StoredEntity<T> {
     if (this._entities[name] == null) {
       throw new Error('Tried to reach unknown entity "' + name + '"! Was it added to the Store?');
     }

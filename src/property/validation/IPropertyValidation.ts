@@ -7,7 +7,7 @@ export interface IPropertyValidation {
   validate: PropertyValidationFunction;
 }
 
-export type PropertyValidationFunction = (value: any, context: PropertyValidationContext) => Maybe<true> | MaybePromise<true>;
+export type PropertyValidationFunction = (value: any, context?: PropertyValidationContext) => Maybe<true> | MaybePromise<true>;
 
 export interface PropertyValidationContext {
   property: IProperty;

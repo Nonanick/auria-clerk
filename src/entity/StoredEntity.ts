@@ -47,8 +47,8 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     this.#store = store;
     this.#archive = factory.archive;
 
-    if(entityInfo.identifier == null) {
-      this._properties[factory.defaultIdentifier.name] = new Property({... factory.defaultIdentifier});
+    if (entityInfo.identifier == null) {
+      this._properties[factory.defaultIdentifier.name] = new Property({ ...factory.defaultIdentifier });
     }
 
     // Procedures
@@ -194,7 +194,7 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     procedure: string,
     context: any,
   ): MaybePromise<IEntityProcedureResponse> {
-    throw new Error("Entity must be initialized by a Store");
+    return this.store().execute(procedure, this, context);
   }
 
   async executeOnModel(
@@ -202,10 +202,10 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     procedure: string,
     context: any,
   ): MaybePromise<IModelProcedureResponse> {
-    throw new Error("Entity must be initialized by a Store");
+    return this.store().execute(procedure, model, context);
   }
 
-  model<DTO = T>(): StoredModelOf<DTO> {
+  model<DTO = T>(values?: Partial<DTO>): StoredModelOf<DTO> {
     let model = new StoredModel(this) as StoredModelOf<DTO>;
 
     // push procedures
@@ -228,6 +228,11 @@ export class StoredEntity<T = unknown> extends Entity<T> {
         model.$hookProcedure(hook);
       }
     }
+
+    if (values != null) {
+      model.$set(values);
+    }
+
     return model;
   }
 

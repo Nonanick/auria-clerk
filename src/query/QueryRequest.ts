@@ -1,3 +1,4 @@
+import { Except } from 'type-fest';
 import { StoredEntity, StoredModelOf } from '../entity/StoredEntity';
 import { MaybePromise } from '../error/Maybe';
 import { FilterComparison } from './filter/FilterComparison';
@@ -131,7 +132,7 @@ export class QueryRequest<T = {}> {
 
   }
 
-  loadQueryRequest(request: Omit<IQueryRequest, "entity">) {
+  loadQueryRequest(request: Except<IQueryRequest, "entity">) {
 
     // Properties
     this._properties = [...this.properties, ...request.properties ?? []];

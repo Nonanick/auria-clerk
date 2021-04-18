@@ -1,17 +1,18 @@
+import type { Except } from 'type-fest';
 import { MaybePromise } from "../error/Maybe";
 import { Model } from "../model/Model";
 import { ModelOf } from "../model/ModelOf";
-import { IModelValidation } from "../model/validate/IModelValidation";
-import {
+import type { IModelValidation } from "../model/validate/IModelValidation";
+import type {
   IProperty,
   IPropertyIdentifier,
   ValidPropertyType
 } from "../property/IProperty";
 import { Property } from "../property/Property";
 import { isPropertyType } from "../property/type/IPropertyType";
-import { IFilterQuery } from "../query/filter/IFilterQuery";
-import { IOrderBy } from "../query/order/IOrderBy";
-import { IEntity, PropertyInDictionary } from "./IEntity";
+import type { IFilterQuery } from "../query/filter/IFilterQuery";
+import type { IOrderBy } from "../query/order/IOrderBy";
+import type { IEntity, PropertyInDictionary } from "./IEntity";
 
 export class Entity<T = unknown> {
 
@@ -19,7 +20,7 @@ export class Entity<T = unknown> {
     [name: string]: Entity;
   } = {};
 
-  static instance<T = unknown>(entity: IEntity) : Entity<T> {
+  static instance<T = unknown>(entity: IEntity): Entity<T> {
     if (Entity.instances[entity.name] == null) {
       Entity.instances[entity.name] = new Entity(entity);
     }
@@ -95,7 +96,7 @@ export class Entity<T = unknown> {
       } else {
         mustBeProp = {
           name: propName,
-          ...mustBeProp as (Omit<IProperty, "name">),
+          ...mustBeProp as (Except<IProperty, "name">),
         };
       }
 

@@ -11,6 +11,7 @@ import {
 import { IProxyProcedure } from "../proxy/IProxyProcedure";
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IOrderBy } from "../query/order/IOrderBy";
+import { Except } from 'type-fest';
 
 export interface IEntity {
   // Unique identifier inside a store
@@ -48,12 +49,12 @@ export interface IEntity {
 
   // Proxy entity/model procedures, intervene in the natural flow
   proxy?: {
-    [name: string]: Omit<IProxyProcedure, "name"> & {};
+    [name: string]: Except<IProxyProcedure, "name"> & {};
   } | IProxyProcedure[];
 
   // Trigger actions without intervening in the life cycle
   hooks?: {
-    [name: string]: Omit<IHookProcedure, "name"> & {};
+    [name: string]: Except<IHookProcedure, "name"> & {};
   };
 }
 
@@ -63,36 +64,36 @@ export function getAsIProperty(
 ): IProperty {
 
   if (
-    prop === String ||
-    prop === Object ||
-    prop === Number ||
-    prop === Boolean ||
-    prop === Date ||
-    prop === Object ||
-    prop === Array
+    prop === 'string' ||
+    prop === 'object' ||
+    prop === 'number' ||
+    prop === 'boolean' ||
+    prop === "bool" ||
+    prop === 'date' ||
+    prop === 'array' 
   ) {
     return {
       name,
-      type : prop
-    } as IProperty;
+      type: prop
+    };
   }
 
-  if( isPropertyType(prop) ) {
+  if (isPropertyType(prop)) {
     return {
       name,
-      type : prop
+      type: prop
     }
   }
 
   return {
-    ...(prop as IProperty),
+    ...prop as IProperty,
     name,
-  }
+  };
 }
 
-export type PropertyInDictionary = Omit<IProperty, "name">;
+export type PropertyInDictionary = Except<IProperty, "name">;
 export type PropertyDictionary = {
-  [name : string] : PropertyInDictionary;
+  [name: string]: PropertyInDictionary;
 };
 
 export type EntityDefaultFilter = IFilterQuery & {

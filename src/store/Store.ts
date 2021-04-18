@@ -1,3 +1,4 @@
+import { Except } from 'type-fest';
 import { ArchiveProcedureHook } from '../archive/ArchiveProcedureHook';
 import { ArchiveProcedureProxy } from '../archive/ArchiveProcedureProxy';
 import { Entity } from "../entity/Entity";
@@ -42,7 +43,7 @@ export class Store {
     }
   }
 
-  query<T = {}>(entity: string, request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
+  query<T = {}>(entity: string, request?: Except<IQueryRequest, "entity">): QueryRequest<T> {
 
     if (this._entities[entity] == null) {
       throw new AppException('Cannot query unknown entity ' + entity + ' does it exist on this store?');

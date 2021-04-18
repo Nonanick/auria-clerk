@@ -4,7 +4,6 @@ import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
 import { IProperty } from './IProperty';
 import { IPropertyRelation } from './relation/IPropertyRelation';
-import { ArrayType } from './type/common/ArrayType';
 import { BooleanType } from './type/common/BooleanType';
 import { DateType } from './type/common/DateType';
 import { NumberType } from './type/common/NumberType';
@@ -159,23 +158,23 @@ export class Property {
 
 export function normalizePropertyType(type: IProperty['type']): IPropertyType {
 
-  if (type === String) {
+  if (type === 'string' ) {
     return StringType;
   }
 
-  if (type === Number) {
+  if (type === 'number') {
     return NumberType;
   }
 
-  if (type === Boolean) {
+  if (type === 'bool' || type === "boolean") {
     return BooleanType;
   }
 
-  if (type === Date) {
+  if (type === 'date') {
     return DateType;
   }
 
-  if(type === Object) {
+  if(type === 'object') {
     return {
       name : 'Object',
       raw : Object,

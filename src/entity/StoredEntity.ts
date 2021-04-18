@@ -1,8 +1,7 @@
+import { Except } from 'type-fest';
 import { IArchive } from "../archive/IArchive";
 import { MaybePromise } from "../error/Maybe";
 import { IHookProcedure } from "../hook/IHookProcedure";
-import { Model } from "../model/Model";
-import { ModelOf } from "../model/ModelOf";
 import { StoredModel } from '../model/StoredModel';
 import { UniqueConstraint } from "../model/validate/UniqueConstraint";
 import {
@@ -320,7 +319,7 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     return this.#store;
   }
 
-  query<T = {}>(request?: Omit<IQueryRequest, "entity">): QueryRequest<T> {
+  query<T = {}>(request?: Except<IQueryRequest, "entity">): QueryRequest<T> {
     return this.#store.query(this.name, request);
   }
 }

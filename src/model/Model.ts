@@ -10,7 +10,7 @@ import { ValueHistory } from './history/ValueHistory';
 
 export const ModelDefaultIdentifier: IPropertyIdentifier = {
   name: '_id',
-  type: Number,
+  type: 'string',
   unique: true,
 }
 

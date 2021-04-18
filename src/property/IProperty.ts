@@ -1,5 +1,5 @@
-import { JsonObject } from 'type-fest';
-import { DefaultValue } from "./default/DefaultValue";
+import { Except, JsonObject } from 'type-fest';
+import { DefaultValue } from './default/DefaultValue';
 import { PropertyGetProxy } from "./proxy/PropertyGetProxy";
 import { PropertySetProxy } from "./proxy/PropertySetProxy";
 import { IPropertyRelation } from "./relation/IPropertyRelation";
@@ -8,11 +8,11 @@ import { IPropertyType } from "./type/IPropertyType";
 import { IPropertyValidation, PropertyValidationFunction } from "./validation/IPropertyValidation";
 
 export type IProperty =
-  //| IGeneralProperty 
-  | IDateProperty 
-  | IStringProperty 
-  | INumberProperty 
-  | IObjectProperty 
+  | IPropertyTypeProperty
+  | IDateProperty
+  | IStringProperty
+  | INumberProperty
+  | IObjectProperty
   | IBooleanProperty
   | IArrayProperty;
 
@@ -51,41 +51,48 @@ interface IBaseProperty<T = any> {
   };
 }
 
-interface IGeneralProperty extends IBaseProperty<any> {
-  type: ValidPropertyType;
-  default?: DefaultValue;
-}
-
 interface IDateProperty extends IBaseProperty<Date> {
-  type: DateConstructor | IPropertyType;
+  type: 'date';
   default?: Date | (() => Date);
 }
-
 interface IStringProperty extends IBaseProperty<String> {
-  type: StringConstructor | IPropertyType;
+  type: 'string';
   default?: String | (() => String);
 }
 
 interface INumberProperty extends IBaseProperty<Number> {
-  type: NumberConstructor | IPropertyType;
+  type: 'number';
   default?: Number | (() => Number);
 }
 
 interface IBooleanProperty extends IBaseProperty<Boolean> {
-  type: BooleanConstructor| IPropertyType;
+  type: 'boolean' | 'bool';
   default?: Boolean | (() => Boolean);
 }
 
 interface IObjectProperty extends IBaseProperty<JsonObject> {
-  type: ObjectConstructor | IPropertyType;
+  type: 'object';
   default?: JsonObject | (() => JsonObject);
 }
 
 interface IArrayProperty<T = any> extends IBaseProperty<Array<T>> {
-  type : ArrayConstructor;
-  default? : Array<T> | (() => Array<T>);
+  type: 'array';
+  default?: Array<T> | (() => Array<T>);
 }
 
-export type ValidPropertyType = IPropertyType | StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor | ObjectConstructor | ArrayConstructor;
+interface IPropertyTypeProperty extends IBaseProperty<any> {
+  type: IPropertyType;
+  default?: DefaultValue;
+}
 
-export type IPropertyIdentifier = Omit<IProperty, "isIdentifier" | "relatedTo" | "required">;
+export type ValidPropertyType =
+  | IPropertyType
+  | 'string'
+  | 'number'
+  | 'boolean' 
+  | 'bool'
+  | 'date'
+  | 'object'
+  | 'array';
+
+export type IPropertyIdentifier = Except<IProperty, "isIdentifier" | "relatedTo" | "required">;

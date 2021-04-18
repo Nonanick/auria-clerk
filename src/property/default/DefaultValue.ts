@@ -1,12 +1,15 @@
 import { ComparableValues } from '../../query/filter/FilterComparison';
-
+import type { JsonObject } from 'type-fest';
 export type DefaultValue =
   | String
   | Number
   | Boolean
   | Date
-  | (() => String | Number | Boolean | Date)
-  | (() => Promise<String | Number | Boolean | Date>);
+  | JsonObject
+  | Array<any>
+  | null
+  | (() => String | Number | Boolean | Date | JsonObject | Array<any> | null)
+  | (() => Promise<String | Number | Boolean | Date | JsonObject | Array<any> | null> );
 
 export async function ResolveDefaultValue(def: DefaultValue) {
   let value: any;

@@ -14,7 +14,7 @@ import {
   IModelProcedureRequest,
 } from "../procedure";
 import { IModelProcedureResponse } from "../procedure/model/IModelProcedureResponse";
-import { IPropertyIdentifier, Property } from "../property";
+import { IProperty, IPropertyIdentifier, Property } from "../property";
 import {
   IProxyEntityProcedureRequest,
   IProxyEntityProcedureResponse,
@@ -52,7 +52,9 @@ export class StoredEntity<T = unknown> extends Entity<T> {
     this.#archive = factory.archive;
 
     if (entityInfo.identifier == null) {
-      this._properties[factory.defaultIdentifier.name] = new Property({ ...factory.defaultIdentifier });
+      this._properties[factory.defaultIdentifier.name] = new Property(
+        { ...factory.defaultIdentifier } as IProperty
+        );
     }
 
     // Procedures

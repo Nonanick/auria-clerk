@@ -1,3 +1,4 @@
+import { JsonArray, JsonObject } from 'type-fest';
 import { PropertyComparison } from '../../property/comparison/PropertyComparison';
 
 export interface FilterAsObject {
@@ -20,7 +21,8 @@ export type ComparableValues =
   | Number[]
   | Boolean[]
   | Date[]
-  | Object
+  | JsonObject
+  | JsonArray
   | null
   | undefined
   ;

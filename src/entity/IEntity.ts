@@ -67,12 +67,14 @@ export function getAsIProperty(
     prop === Object ||
     prop === Number ||
     prop === Boolean ||
-    prop === Date 
+    prop === Date ||
+    prop === Object ||
+    prop === Array
   ) {
     return {
       name,
       type : prop
-    };
+    } as IProperty;
   }
 
   if( isPropertyType(prop) ) {
@@ -83,12 +85,12 @@ export function getAsIProperty(
   }
 
   return {
+    ...(prop as IProperty),
     name,
-    ...(prop as PropertyInDictionary)
   }
 }
 
-export type PropertyInDictionary = Omit<IProperty, "name"> & {};
+export type PropertyInDictionary = Omit<IProperty, "name">;
 export type PropertyDictionary = {
   [name : string] : PropertyInDictionary;
 };

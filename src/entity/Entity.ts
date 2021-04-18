@@ -113,7 +113,7 @@ export class Entity<T = unknown> {
 
     // Properties
     if (init.identifier != null) {
-      let idProp = new Property(init.identifier);
+      let idProp = new Property(init.identifier as IProperty);
       this._properties[idProp.name] = idProp;
     }
 

@@ -2,12 +2,15 @@ import { Maybe, MaybePromise } from "../../error/Maybe";
 import { Model } from '../../model/Model';
 import { IProperty } from '../IProperty';
 
-export interface IPropertyValidation {
+export interface IPropertyValidation<T = any> {
   name: string;
-  validate: PropertyValidationFunction;
+  validate: PropertyValidationFunction<T>;
 }
 
-export type PropertyValidationFunction = (value: any, context?: PropertyValidationContext) => Maybe<true> | MaybePromise<true>;
+export type PropertyValidationFunction<T = any> = (
+  value: T | null | undefined,
+  context?: PropertyValidationContext
+) => Maybe<true> | MaybePromise<true>;
 
 export interface PropertyValidationContext {
   property: IProperty;
@@ -36,6 +39,5 @@ export function normalizePropertyValidation(
   }
 
   return fn;
-
 
 }

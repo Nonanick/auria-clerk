@@ -56,9 +56,9 @@ export class Property {
     let isValid: Maybe<true>;
     // Single validation function
     if (typeof validate === 'function') {
-      isValid = await validate(value, { property: this._info, model });
+      isValid = await validate(value as any, { property: this._info, model });
     } else {
-      isValid = await validate.validate(value, { property: this._info, model });
+      isValid = await validate.validate(value as any, { property: this._info, model });
     }
 
     if (isValid instanceof Error) {

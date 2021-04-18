@@ -1,6 +1,6 @@
-export interface IPropertySanitization {
+export interface IPropertySanitization<T = any> {
   name: string;
-  sanitize: PropertySanitizationFunction;
+  sanitize: PropertySanitizationFunction<T>;
 }
 
-export type PropertySanitizationFunction = (value: any) => any;
+export type PropertySanitizationFunction<T = any> = (value: T) => any;

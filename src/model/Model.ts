@@ -48,7 +48,7 @@ class Model<T = unknown> {
 
     this.$_properties = entity.properties;
 
-    this.$_idProperty = entity.identifier ?? { ...ModelDefaultIdentifier };
+    this.$_idProperty = (entity.identifier ?? { ...ModelDefaultIdentifier }) as IProperty;
 
     return new Proxy(this, ProxiedModelHandler);
   }

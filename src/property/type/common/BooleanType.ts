@@ -3,7 +3,7 @@ import { IPropertyType } from "../IPropertyType";
 
 export const BooleanType: IPropertyType = {
   name: 'Boolean',
-  raw: Boolean,
+  raw: 'boolean',
   encode: (v: any) => Boolean(v),
   validate: {
     name: 'Expects boolean',

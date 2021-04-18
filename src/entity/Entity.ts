@@ -81,26 +81,31 @@ export class Entity<T = unknown> {
     [name: string]: PropertyInDictionary | ValidPropertyType;
   }) {
     let hasUnique = false;
+
     for (let propName in props) {
       let mustBeProp: ValidPropertyType | PropertyInDictionary =
         this._entity.properties[propName];
 
+        let fullProp : IProperty;
       if (
         isPropertyType(mustBeProp) ||
-        [String, Number, Boolean, Object, Date].includes(mustBeProp as any)
+        (
+          typeof mustBeProp === "string"
+          && ['string', 'number', 'boolean', 'bool', 'object', 'date', 'array'].includes(mustBeProp)
+        )
       ) {
-        mustBeProp = {
+        fullProp = {
           name: propName,
           type: mustBeProp as ValidPropertyType,
         };
       } else {
-        mustBeProp = {
+        fullProp = {
           name: propName,
-          ...mustBeProp as (Except<IProperty, "name">),
+          ...mustBeProp as (PropertyInDictionary),
         };
       }
 
-      this._properties[propName] = new Property(mustBeProp as IProperty);
+      this._properties[propName] = new Property(fullProp);
 
       if (this._properties[propName].isUnique()) {
         hasUnique = true;

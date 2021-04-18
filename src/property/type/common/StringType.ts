@@ -3,7 +3,7 @@ import { IPropertyType } from "../IPropertyType";
 
 export const StringType: IPropertyType & Partial<IStringType> = {
   name: 'String',
-  raw: String,
+  raw: 'string',
   encode: (v: any) => String(v),
   validate: {
     name: 'Expects string',

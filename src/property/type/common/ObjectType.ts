@@ -3,7 +3,7 @@ import { IPropertyType } from '../IPropertyType';
 
 export const ObjectType: IPropertyType = {
   name: 'Object',
-  raw: Object,
+  raw: 'object',
   sanitize: {
     name: 'Sanitize object',
     sanitize: (value: any) => Object.assign({}, value),

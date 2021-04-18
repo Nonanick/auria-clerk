@@ -7,6 +7,7 @@ import { IPropertyRelation } from './relation/IPropertyRelation';
 import { BooleanType } from './type/common/BooleanType';
 import { DateType } from './type/common/DateType';
 import { NumberType } from './type/common/NumberType';
+import { ObjectType } from './type/common/ObjectType';
 import { StringType } from './type/common/StringType';
 import { IPropertyType } from './type/IPropertyType';
 
@@ -43,7 +44,7 @@ export class Property {
     // Array of validations
     if (Array.isArray(validate)) {
       for (let v of validate) {
-        let isValid = await v.validate(value, { property: this._info, model, });
+        let isValid = await v.validate(value as any, { property: this._info, model, });
 
         if (isValid instanceof Error) {
           return isValid;
@@ -175,10 +176,7 @@ export function normalizePropertyType(type: IProperty['type']): IPropertyType {
   }
 
   if(type === 'object') {
-    return {
-      name : 'Object',
-      raw : Object,
-    };
+    return ObjectType;
   }
 
   return type as IPropertyType;

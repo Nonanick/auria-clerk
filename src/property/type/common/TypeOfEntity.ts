@@ -11,7 +11,7 @@ export function TypeOf(entity: IEntity): TypeOfEntity {
     TypeOfVault[entity.name] = {
       entity,
       name: 'TypeOfEntity[' + entity.name + ']',
-      raw: Object,
+      raw: 'object',
     };
   }
 

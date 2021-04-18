@@ -4,7 +4,7 @@ import { IStringType } from './StringType';
 
 export const DateType: IPropertyType & Partial<IStringType> = {
   name: 'Date',
-  raw: Date,
+  raw: 'date',
   encode(v: any): Date { return v instanceof Date ? v : new Date(v); },
   validate: {
     name: 'Expects a Date',

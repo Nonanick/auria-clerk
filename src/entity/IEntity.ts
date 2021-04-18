@@ -5,6 +5,13 @@ import { IEntityProcedure } from "../procedure/entity/IEntityProcedure";
 import { IModelProcedure } from "../procedure/model/IModelProcedure";
 import {
   IProperty,
+ // IArrayProperty,
+  IBooleanProperty,
+  IDateProperty,
+  INumberProperty,
+  IObjectProperty,
+  IPropertyTypeProperty,
+  IStringProperty,
   IPropertyIdentifier,
   ValidPropertyType
 } from "../property/IProperty";
@@ -25,7 +32,7 @@ export interface IEntity {
 
   // All properties of the models of this entity
   properties: {
-    [name: string]: PropertyInDictionary | ValidPropertyType;
+    [name: string]: Except<IPropertyTypeProperty, "name"> | Except<IDateProperty, "name"> | Except<IStringProperty, "name"> | Except<INumberProperty, "name"> | Except<IObjectProperty, "name"> | Except<IBooleanProperty, "name"> | ValidPropertyType;
   };
 
   // Entity will be naturally ordered by...
@@ -64,13 +71,13 @@ export function getAsIProperty(
 ): IProperty {
 
   if (
-    prop === 'string' ||
-    prop === 'object' ||
-    prop === 'number' ||
-    prop === 'boolean' ||
-    prop === "bool" ||
-    prop === 'date' ||
-    prop === 'array' 
+    prop === 'string' 
+    || prop === 'object' 
+    || prop === 'number' 
+    || prop === 'boolean' 
+    || prop === "bool" 
+    || prop === 'date' 
+    || prop === 'array'
   ) {
     return {
       name,
@@ -91,7 +98,15 @@ export function getAsIProperty(
   };
 }
 
-export type PropertyInDictionary = Except<IProperty, "name">;
+export type PropertyInDictionary =
+  | Except<IPropertyTypeProperty, "name">
+  | Except<IDateProperty, "name">
+  | Except<IStringProperty, "name">
+  | Except<INumberProperty, "name">
+  | Except<IObjectProperty, "name">
+  | Except<IBooleanProperty, "name">;
+ // | Except<IArrayProperty, "name">;
+
 export type PropertyDictionary = {
   [name: string]: PropertyInDictionary;
 };

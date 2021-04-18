@@ -3,7 +3,7 @@ import { IPropertyType } from "../IPropertyType";
 
 export const IntegerType: IPropertyType = {
   name: 'Integer',
-  raw: Number,
+  raw: 'number',
   encode: (v: any) => parseInt(v),
   validate: [{
     name: 'Is numeric',

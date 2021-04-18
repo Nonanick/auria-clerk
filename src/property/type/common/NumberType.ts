@@ -3,7 +3,7 @@ import { IPropertyType } from '../IPropertyType';
 
 export const NumberType: IPropertyType & Partial<INumberType> = {
   name: 'Number',
-  raw: Number,
+  raw: 'number',
   sanitize: {
     name: 'Transform in number',
     sanitize: (value: any) => Number(value),

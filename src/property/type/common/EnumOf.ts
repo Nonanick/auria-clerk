@@ -4,7 +4,7 @@ import { IPropertyType } from '../IPropertyType';
 export function EnumOf(array: EnumValue[], validate?: (value: any) => MaybePromise<true>): IPropertyType {
   return {
     name: 'EnumOf',
-    raw: String,
+    raw: 'string',
     validate: {
       name: 'Belongs to enumeration',
       validate: validate ?? (

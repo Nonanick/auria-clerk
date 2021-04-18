@@ -11,7 +11,7 @@ export function ArrayType(item: IPropertyType): ArrayOfType {
   if (ArrayOfVault[item.name] == null) {
     ArrayOfVault[item.name] = {
       name: 'ArrayOf[' + item.name + ']',
-      raw: Array,
+      raw: 'array',
       items: item,
     };
   }

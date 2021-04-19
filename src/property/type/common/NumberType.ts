@@ -13,6 +13,9 @@ export const NumberType: IPropertyType & Partial<INumberType> = {
     validate: (value) => typeof value === 'number'
       ? true
       : new InvalidProperty("Property expected numeric value!")
+  },
+  toDTO() {
+     return 'number';
   }
 };
 

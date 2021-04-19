@@ -10,6 +10,7 @@ export interface IPropertyType {
   sanitize?: IPropertySanitization;
   encode?: IPropertyEncode;
   decode?: IPropertyDecode;
+  toDTO: () => string;
 }
 
 export function isPropertyType(obj: any): obj is IPropertyType {

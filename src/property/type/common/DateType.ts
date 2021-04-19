@@ -10,6 +10,8 @@ export const DateType: IPropertyType & Partial<IStringType> = {
     name: 'Expects a Date',
     validate: (v: any) => v instanceof Date ? true : new AppError('Date expects an instance of Date'),
   },
-  format: "date-time"
-
+  format: "date-time",
+  toDTO() {
+    return 'Date';
+  }
 };

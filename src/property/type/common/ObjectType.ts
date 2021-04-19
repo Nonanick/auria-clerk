@@ -1,3 +1,4 @@
+import { JsonObject } from 'type-fest';
 import { InvalidProperty } from '../../../error/type/InvalidProperty';
 import { IPropertyType } from '../IPropertyType';
 
@@ -13,6 +14,8 @@ export const ObjectType: IPropertyType = {
     validate: (value) => typeof value === 'object'
       ? true
       : new InvalidProperty("Property expected an object!")
-  }
+  },
+  toDTO() {
+    return `{ [property : string] : any }`;
+  } 
 };
-

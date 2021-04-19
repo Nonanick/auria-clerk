@@ -104,6 +104,7 @@ export interface IObjectProperty extends IBaseProperty {
 
 export interface IArrayProperty extends IBaseProperty {
   type: 'array';
+  item : ValidPropertyType;
   default?: JsonArray | (() => JsonArray);
   validate?: (PropertyValidationFunction<JsonArray>) | (IPropertyValidation<JsonArray>) | (IPropertyValidation<JsonArray>[]);
   sanitize?: (PropertySanitizationFunction<JsonArray>) | (IPropertySanitization<JsonArray>) | (IPropertySanitization<JsonArray>[]);

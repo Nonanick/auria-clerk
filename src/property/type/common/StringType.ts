@@ -9,6 +9,9 @@ export const StringType: IPropertyType & Partial<IStringType> = {
     name: 'Expects string',
     validate: (v: any) => typeof v === "string" ? true : new AppError('String type expects a string value!'),
   },
+  toDTO() {
+    return 'string';
+  }
 };
 
 export type IStringType = {

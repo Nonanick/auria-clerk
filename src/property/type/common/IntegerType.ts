@@ -8,5 +8,8 @@ export const IntegerType: IPropertyType = {
   validate: [{
     name: 'Is numeric',
     validate: (v: any) => typeof v === 'number' ? true : new AppError('Integer type expects a numeric value!')
-  }]
+  }],
+  toDTO() {
+    return 'number';
+  }
 };

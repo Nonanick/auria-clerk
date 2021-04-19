@@ -1,4 +1,3 @@
-import type { Except } from 'type-fest';
 import { MaybePromise } from "../error/Maybe";
 import { Model } from "../model/Model";
 import { ModelOf } from "../model/ModelOf";
@@ -78,25 +77,26 @@ export class Entity<T = unknown> {
   }
 
   private initProperties(props: {
-    [name: string]: PropertyInDictionary | ValidPropertyType;
+    [name: string]: PropertyInDictionary | Exclude<ValidPropertyType,"array">;
   }) {
+    
     let hasUnique = false;
 
     for (let propName in props) {
-      let mustBeProp: ValidPropertyType | PropertyInDictionary =
+      let mustBeProp: Exclude<ValidPropertyType,"array"> | PropertyInDictionary =
         this._entity.properties[propName];
 
-        let fullProp : IProperty;
+      let fullProp: IProperty;
       if (
         isPropertyType(mustBeProp) ||
         (
           typeof mustBeProp === "string"
-          && ['string', 'number', 'boolean', 'bool', 'object', 'date', 'array'].includes(mustBeProp)
+          && ['string', 'number', 'boolean', 'bool', 'object', 'date'].includes(mustBeProp)
         )
       ) {
         fullProp = {
           name: propName,
-          type: mustBeProp as ValidPropertyType,
+          type: mustBeProp as Exclude<ValidPropertyType,"array">,
         };
       } else {
         fullProp = {
@@ -164,5 +164,22 @@ export class Entity<T = unknown> {
     }
 
     return true as true;
+  }
+
+  toDTO(headers: boolean = true) {
+
+    const entDTO = `${headers
+      ? `export interface ${this.nameOnPascalCase()}DTO`
+      : ''} {
+\t${Object.values(this.properties).map(prop => {
+        return prop.toDTO();
+      }).join(';\n\t')}
+    }`;
+
+    return entDTO;
+  }
+
+  nameOnPascalCase() {
+    return this.name.split(/[\-_ ]/).map(piece => piece.charAt(0).toLocaleUpperCase() + piece.substr(1)).join('')
   }
 }

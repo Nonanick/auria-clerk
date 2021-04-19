@@ -2,8 +2,9 @@ import { Maybe, MaybePromise } from '../error/Maybe';
 import { Model } from '../model/Model';
 import { ComparableValues } from '../query/filter/FilterComparison';
 import { DefaultValue, ResolveDefaultValue } from './default/DefaultValue';
-import { IProperty } from './IProperty';
+import { IArrayProperty, IProperty } from './IProperty';
 import { IPropertyRelation } from './relation/IPropertyRelation';
+import { ArrayType } from './type/common/ArrayType';
 import { BooleanType } from './type/common/BooleanType';
 import { DateType } from './type/common/DateType';
 import { NumberType } from './type/common/NumberType';
@@ -149,17 +150,26 @@ export class Property {
   }
 
   getType(): IPropertyType {
-
     const type = this._info.type;
-    return normalizePropertyType(type);
+    return normalizePropertyType(type, this._info);
 
+  }
+
+  toDTO(): string {
+    let canBeOptional : boolean = true;
+    if(this._info.name == "_id")
+      console.log('Has default?', this._info);
+    if(this.isRequired() && !this.hasDefault()) {
+      canBeOptional = false;
+    }
+    return `${this.name}${canBeOptional ? '?' : ''}: ${this.getType().toDTO()}`;
   }
 }
 
 
-export function normalizePropertyType(type: IProperty['type']): IPropertyType {
+export function normalizePropertyType(type: IProperty['type'], info: IProperty): IPropertyType {
 
-  if (type === 'string' ) {
+  if (type === 'string') {
     return StringType;
   }
 
@@ -175,8 +185,16 @@ export function normalizePropertyType(type: IProperty['type']): IPropertyType {
     return DateType;
   }
 
-  if(type === 'object') {
+  if (type === 'object') {
     return ObjectType;
+  }
+
+  if (type === "array") {
+    const i = info as IArrayProperty;
+    if (typeof i.item === 'string') {
+      return normalizePropertyType(i.item, info);
+    }
+    return ArrayType(i.item);
   }
 
   return type as IPropertyType;

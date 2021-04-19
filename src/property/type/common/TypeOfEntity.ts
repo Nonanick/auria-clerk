@@ -1,3 +1,4 @@
+import { Entity } from '../../../entity';
 import { IEntity } from '../../../entity/IEntity';
 import { IPropertyType } from '../IPropertyType';
 
@@ -12,6 +13,9 @@ export function TypeOf(entity: IEntity): TypeOfEntity {
       entity,
       name: 'TypeOfEntity[' + entity.name + ']',
       raw: 'object',
+      toDTO() {
+        return Entity.instance(entity).toDTO(false);
+      }
     };
   }
 

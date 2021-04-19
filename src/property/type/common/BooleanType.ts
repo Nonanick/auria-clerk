@@ -8,5 +8,8 @@ export const BooleanType: IPropertyType = {
   validate: {
     name: 'Expects boolean',
     validate: (v: any) => typeof v === "boolean" ? true : new AppError('Boolean type expects value to be a boolean!')
+  },
+  toDTO() {
+    return 'boolean';
   }
 };

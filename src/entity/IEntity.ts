@@ -13,7 +13,8 @@ import {
   IPropertyTypeProperty,
   IStringProperty,
   IPropertyIdentifier,
-  ValidPropertyType
+  ValidPropertyType,
+  IArrayProperty
 } from "../property/IProperty";
 import { IProxyProcedure } from "../proxy/IProxyProcedure";
 import { IFilterQuery } from "../query/filter/IFilterQuery";
@@ -32,7 +33,7 @@ export interface IEntity {
 
   // All properties of the models of this entity
   properties: {
-    [name: string]: Except<IPropertyTypeProperty, "name"> | Except<IDateProperty, "name"> | Except<IStringProperty, "name"> | Except<INumberProperty, "name"> | Except<IObjectProperty, "name"> | Except<IBooleanProperty, "name"> | ValidPropertyType;
+    [name: string]: PropertyInDictionary | Exclude<ValidPropertyType,"array">;
   };
 
   // Entity will be naturally ordered by...
@@ -67,7 +68,7 @@ export interface IEntity {
 
 export function getAsIProperty(
   name: string,
-  prop: PropertyInDictionary | ValidPropertyType,
+  prop: PropertyInDictionary | Exclude<ValidPropertyType,"array">,
 ): IProperty {
 
   if (
@@ -77,7 +78,6 @@ export function getAsIProperty(
     || prop === 'boolean' 
     || prop === "bool" 
     || prop === 'date' 
-    || prop === 'array'
   ) {
     return {
       name,
@@ -104,8 +104,8 @@ export type PropertyInDictionary =
   | Except<IStringProperty, "name">
   | Except<INumberProperty, "name">
   | Except<IObjectProperty, "name">
-  | Except<IBooleanProperty, "name">;
- // | Except<IArrayProperty, "name">;
+  | Except<IBooleanProperty, "name">
+  | Except<IArrayProperty, "name">;
 
 export type PropertyDictionary = {
   [name: string]: PropertyInDictionary;

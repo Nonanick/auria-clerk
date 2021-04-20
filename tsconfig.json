@@ -12,7 +12,12 @@
     "strict": true,
     "keyofStringsOnly": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": "",
+    "paths": {
+      "@lib/*" : [
+        "src/interfaces/*"
+      ]
+    },
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,

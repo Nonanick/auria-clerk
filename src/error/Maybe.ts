@@ -1,0 +1,1 @@
+export type Maybe<T, Err = Error> = T | Err;

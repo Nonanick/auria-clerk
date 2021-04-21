@@ -7,15 +7,19 @@
     ],
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "",
     "importHelpers": true,
     "strict": true,
     "keyofStringsOnly": true,
+    "isolatedModules": true,
     "moduleResolution": "node",
     "baseUrl": "",
     "paths": {
-      "@lib/*" : [
+      "@lib/*": [
         "src/interfaces/*"
+      ],
+      "@error/*" : [
+        "src/error/*"
       ]
     },
     "esModuleInterop": true,

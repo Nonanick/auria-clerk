@@ -1,3 +1,4 @@
-export interface IPropertySanitizer {
+
+export interface IPropertySanitizer<T> {
   
 }

@@ -1,3 +1,1 @@
-export interface IPropertySerializer<From, To> {
-
-}
+export type IPropertySerializer<From, To>  = (value : From) => Promise<To> | To;

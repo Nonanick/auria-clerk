@@ -1,4 +1,2 @@
 
-export interface IPropertySanitizer<T> {
-  
-}
+export type IPropertySanitizer<T> = (value : T) => T;

@@ -6,13 +6,19 @@ import { IPropertyType } from './type/IPropertyType';
 import { IPropertyValidation } from './validation/IPropertyValidation';
 
 export interface IProperty {
+
   name: string;
+  
   type: IPropertyType | Symbol;
 
   required?: boolean;
+  
   descriptive?: boolean;
+  
   private?: boolean;
+  
   identifier?: boolean;
+  
   nullable?: boolean;
 
   sanitizers?: {

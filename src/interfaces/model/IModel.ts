@@ -12,7 +12,7 @@ export interface IModel {
   get(property : string) : MaybePromise<JsonValue>;
   get(properties : string[]) : MaybePromise<JsonObject>;
   
-  set(property : string, value : JsonValue) : MaybePromise<IModel>;
+  set(property : string, value : JsonValue) : MaybePromise<IModel, Error[]>;
   set(values : {
     [property : string] : JsonValue
   }) : MaybePromise<IModel, Error[]>;

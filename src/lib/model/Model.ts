@@ -7,19 +7,42 @@ import { Property } from '../property/Property';
 
 export class Model implements IModel {
 
+  static is(obj : any) : obj is IModel {
+    return (
+      typeof obj.addProperty === 'function'
+      && typeof obj.properties === 'function'
+      && typeof obj.changedProperties === 'function'
+      && typeof obj.get === 'function'
+      && typeof obj.getPropertyValue === 'function'
+      && typeof obj.set === 'function'
+      && typeof obj.setPropertyValue === 'function'
+      && typeof obj.addValidation === 'function'
+      && typeof obj.hasValidation === 'function'
+      && typeof obj.removeValidation === 'function'
+      && typeof obj.validate === 'function'
+      && typeof obj.serialize === 'function'
+      && typeof obj.unserialize === 'function'
+      && typeof obj.clone === 'function'
+    )
+  }
+
   #entity: Entity;
 
   #modelValidations: {
     [name: string]: IValidateModel
   } = {};
 
-  #values: JsonObject = {};
-
   #properties: {
     [name: string]: Property
   } = {};
 
   #changedProperties: string[] = [];
+
+  #values: JsonObject = {};
+
+  constructor(entity: Entity) {
+    this.#entity = entity;
+  }
 
   addProperty(...properties: Property[]) {
     properties.forEach(p => {
@@ -31,8 +54,8 @@ export class Model implements IModel {
     return { ...this.#properties };
   }
 
-  constructor(entity: Entity) {
-    this.#entity = entity;
+  changedProperties(): string[] {
+    return [...this.#changedProperties];
   }
 
   async get(property: string): MaybePromise<JsonValue>;
@@ -79,7 +102,7 @@ export class Model implements IModel {
     return null;
   }
 
-  async set(property: string, value: JsonValue): MaybePromise<IModel, Error>;
+  async set(property: string, value: JsonValue): MaybePromise<IModel, Error[]>;
   async set(values: { [property: string]: JsonValue; }): MaybePromise<IModel, Error[]>;
   async set(property: any, value?: JsonValue): MaybePromise<IModel, Error | Error[]> {
 
@@ -88,10 +111,6 @@ export class Model implements IModel {
       const setReturn = await this.set({
         [property]: value!
       });
-
-      if (Array.isArray(setReturn) && setReturn[0] instanceof Error) {
-        return setReturn[0];
-      }
       return setReturn;
     }
 
@@ -99,6 +118,7 @@ export class Model implements IModel {
     let setValues: JsonObject = {};
 
     for (let propName in property) {
+
       if (this.#properties[propName] == null) {
         setErrors.push(
           new Error(`Property ${propName} is unknown in model of ${this.#entity.name}!`)
@@ -106,45 +126,10 @@ export class Model implements IModel {
         continue;
       }
 
-      const prop = this.#properties[propName];
-
       let value = property[propName];
-
-      // Apply sanitizers
-      if (Object.keys(prop.sanitizers!).length > 0) {
-        for (let sanitizerName in prop.sanitizers!) {
-          let sanitizedValue = prop.sanitizers![sanitizerName](value);
-          if (sanitizedValue instanceof Error) {
-            setErrors.push(
-              new Error(
-                `ERROR! Failed to set value of property ${propName} in model of ${this.#entity.name}!`
-                + `\n${sanitizedValue.message}`
-              )
-            );
-            continue;
-          }
-          value = sanitizedValue;
-        }
-      }
-
-      // Apply validations
-      if (Object.keys(prop.validations!).length > 0) {
-
-        for (let validationName in prop.validations!) {
-          const validationResult = await prop.validations![validationName](value);
-
-          if (validationResult instanceof Error) {
-            setErrors.push(
-              new Error(
-                `ERROR! Failed to set value of property ${propName} in model of ${this.#entity.name}!`
-                + `\n${validationResult.message}`
-              )
-            );
-            continue;
-          }
-
-          setValues[propName] = value;
-        }
+      let setRet = await this.setPropertyValue(propName, value);
+      if (setRet !== true) {
+        setErrors.push(...setRet);
       }
     }
 
@@ -163,6 +148,53 @@ export class Model implements IModel {
 
     return this;
 
+  }
+
+  private async setPropertyValue(property: string, value: JsonValue): MaybePromise<true, Error[]> {
+    const prop = this.#properties[property];
+    const setErrors: Error[] = [];
+    // Apply sanitizers
+    if (Object.keys(prop.sanitizers!).length > 0) {
+
+      for (let sanitizerName in prop.sanitizers!) {
+        let sanitizedValue = prop.sanitizers![sanitizerName](value);
+        if (sanitizedValue instanceof Error) {
+          setErrors.push(
+            new Error(
+              `ERROR! Failed to set value of property ${property} in model of ${this.#entity.name}!`
+              + `\n${sanitizedValue.message}`
+            )
+          );
+          continue;
+        }
+        value = sanitizedValue;
+      }
+    }
+
+    // Apply validations
+    if (Object.keys(prop.validations!).length > 0) {
+
+      for (let validationName in prop.validations!) {
+        const validationResult = await prop.validations![validationName](value);
+
+        if (validationResult instanceof Error) {
+          setErrors.push(
+            new Error(
+              `ERROR! Failed to set value of property ${property} in model of ${this.#entity.name}!`
+              + `\n${validationResult.message}`
+            )
+          );
+          continue;
+        }
+
+      }
+    }
+    if (setErrors.length > 0) {
+      return setErrors;
+    }
+
+    this.#values[property] = value;
+    return true;
   }
 
   addValidation(name: string, validation: IValidateModel) {
@@ -198,9 +230,9 @@ export class Model implements IModel {
 
   clone(): Model {
     const clonedModel = new Model(this.#entity);
-    clonedModel.#properties = {...this.#properties};
-    clonedModel.#modelValidations = {...this.#modelValidations};
-    clonedModel.#values = {...this.#values};
+    clonedModel.#properties = { ...this.#properties };
+    clonedModel.#modelValidations = { ...this.#modelValidations };
+    clonedModel.#values = { ...this.#values };
 
     throw new Error('Method not implemented.');
   }

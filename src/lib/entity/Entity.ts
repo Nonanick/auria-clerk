@@ -1,6 +1,7 @@
 import type { IEntity } from '@lib/entity/IEntity';
 
 export class Entity implements IEntity {
+  
   #interface : IEntity;
 
   static is(obj : any) : obj is IEntity {

@@ -1,18 +1,4 @@
-import type { MaybePromise } from '@error/MaybePromise';
-import type { IArchiveRequest } from './request/IArchiveRequest';
-import type { IArchiveResponse } from './response/IArchiveResponse';
+import { IArchiveProxyRequest } from './IArchiveProxyRequest';
+import { IArchiveProxyResponse } from './IArchiveProxyResponse';
 
 export type IArchiveProxy = IArchiveProxyRequest | IArchiveProxyResponse;
-
-export interface IArchiveProxyRequest {
-  proxies : 'request';
-  procedure : string | Symbol;
-  proxyFn : (request : IArchiveRequest ) => MaybePromise<IArchiveRequest>;
-}
-
-export interface IArchiveProxyResponse {
-  proxies : 'response';
-  procedure : string | Symbol;
-  proxyFn : (response: IArchiveResponse ) => MaybePromise<IArchiveResponse>;
-
-}

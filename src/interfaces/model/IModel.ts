@@ -1,29 +1,29 @@
 import type { MaybePromise } from '@error/MaybePromise';
 import type { IProperty } from '@lib/property/IProperty';
-import type { JsonObject, JsonValue } from 'type-fest';
+import type { JsonObject } from 'type-fest';
 import type { IValidateModel } from './validation/IValidateModel';
 
-export interface IModel {
+export interface IModel<T extends JsonObject = JsonObject> {
 
-  properties() : {
-    [name : string] : IProperty
-  };
+  properties(): Record<keyof T, IProperty>
 
-  get(property : string) : MaybePromise<JsonValue>;
-  get(properties : string[]) : MaybePromise<JsonObject>;
-  
-  set(property : string, value : JsonValue) : MaybePromise<IModel, Error[]>;
-  set(values : {
-    [property : string] : JsonValue
-  }) : MaybePromise<IModel, Error[]>;
-  
-  addValidation(name : string, fn : IValidateModel) : IModel;
-  removeValidation(name : string) : IValidateModel | undefined;
+  get(property: keyof T): MaybePromise<T[typeof property]>;
+  get(properties: (keyof T)[]): MaybePromise<
+    Record<typeof properties[number], T[typeof properties[number]]>
+  >;
 
-  validate() : MaybePromise<true, Error[]>;
-  
-  serialize(noDefaults? : boolean) : Promise<JsonObject>;
-  unserialize(json : JsonObject) : Promise<IModel>; 
-  
-  clone() : IModel;
+  set(property: keyof T, value: T[typeof property]): MaybePromise<IModel<T>, Error[]>;
+  set(values: {
+    [property in keyof T]?: T[property]
+  }): MaybePromise<IModel<T>, Error[]>;
+
+  addValidation(name: string, fn: IValidateModel): IModel<T>;
+  removeValidation(name: string): IValidateModel | undefined;
+
+  validate(): MaybePromise<true, Error[]>;
+
+  serialize(noDefaults?: boolean): Promise<T>;
+  unserialize(json: JsonObject): Promise<IModel<T>>;
+
+  clone(): IModel<T>;
 }

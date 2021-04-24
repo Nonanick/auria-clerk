@@ -1,8 +1,9 @@
 import type { IEntity } from '@lib/entity/IEntity';
+import { JsonObject } from 'type-fest';
 
-export class Entity implements IEntity {
+export class Entity<T extends JsonObject = JsonObject> implements IEntity<T> {
   
-  #interface : IEntity;
+  #interface : IEntity<T>;
 
   static is(obj : any) : obj is IEntity {
     return (

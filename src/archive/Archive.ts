@@ -15,7 +15,17 @@ export abstract class Archive implements IArchive {
 
   #proxies: {
     [name: string]: IArchiveProxy
-  } = {};
+  } = {}
+
+  constructor(factory?: IFactory) {
+    this.#factory = factory != null ? factory : new DefaultFactory(this);
+  }
+
+  abstract entity(entity: IEntity): IArchiveEntity;
+
+  abstract get procedures(): {
+    [name: string]: IArchiveProcedure
+  }
 
   get allProxies(): { [name: string]: IArchiveProxy; } {
     return { ...this.#proxies };
@@ -93,15 +103,4 @@ export abstract class Archive implements IArchive {
 
     return false;
   }
-
-  constructor(factory?: IFactory) {
-    this.#factory = factory != null ? factory : new DefaultFactory(this);
-  }
-
-  abstract entity(entity: IEntity): IArchiveEntity;
-
-  abstract get procedures(): {
-    [name: string]: IArchiveProcedure
-  };
-
 }

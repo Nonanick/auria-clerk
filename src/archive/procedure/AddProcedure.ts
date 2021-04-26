@@ -3,6 +3,7 @@ import type { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure
 import type { ProcedureClassFunction, ProcedureModelFunction } from '@lib/archive/procedure/ProcedureClass';
 import type { JsonObject } from 'type-fest';
 import type { ArchiveEntity } from '../entity/ArchiveEntity';
+import { RunProcedure } from './RunProcedure';
 
 export function AddProcedure<
   Model extends JsonObject = JsonObject,
@@ -13,8 +14,8 @@ export function AddProcedure<
   let entityWithProcedures: any = target;
 
   for (let procName in procedures) {
-    entityWithProcedures[procName] = async (models: IArchiveModel<Model>[]) => {
-      return procedures[procName](target.archive(), target, models);
+    entityWithProcedures[procName] = async (models: IArchiveModel<Model>[], context? : any) => {
+      return RunProcedure(procName, procedures[procName], target.archive(), target, models, context);
     }
   }
 

@@ -34,6 +34,6 @@ export interface IArchive {
   getRequestProxies(procedure: string | Symbol): IArchiveProxyRequest[];
 
   getResponseProxies(): IArchiveProxyResponse[];
-  getResponseProxies(procedure: string): IArchiveProxyResponse[];
+  getResponseProxies(procedure: string | Symbol): IArchiveProxyResponse[];
 
 }

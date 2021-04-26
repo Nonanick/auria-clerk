@@ -5,12 +5,14 @@ import type { IArchiveModel } from '../model/IArchiveModel';
 import type { IQueryRequest } from '../query/IQueryRequest';
 import type { IQueryResponse } from '../query/IQueryResponse';
 
-export interface IArchiveEntity<T extends JsonObject = JsonObject> extends IEntity {
+export interface IArchiveEntity<
+  T extends JsonObject = JsonObject,
+  > extends IEntity {
 
-  model() : IArchiveModel<T>;
+  model(): IArchiveModel<T>;
 
-  query(request : IQueryRequest) : MaybePromise<IQueryResponse>;
+  query(request: IQueryRequest): MaybePromise<IQueryResponse>;
 
-  procedures() : string[];
+  procedures(): string[];
 
 }

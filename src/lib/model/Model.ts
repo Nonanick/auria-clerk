@@ -1,11 +1,13 @@
 import type { MaybePromise } from '@error/MaybePromise';
 import type { IModel } from '@lib/model/IModel';
 import type { IValidateModel } from '@lib/model/validation/IValidateModel';
-import type { JsonValue, JsonObject } from 'type-fest';
+import type {  JsonObject } from 'type-fest';
 import { Entity } from '../entity/Entity';
 import { Property } from '../property/Property';
 
-export class Model implements IModel {
+export class Model<
+Type extends JsonObject = JsonObject,
+> implements IModel<Type> {
 
   static is(obj : any) : obj is IModel {
     return (
@@ -32,35 +34,53 @@ export class Model implements IModel {
     [name: string]: IValidateModel
   } = {};
 
-  #properties: {
-    [name: string]: Property
-  } = {};
+  #properties: Record<keyof Type, Property>;
 
-  #changedProperties: string[] = [];
+  #changedProperties: (keyof Type)[] = [];
 
   #values: JsonObject = {};
 
   constructor(entity: Entity) {
     this.#entity = entity;
+    this.#properties = this.#entity.properties;
   }
 
   addProperty(...properties: Property[]) {
     properties.forEach(p => {
-      this.#properties[p.name] = p;
+      this.#properties[p.name as keyof Type] = p;
     });
   }
 
-  properties(): { [name: string]: Property; } {
+  properties(): Record<keyof Type, Property> {
     return { ...this.#properties };
   }
 
-  changedProperties(): string[] {
+  changedProperties(setChanged? : (keyof Type)[]): (keyof Type)[] {
+    
+    if(setChanged != null) {
+      setChanged.forEach(p => {
+        if(!this.#changedProperties.includes(p)) {
+          this.#changedProperties.push(p);
+        }
+      });
+    }
     return [...this.#changedProperties];
   }
 
-  async get(property: string): MaybePromise<JsonValue>;
-  async get(properties: string[]): MaybePromise<JsonObject>;
-  async get(properties: string | string[]): MaybePromise<JsonObject | JsonValue> {
+  async get(property: keyof Type): MaybePromise<
+    Type[typeof property]
+  >;
+
+  async get(properties:(keyof Type)[]): MaybePromise<
+  Record<typeof properties[number], Type[typeof properties[number]]>
+  >;
+
+  async get(properties: keyof Type | (keyof Type)[]) : 
+  MaybePromise<
+    Type[typeof properties[number]] 
+    | Record<typeof properties[number], Type[typeof properties[number]]>
+    | undefined
+  > {
 
     if (typeof properties === 'string') {
       if (this.#properties[properties] != null) {
@@ -74,7 +94,7 @@ export class Model implements IModel {
       const getValuesResponse: any = {};
       const unknownProperties: string[] = [];
       for (let prop in properties) {
-        if (this.#properties[prop] != null) {
+        if (this.#properties![prop] != null) {
           getValuesResponse[prop] = await this.getPropertyValue(prop);
         } else {
           unknownProperties.push(prop);
@@ -86,10 +106,10 @@ export class Model implements IModel {
         : getValuesResponse;
     }
 
-    return null;
+    return;
   }
 
-  private async getPropertyValue(property: string) {
+  private async getPropertyValue(property: keyof Type) {
     if (this.#values[property] != null) {
       return this.#values[property];
     }
@@ -102,15 +122,18 @@ export class Model implements IModel {
     return null;
   }
 
-  async set(property: string, value: JsonValue): MaybePromise<IModel, Error[]>;
-  async set(values: { [property: string]: JsonValue; }): MaybePromise<IModel, Error[]>;
-  async set(property: any, value?: JsonValue): MaybePromise<IModel, Error | Error[]> {
+  async set(property: keyof Type, value: Type[typeof property]): MaybePromise<IModel<Type>, Error[]>;
+  async set(values: { [property in keyof Type]?: Type[property]; }): MaybePromise<IModel<Type>, Error[]>;
+  async set(
+    property: { [property in keyof Type]?: Type[property]; } | keyof Type, 
+    value?: Type[keyof Type]
+    ): MaybePromise<IModel<Type>, Error | Error[]> {
 
     if (typeof property === "string") {
 
       const setReturn = await this.set({
         [property]: value!
-      });
+      } as any);
       return setReturn;
     }
 
@@ -150,7 +173,7 @@ export class Model implements IModel {
 
   }
 
-  private async setPropertyValue(property: string, value: JsonValue): MaybePromise<true, Error[]> {
+  private async setPropertyValue(property: keyof Type, value: Type[typeof property] | undefined): MaybePromise<true, Error[]> {
     const prop = this.#properties[property];
     const setErrors: Error[] = [];
     // Apply sanitizers
@@ -220,15 +243,15 @@ export class Model implements IModel {
     throw new Error('Method not implemented.');
   }
 
-  async serialize(noDefaults?: boolean): Promise<JsonObject> {
+  async serialize(noDefaults?: boolean): Promise<Type> {
     throw new Error('Method not implemented.');
   }
 
-  async unserialize(json: JsonObject): Promise<IModel> {
+  async unserialize(json: JsonObject): Promise<IModel<Type>> {
     throw new Error('Method not implemented.');
   }
 
-  clone(): Model {
+  clone(): Model<Type> {
     const clonedModel = new Model(this.#entity);
     clonedModel.#properties = { ...this.#properties };
     clonedModel.#modelValidations = { ...this.#modelValidations };

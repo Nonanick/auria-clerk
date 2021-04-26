@@ -20,6 +20,8 @@ export interface IModel<T extends JsonObject = JsonObject> {
   addValidation(name: string, fn: IValidateModel): IModel<T>;
   removeValidation(name: string): IValidateModel | undefined;
 
+  changedProperties(setChanged? : (keyof T)[]): (keyof T)[];
+  
   validate(): MaybePromise<true, Error[]>;
 
   serialize(noDefaults?: boolean): Promise<T>;

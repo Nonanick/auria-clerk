@@ -1,6 +1,7 @@
 import { ArrayType } from './Array';
 import { BigIntType } from './BigInt';
 import { BooleanType } from './Boolean';
+import { DateType } from './Date';
 import { NumberType } from './Number';
 import { ObjectType } from './Object';
 import { StringType } from './String';
@@ -11,7 +12,8 @@ const RawTypes = {
   Boolean : BooleanType,
   BigInt : BigIntType,
   Array : ArrayType,
-  Object : ObjectType
+  Object : ObjectType,
+  Date : DateType,
 };
 
 export {

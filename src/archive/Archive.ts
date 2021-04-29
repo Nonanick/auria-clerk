@@ -6,8 +6,11 @@ import type { IArchiveProxyRequest } from '@lib/archive/proxy/IArchiveProxyReque
 import type { IArchiveProxy } from '@lib/archive/proxy/IArchiveProxy';
 import type { IArchiveProxyResponse } from '@lib/archive/proxy/IArchiveProxyResponse';
 import type { IFactory } from '@lib/archive/factory/IFactory';
+import type { MaybePromise } from '@error/MaybePromise';
 import { AllProcedures } from './proxy/AllProcedures';
 import { DefaultFactory } from './factory/DefaultFactory';
+import type { IQueryRequest } from '@lib/archive/query/IQueryRequest';
+import type { IQueryResponse } from '@lib/archive/query/IQueryResponse';
 
 export abstract class Archive implements IArchive {
 
@@ -103,4 +106,6 @@ export abstract class Archive implements IArchive {
 
     return false;
   }
+
+  abstract query(queryRequest : IQueryRequest) : MaybePromise<IQueryResponse>;
 }

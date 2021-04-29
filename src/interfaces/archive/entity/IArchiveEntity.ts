@@ -1,15 +1,15 @@
 import type { MaybePromise } from '@error/MaybePromise';
 import type { IEntity } from '@lib/entity/IEntity';
-import { JsonObject } from 'type-fest';
+import type { JsonObject } from 'type-fest';
 import type { IArchiveModel } from '../model/IArchiveModel';
-import { IArchiveProxy } from '../proxy/IArchiveProxy';
-import { IArchiveProxyRequest } from '../proxy/IArchiveProxyRequest';
-import { IArchiveProxyResponse } from '../proxy/IArchiveProxyResponse';
+import type { IArchiveProxy } from '../proxy/IArchiveProxy';
+import type { IArchiveProxyRequest } from '../proxy/IArchiveProxyRequest';
+import type { IArchiveProxyResponse } from '../proxy/IArchiveProxyResponse';
 import type { IQueryRequest } from '../query/IQueryRequest';
 import type { IQueryResponse } from '../query/IQueryResponse';
 
 export interface IArchiveEntity<
-  T extends JsonObject = JsonObject,
+  T extends {} = JsonObject,
   > extends IEntity {
 
   model(): IArchiveModel<T>;

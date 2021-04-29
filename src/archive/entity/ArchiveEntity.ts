@@ -39,8 +39,8 @@ export class ArchiveEntity<
 
     // Add entity procedures to model
     this.procedures().forEach(procedure => {
-      (model as any)[procedure] = async () => {
-        return (this as any)[procedure]([model]);
+      (model as any)[procedure] = async (context? : any) => {
+        return (this as any)[procedure]([model], context);
       };
     });
 
@@ -52,6 +52,15 @@ export class ArchiveEntity<
     throw new Error('Method not implemented.');
   }
 
+  /**
+   * Method which indicates what properties inside this Archive are procedures
+   * Procedures are passed down to models when being created
+   * 
+   * all properties of this class listed inside this array should be of type:
+   * @type {ProcedureModelFunction}
+   * 
+   * @returns 
+   */
   procedures() {
     return [];
   }

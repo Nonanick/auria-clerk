@@ -10,4 +10,4 @@ export interface ProcedureClass extends Class<ArchiveEntity> {
 
 export type ProcedureClassFunction<T extends JsonObject = JsonObject> = (models : IArchiveModel<T>[]) => MaybePromise<IArchiveResponse>;
 
-export type ProcedureModelFunction = () => MaybePromise<IArchiveResponse>;
+export type ProcedureModelFunction = (context? : any) => MaybePromise<IArchiveResponse>;

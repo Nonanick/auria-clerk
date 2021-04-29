@@ -3,7 +3,7 @@ import type { IProperty } from '@lib/property/IProperty';
 import type { JsonObject } from 'type-fest';
 import type { IValidateModel } from './validation/IValidateModel';
 
-export interface IModel<T extends JsonObject = JsonObject> {
+export interface IModel<T = JsonObject> {
 
   properties(): Record<keyof T, IProperty>
 

@@ -13,9 +13,19 @@ export function AddProcedure<
 
   let entityWithProcedures: any = target;
 
-  for (let procName in procedures) {
-    entityWithProcedures[procName] = async (models: IArchiveModel<Model>[], context? : any) => {
-      return RunProcedure(procName, procedures[procName], target.archive(), target, models, context);
+  for (let procedureName in procedures) {
+    entityWithProcedures[procedureName] = async (
+      models: IArchiveModel<Model>[],
+      context?: any
+    ) => {
+      return RunProcedure(
+        procedureName,
+        procedures[procedureName],
+        target.archive(),
+        target,
+        models,
+        context
+      );
     }
   }
 

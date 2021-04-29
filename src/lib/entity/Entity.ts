@@ -6,7 +6,7 @@ import type { JsonObject } from 'type-fest';
 import { Model } from '../model/Model';
 import { Property } from '../property/Property';
 
-export class Entity<T extends JsonObject = JsonObject> implements IEntity<T> {
+export class Entity<T extends {} = JsonObject> implements IEntity<T> {
 
   #interface: IEntity<T>;
 

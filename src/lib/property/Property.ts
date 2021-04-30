@@ -1,5 +1,5 @@
-import type { IProperty } from '@lib/property/IProperty';
-import { IPropertyType } from '@lib/property/type/IPropertyType';
+import type { IProperty } from '@interfaces/property/IProperty';
+import { IPropertyType } from '@interfaces/property/type/IPropertyType';
 
 export class Property<T extends IProperty = IProperty> implements IProperty {
 

@@ -1,12 +1,12 @@
 import type { Maybe } from '@error/Maybe';
 import { ProcedureRequestProxyFailed } from '@error/procedure/ProcedureRequestProxyFailed';
 import { ProcedureResponseProxyFailed } from '@error/procedure/ProcedureResponseProxyFailed';
-import type { IArchiveEntity } from '@lib/archive/entity/IArchiveEntity';
-import type { IArchive } from '@lib/archive/IArchive';
-import type { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure';
-import type { IArchiveRequest } from '@lib/archive/procedure/request/IArchiveRequest';
-import type { IArchiveResponse } from '@lib/archive/procedure/response/IArchiveResponse';
-import type { IModel } from '@lib/model/IModel';
+import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
+import type { IArchive } from '@interfaces/archive/IArchive';
+import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
+import type { IArchiveRequest } from '@interfaces/archive/procedure/request/IArchiveRequest';
+import type { IArchiveResponse } from '@interfaces/archive/procedure/response/IArchiveResponse';
+import type { IModel } from '@interfaces/model/IModel';
 
 /**
  * Run Procedure

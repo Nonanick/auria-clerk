@@ -13,13 +13,13 @@
     "keyofStringsOnly": true,
     "isolatedModules": true,
     "moduleResolution": "node",
-    "baseUrl": "",
+    "baseUrl": "./",
     "paths": {
-      "@lib/*": [
-        "src/interfaces/*"
+      "@interfaces/*": [
+        "./src/interfaces/*"
       ],
       "@error/*" : [
-        "src/error/*"
+        "./src/error/*"
       ]
     },
     "esModuleInterop": true,

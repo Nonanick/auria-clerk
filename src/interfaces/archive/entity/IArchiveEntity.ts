@@ -1,5 +1,5 @@
 import type { MaybePromise } from '@error/MaybePromise';
-import type { IEntity } from '@lib/entity/IEntity';
+import type { IEntity } from '@interfaces/entity/IEntity';
 import type { JsonObject } from 'type-fest';
 import type { IArchiveModel } from '../model/IArchiveModel';
 import type { IArchiveProxy } from '../proxy/IArchiveProxy';

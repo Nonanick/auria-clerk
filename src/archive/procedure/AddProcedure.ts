@@ -1,6 +1,6 @@
-import type { IArchiveModel } from '@lib/archive/model/IArchiveModel';
-import type { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure';
-import type { ProcedureClassFunction, ProcedureModelFunction } from '@lib/archive/procedure/ProcedureClass';
+import type { IArchiveModel } from '@interfaces/archive/model/IArchiveModel';
+import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
+import type { ProcedureClassFunction, ProcedureModelFunction } from '@interfaces/archive/procedure/ProcedureClass';
 import type { JsonObject } from 'type-fest';
 import type { ArchiveEntity } from '../entity/ArchiveEntity';
 import { RunProcedure } from './RunProcedure';

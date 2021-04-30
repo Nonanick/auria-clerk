@@ -1,4 +1,4 @@
-import type { IEntity } from '@lib/entity/IEntity';
+import type { IEntity } from '@interfaces/entity/IEntity';
 import type { IArchiveEntity } from './entity/IArchiveEntity';
 import type { IArchiveProcedure } from './procedure/IArchiveProcedure';
 import { IArchiveProxy } from './proxy/IArchiveProxy';

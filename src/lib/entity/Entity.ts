@@ -1,12 +1,19 @@
-import type { IQueryFilter } from '@lib/archive/query/filter/IQueryFilter';
-import type { IEntity } from '@lib/entity/IEntity';
-import type { IModel } from '@lib/model/IModel';
-import type { IValidateModel } from '@lib/model/validation/IValidateModel';
-import type { JsonObject } from 'type-fest';
+import type { IQueryFilter } from '@interfaces/archive/query/filter/IQueryFilter';
+import type { IEntity } from '@interfaces/entity/IEntity';
+import type { IModel } from '@interfaces/model/IModel';
+import type { IValidateModel } from '@interfaces/model/validation/IValidateModel';
+import type { IProperty } from '@interfaces/property/IProperty';
+import type { Except, JsonObject } from 'type-fest';
+import { Type } from '../../common/property/types';
 import { Model } from '../model/Model';
 import { Property } from '../property/Property';
 
 export class Entity<T extends {} = JsonObject> implements IEntity<T> {
+
+  static defaultIdentifier: IProperty = {
+    name: '_id',
+    ...Type.String(),
+  };
 
   #interface: IEntity<T>;
 
@@ -16,6 +23,10 @@ export class Entity<T extends {} = JsonObject> implements IEntity<T> {
     return (
       typeof obj.name === 'string'
     );
+  }
+
+  get identifier(): IProperty {
+    return this.#interface.identifier ?? Entity.defaultIdentifier;
   }
 
   get name(): string {
@@ -53,7 +64,7 @@ export class Entity<T extends {} = JsonObject> implements IEntity<T> {
       .map(([name, propDef]) => {
         return new Property({
           name,
-          ...propDef
+          ...propDef as Except<IProperty, "name">
         });
       })
       .reduce((hash, prop) => {

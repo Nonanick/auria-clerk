@@ -1,6 +1,6 @@
-import { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure';
-import { IArchiveRequest } from '@lib/archive/procedure/request/IArchiveRequest';
-import { IArchiveProxyRequest } from '@lib/archive/proxy/IArchiveProxyRequest';
+import { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
+import { IArchiveRequest } from '@interfaces/archive/procedure/request/IArchiveRequest';
+import { IArchiveProxyRequest } from '@interfaces/archive/proxy/IArchiveProxyRequest';
 
 export class ProcedureRequestProxyFailed extends Error {
 

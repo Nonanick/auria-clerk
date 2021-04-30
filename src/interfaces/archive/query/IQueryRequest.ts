@@ -1,4 +1,4 @@
-import type { IEntity } from '@lib/entity/IEntity';
+import type { IEntity } from '@interfaces/entity/IEntity';
 import type { IQueryAggregation } from './aggregation/IQueryAggregation';
 import type { IQueryFilter } from './filter/IQueryFilter';
 import type { IQueryJoin } from './join/IQueryJoin';

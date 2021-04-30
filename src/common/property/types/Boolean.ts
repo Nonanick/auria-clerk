@@ -1,8 +1,8 @@
-import type { IProperty } from '@lib/property/IProperty';
-import type { IPropertySanitizer } from '@lib/property/sanitizer/IPropertySanitizer';
-import { IPropertySerializer } from '@lib/property/serialize/IPropertySerializer';
-import { IPropertyUnserializer } from '@lib/property/serialize/IPropertyUnserializer';
-import type { IPropertyValidation } from '@lib/property/validation/IPropertyValidation';
+import type { IProperty } from '@interfaces/property/IProperty';
+import type { IPropertySanitizer } from '@interfaces/property/sanitizer/IPropertySanitizer';
+import { IPropertySerializer } from '@interfaces/property/serialize/IPropertySerializer';
+import { IPropertyUnserializer } from '@interfaces/property/serialize/IPropertyUnserializer';
+import type { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
 import type { Except } from 'type-fest';
 
 export const BooleanTypeSymbol = Symbol('BooleanType');

@@ -1,6 +1,6 @@
-import { IArchive } from '@lib/archive/IArchive';
-import { IEntity } from '@lib/entity/IEntity';
-import { IModel } from '@lib/model/IModel';
+import { IArchive } from '@interfaces/archive/IArchive';
+import { IEntity } from '@interfaces/entity/IEntity';
+import { IModel } from '@interfaces/model/IModel';
 
 export interface IArchiveRequest {
   archive : IArchive;

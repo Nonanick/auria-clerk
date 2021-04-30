@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '@lib/property/validation/IPropertyValidation';
+import { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
 import { JsonObject } from 'type-fest';
 
 export const HasRequiredProperties: (props: string[]) => IPropertyValidation<JsonObject> = (props) => {

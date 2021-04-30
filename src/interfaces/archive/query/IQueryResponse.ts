@@ -1,4 +1,4 @@
-import type { IModel } from '@lib/model/IModel';
+import type { IModel } from '@interfaces/model/IModel';
 import { Collection } from '../../../collection/Collection';
 import type { IQueryRequest } from './IQueryRequest';
 

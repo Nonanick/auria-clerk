@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '@lib/property/validation/IPropertyValidation';
+import { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
 
 export function MultipleOf(num : number) : IPropertyValidation<number> {
   return async (val) => {

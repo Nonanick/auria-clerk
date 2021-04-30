@@ -1,6 +1,6 @@
 import type { MaybePromise } from '@error/MaybePromise';
-import type { IModel } from '@lib/model/IModel';
-import type { IValidateModel } from '@lib/model/validation/IValidateModel';
+import type { IModel } from '@interfaces/model/IModel';
+import type { IValidateModel } from '@interfaces/model/validation/IValidateModel';
 import type {  JsonObject } from 'type-fest';
 import { Entity } from '../entity/Entity';
 import { Property } from '../property/Property';

@@ -1,21 +1,30 @@
 import type { MaybePromise } from '@error/MaybePromise';
-import type { IArchiveEntity } from '@lib/archive/entity/IArchiveEntity';
-import type { IArchive } from '@lib/archive/IArchive';
-import type { IArchiveModel } from '@lib/archive/model/IArchiveModel';
-import type { IArchiveProxy } from '@lib/archive/proxy/IArchiveProxy';
-import type { IArchiveProxyRequest } from '@lib/archive/proxy/IArchiveProxyRequest';
-import type { IArchiveProxyResponse } from '@lib/archive/proxy/IArchiveProxyResponse';
-import type { IQueryRequest } from '@lib/archive/query/IQueryRequest';
-import type { IQueryResponse } from '@lib/archive/query/IQueryResponse';
-import type { IEntity } from '@lib/entity/IEntity';
+import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
+import type { IArchive } from '@interfaces/archive/IArchive';
+import type { IArchiveModel } from '@interfaces/archive/model/IArchiveModel';
+import type { IArchiveProxy } from '@interfaces/archive/proxy/IArchiveProxy';
+import type { IArchiveProxyRequest } from '@interfaces/archive/proxy/IArchiveProxyRequest';
+import type { IArchiveProxyResponse } from '@interfaces/archive/proxy/IArchiveProxyResponse';
+import type { IQueryRequest } from '@interfaces/archive/query/IQueryRequest';
+import type { IQueryResponse } from '@interfaces/archive/query/IQueryResponse';
+import type { IEntity } from '@interfaces/entity/IEntity';
+import { IProperty } from '@interfaces/property/IProperty';
 import type { JsonObject } from 'type-fest';
+import { Type } from '../../common/property/types';
 import { Entity } from '../../lib/entity/Entity';
 import { ArchiveModel } from '../model/ArchiveModel';
 import { AllProcedures } from '../proxy/AllProcedures';
 
 export class ArchiveEntity<
-  Type extends JsonObject = JsonObject,
+  Type extends {} = JsonObject,
   > extends Entity<Type> implements IArchiveEntity<Type> {
+
+
+  static from<T extends {} = JsonObject>(archive: IArchive, entity: IEntity): ArchiveEntity<T> {
+    const ent: ArchiveEntity<T> = new ArchiveEntity(archive, entity);
+
+    return ent;
+  }
 
   #archive: IArchive;
 
@@ -31,6 +40,8 @@ export class ArchiveEntity<
     return { ...this.#proxies };
   }
 
+ 
+
   model(): IArchiveModel<Type> {
     // Apply modification from super class
     const model = super.model(
@@ -39,7 +50,7 @@ export class ArchiveEntity<
 
     // Add entity procedures to model
     this.procedures().forEach(procedure => {
-      (model as any)[procedure] = async (context? : any) => {
+      (model as any)[procedure] = async (context?: any) => {
         return (this as any)[procedure]([model], context);
       };
     });

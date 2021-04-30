@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '@lib/property/validation/IPropertyValidation';
+import { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
 
 export function MinLength(min: number): IPropertyValidation<string> {
   return async (str) => {

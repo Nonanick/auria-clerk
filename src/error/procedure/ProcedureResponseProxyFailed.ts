@@ -1,7 +1,7 @@
-import type { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure';
-import type { IArchiveRequest } from '@lib/archive/procedure/request/IArchiveRequest';
-import type { IArchiveResponse } from '@lib/archive/procedure/response/IArchiveResponse';
-import type { IArchiveProxyResponse } from '@lib/archive/proxy/IArchiveProxyResponse';
+import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
+import type { IArchiveRequest } from '@interfaces/archive/procedure/request/IArchiveRequest';
+import type { IArchiveResponse } from '@interfaces/archive/procedure/response/IArchiveResponse';
+import type { IArchiveProxyResponse } from '@interfaces/archive/proxy/IArchiveProxyResponse';
 
 export class ProcedureResponseProxyFailed extends Error {
 

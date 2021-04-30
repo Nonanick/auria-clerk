@@ -1,5 +1,5 @@
 import type { MaybePromise } from '@error/MaybePromise';
-import type { IProperty } from '@lib/property/IProperty';
+import type { IProperty } from '@interfaces/property/IProperty';
 import type { JsonObject } from 'type-fest';
 import type { IValidateModel } from './validation/IValidateModel';
 

@@ -1,5 +1,5 @@
-import { IArchiveEntity } from '@lib/archive/entity/IArchiveEntity';
-import { IArchive } from '@lib/archive/IArchive';
+import { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
+import { IArchive } from '@interfaces/archive/IArchive';
 import { Factory } from './Factory';
 
 export class DefaultFactory extends Factory {

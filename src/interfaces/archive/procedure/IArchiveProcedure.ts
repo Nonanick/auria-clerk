@@ -1,6 +1,6 @@
 import { MaybePromise } from '@error/MaybePromise';
-import type { IEntity } from '@lib/entity/IEntity';
-import type { IModel } from '@lib/model/IModel';
+import type { IEntity } from '@interfaces/entity/IEntity';
+import type { IModel } from '@interfaces/model/IModel';
 import type { IArchive } from '../IArchive';
 import type { IArchiveResponse } from './response/IArchiveResponse';
 

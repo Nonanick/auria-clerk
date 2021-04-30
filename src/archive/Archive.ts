@@ -1,16 +1,16 @@
-import type { IArchiveEntity } from '@lib/archive/entity/IArchiveEntity';
-import type { IArchive } from '@lib/archive/IArchive';
-import type { IArchiveProcedure } from '@lib/archive/procedure/IArchiveProcedure';
-import type { IEntity } from '@lib/entity/IEntity';
-import type { IArchiveProxyRequest } from '@lib/archive/proxy/IArchiveProxyRequest';
-import type { IArchiveProxy } from '@lib/archive/proxy/IArchiveProxy';
-import type { IArchiveProxyResponse } from '@lib/archive/proxy/IArchiveProxyResponse';
-import type { IFactory } from '@lib/archive/factory/IFactory';
+import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
+import type { IArchive } from '@interfaces/archive/IArchive';
+import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
+import type { IEntity } from '@interfaces/entity/IEntity';
+import type { IArchiveProxyRequest } from '@interfaces/archive/proxy/IArchiveProxyRequest';
+import type { IArchiveProxy } from '@interfaces/archive/proxy/IArchiveProxy';
+import type { IArchiveProxyResponse } from '@interfaces/archive/proxy/IArchiveProxyResponse';
+import type { IFactory } from '@interfaces/archive/factory/IFactory';
 import type { MaybePromise } from '@error/MaybePromise';
 import { AllProcedures } from './proxy/AllProcedures';
 import { DefaultFactory } from './factory/DefaultFactory';
-import type { IQueryRequest } from '@lib/archive/query/IQueryRequest';
-import type { IQueryResponse } from '@lib/archive/query/IQueryResponse';
+import type { IQueryRequest } from '@interfaces/archive/query/IQueryRequest';
+import type { IQueryResponse } from '@interfaces/archive/query/IQueryResponse';
 
 export abstract class Archive implements IArchive {
 

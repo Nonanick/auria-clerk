@@ -1,10 +1,11 @@
-import { Entity } from '../../../src/lib/entity/Entity';
-import { MockedEntity } from '../../mock/entity/MockedEntity';
+import { MockedUser } from '../../mock/entity/MockUser';
+
 describe('Entity class', () => {
-  let mockedEntity : Entity = new Entity(MockedEntity);
+  let mockedEntity = MockedUser;
 
   beforeEach(() => {
-    mockedEntity = new Entity(MockedEntity);
+
+    mockedEntity.properties.address.item.type
   });
   
   describe('Property manipulation', () => {

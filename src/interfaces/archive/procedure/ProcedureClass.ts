@@ -1,6 +1,6 @@
-import { MaybePromise } from '@error/MaybePromise';
 import { ArchiveEntity } from 'src/archive/entity/ArchiveEntity';
 import { Class, JsonObject } from 'type-fest';
+import { MaybePromise } from '../../../error/MaybePromise';
 import { IArchiveModel } from '../model/IArchiveModel';
 import { IArchiveResponse } from './response/IArchiveResponse';
 

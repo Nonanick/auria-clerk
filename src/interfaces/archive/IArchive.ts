@@ -1,4 +1,4 @@
-import type { IEntity } from '@interfaces/entity/IEntity';
+import { IEntity } from '../entity/IEntity';
 import type { IArchiveEntity } from './entity/IArchiveEntity';
 import type { IArchiveProcedure } from './procedure/IArchiveProcedure';
 import { IArchiveProxy } from './proxy/IArchiveProxy';
@@ -7,7 +7,7 @@ import { IArchiveProxyResponse } from './proxy/IArchiveProxyResponse';
 
 export interface IArchive {
 
-  entity(entity: IEntity): IArchiveEntity;
+  entity(entity: IEntity<{}>): IArchiveEntity;
 
   procedures: {
     [name: string]: IArchiveProcedure;

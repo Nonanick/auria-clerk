@@ -1,7 +1,7 @@
-import type { MaybePromise } from '@error/MaybePromise';
-import type { IModel } from '@interfaces/model/IModel';
-import type { IValidateModel } from '@interfaces/model/validation/IValidateModel';
 import type {  JsonObject } from 'type-fest';
+import { MaybePromise } from '../../error/MaybePromise';
+import { IModel } from '../../interfaces/model/IModel';
+import { IValidateModel } from '../../interfaces/model/validation/IValidateModel';
 import { Entity } from '../entity/Entity';
 import { Property } from '../property/Property';
 
@@ -9,7 +9,7 @@ export class Model<
 Type extends JsonObject = JsonObject,
 > implements IModel<Type> {
 
-  static is(obj : any) : obj is IModel {
+  static is(obj : any) : obj is IModel<{}> {
     return (
       typeof obj.addProperty === 'function'
       && typeof obj.properties === 'function'
@@ -28,7 +28,7 @@ Type extends JsonObject = JsonObject,
     )
   }
 
-  #entity: Entity;
+  #entity: Entity<Type>;
 
   #modelValidations: {
     [name: string]: IValidateModel
@@ -40,7 +40,7 @@ Type extends JsonObject = JsonObject,
 
   #values: JsonObject = {};
 
-  constructor(entity: Entity) {
+  constructor(entity: Entity<Type>) {
     this.#entity = entity;
     this.#properties = this.#entity.properties;
   }

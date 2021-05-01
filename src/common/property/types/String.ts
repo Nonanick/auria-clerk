@@ -1,9 +1,10 @@
-import type { IProperty } from '@interfaces/property/IProperty';
-import type { IPropertySanitizer } from '@interfaces/property/sanitizer/IPropertySanitizer';
-import { IPropertySerializer } from '@interfaces/property/serialize/IPropertySerializer';
-import { IPropertyUnserializer } from '@interfaces/property/serialize/IPropertyUnserializer';
-import type { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
+
 import type { Except } from 'type-fest';
+import { IProperty } from '../../../interfaces/property/IProperty';
+import { IPropertySanitizer } from '../../../interfaces/property/sanitizer/IPropertySanitizer';
+import { IPropertySerializer } from '../../../interfaces/property/serialize/IPropertySerializer';
+import { IPropertyUnserializer } from '../../../interfaces/property/serialize/IPropertyUnserializer';
+import { IPropertyValidation } from '../../../interfaces/property/validation/IPropertyValidation';
 
 export const StringTypeSymbol = Symbol('StringType');
 
@@ -31,4 +32,4 @@ export interface IStringTypeProperty extends IProperty {
 
 }
 
-type StringTypeDefinition = Except<IStringTypeProperty, "type">;
+type StringTypeDefinition = Except<IStringTypeProperty, "type" | "name">;

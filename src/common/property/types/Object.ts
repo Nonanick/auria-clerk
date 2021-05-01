@@ -1,9 +1,9 @@
-import type { IProperty } from '@interfaces/property/IProperty';
-import type { IPropertySanitizer } from '@interfaces/property/sanitizer/IPropertySanitizer';
-import { IPropertySerializer } from '@interfaces/property/serialize/IPropertySerializer';
-import { IPropertyUnserializer } from '@interfaces/property/serialize/IPropertyUnserializer';
-import type { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
 import type { Except, JsonObject } from 'type-fest';
+import { IProperty } from '../../../interfaces/property/IProperty';
+import { IPropertySanitizer } from '../../../interfaces/property/sanitizer/IPropertySanitizer';
+import { IPropertySerializer } from '../../../interfaces/property/serialize/IPropertySerializer';
+import { IPropertyUnserializer } from '../../../interfaces/property/serialize/IPropertyUnserializer';
+import { IPropertyValidation } from '../../../interfaces/property/validation/IPropertyValidation';
 
 export const ObjectTypeSymbol = Symbol('ObjectType');
 
@@ -25,7 +25,7 @@ export interface IObjectTypeProperty extends IProperty {
   validations?: { [name: string]: IPropertyValidation<JsonObject>; };
 
   serializer?: IPropertySerializer<string, JsonObject>;
-  unserializer?: IPropertyUnserializer<bigint, JsonObject>;
+  unserializer?: IPropertyUnserializer<JsonObject, string>;
 
   default?: JsonObject | (() => JsonObject) | (() => Promise<JsonObject>) | null | undefined;
 

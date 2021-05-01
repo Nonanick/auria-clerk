@@ -1,12 +1,12 @@
-import type { Maybe } from '@error/Maybe';
-import { ProcedureRequestProxyFailed } from '@error/procedure/ProcedureRequestProxyFailed';
-import { ProcedureResponseProxyFailed } from '@error/procedure/ProcedureResponseProxyFailed';
-import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
-import type { IArchive } from '@interfaces/archive/IArchive';
-import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
-import type { IArchiveRequest } from '@interfaces/archive/procedure/request/IArchiveRequest';
-import type { IArchiveResponse } from '@interfaces/archive/procedure/response/IArchiveResponse';
-import type { IModel } from '@interfaces/model/IModel';
+import { Maybe } from '../../error/Maybe';
+import { ProcedureRequestProxyFailed } from '../../error/procedure/ProcedureRequestProxyFailed';
+import { ProcedureResponseProxyFailed } from '../../error/procedure/ProcedureResponseProxyFailed';
+import { IArchiveEntity } from '../../interfaces/archive/entity/IArchiveEntity';
+import { IArchive } from '../../interfaces/archive/IArchive';
+import { IArchiveProcedure } from '../../interfaces/archive/procedure/IArchiveProcedure';
+import { IArchiveRequest } from '../../interfaces/archive/procedure/request/IArchiveRequest';
+import { IArchiveResponse } from '../../interfaces/archive/procedure/response/IArchiveResponse';
+import { IModel } from '../../interfaces/model/IModel';
 
 /**
  * Run Procedure

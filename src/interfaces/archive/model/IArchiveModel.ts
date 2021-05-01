@@ -1,5 +1,5 @@
-import type { IModel } from '@interfaces/model/IModel';
 import type { JsonObject } from 'type-fest';
+import { IModel } from '../../model/IModel';
 
 export interface IArchiveModel<
 T extends {} = JsonObject, 

@@ -14,14 +14,6 @@
     "isolatedModules": true,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "paths": {
-      "@interfaces/*": [
-        "./src/interfaces/*"
-      ],
-      "@error/*" : [
-        "./src/error/*"
-      ]
-    },
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,

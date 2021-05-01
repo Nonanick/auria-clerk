@@ -1,10 +1,10 @@
-import { IArchive } from '@interfaces/archive/IArchive';
-import { IEntity } from '@interfaces/entity/IEntity';
-import { IModel } from '@interfaces/model/IModel';
+import { IEntity } from '../../../entity/IEntity';
+import { IModel } from '../../../model/IModel';
+import { IArchive } from '../../IArchive';
 
 export interface IArchiveRequest {
   archive : IArchive;
-  entity : IEntity;
+  entity : IEntity<{}>;
   models : IModel[];
   context : any;
 }

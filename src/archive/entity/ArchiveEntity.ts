@@ -1,29 +1,29 @@
-import type { MaybePromise } from '@error/MaybePromise';
-import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
-import type { IArchive } from '@interfaces/archive/IArchive';
-import type { IArchiveModel } from '@interfaces/archive/model/IArchiveModel';
-import type { IArchiveProxy } from '@interfaces/archive/proxy/IArchiveProxy';
-import type { IArchiveProxyRequest } from '@interfaces/archive/proxy/IArchiveProxyRequest';
-import type { IArchiveProxyResponse } from '@interfaces/archive/proxy/IArchiveProxyResponse';
-import type { IQueryRequest } from '@interfaces/archive/query/IQueryRequest';
-import type { IQueryResponse } from '@interfaces/archive/query/IQueryResponse';
-import type { IEntity } from '@interfaces/entity/IEntity';
-import { IProperty } from '@interfaces/property/IProperty';
 import type { JsonObject } from 'type-fest';
-import { Type } from '../../common/property/types';
+import { MaybePromise } from '../../error/MaybePromise';
+import { IArchiveEntity } from '../../interfaces/archive/entity/IArchiveEntity';
+import { IArchive } from '../../interfaces/archive/IArchive';
+import { IArchiveModel } from '../../interfaces/archive/model/IArchiveModel';
+import { IArchiveProxy } from '../../interfaces/archive/proxy/IArchiveProxy';
+import { IArchiveProxyRequest } from '../../interfaces/archive/proxy/IArchiveProxyRequest';
+import { IArchiveProxyResponse } from '../../interfaces/archive/proxy/IArchiveProxyResponse';
+import { IQueryRequest } from '../../interfaces/archive/query/IQueryRequest';
+import { IQueryResponse } from '../../interfaces/archive/query/IQueryResponse';
+import { IEntity } from '../../interfaces/entity/IEntity';
 import { Entity } from '../../lib/entity/Entity';
 import { ArchiveModel } from '../model/ArchiveModel';
 import { AllProcedures } from '../proxy/AllProcedures';
 
 export class ArchiveEntity<
-  Type extends {} = JsonObject,
+  Type extends object = JsonObject,
   > extends Entity<Type> implements IArchiveEntity<Type> {
 
 
-  static from<T extends {} = JsonObject>(archive: IArchive, entity: IEntity): ArchiveEntity<T> {
-    const ent: ArchiveEntity<T> = new ArchiveEntity(archive, entity);
-
-    return ent;
+  static from<
+    Interface extends object = JsonObject,
+    Type extends IEntity<Interface> = IEntity<Interface>
+  >(archive: IArchive, entity: Type): ArchiveEntity<Interface> {
+    const ent: ArchiveEntity<Interface> = new ArchiveEntity(archive, entity);
+    return ent as ArchiveEntity<Interface> & Type;
   }
 
   #archive: IArchive;
@@ -40,7 +40,7 @@ export class ArchiveEntity<
     return { ...this.#proxies };
   }
 
- 
+
 
   model(): IArchiveModel<Type> {
     // Apply modification from super class
@@ -145,7 +145,7 @@ export class ArchiveEntity<
     return false;
   }
 
-  constructor(archive: IArchive, entity: IEntity) {
+  constructor(archive: IArchive, entity: IEntity<Type>) {
     super(entity);
     this.#archive = archive;
   }

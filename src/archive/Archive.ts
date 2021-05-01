@@ -1,16 +1,16 @@
-import type { IArchiveEntity } from '@interfaces/archive/entity/IArchiveEntity';
-import type { IArchive } from '@interfaces/archive/IArchive';
-import type { IArchiveProcedure } from '@interfaces/archive/procedure/IArchiveProcedure';
-import type { IEntity } from '@interfaces/entity/IEntity';
-import type { IArchiveProxyRequest } from '@interfaces/archive/proxy/IArchiveProxyRequest';
-import type { IArchiveProxy } from '@interfaces/archive/proxy/IArchiveProxy';
-import type { IArchiveProxyResponse } from '@interfaces/archive/proxy/IArchiveProxyResponse';
-import type { IFactory } from '@interfaces/archive/factory/IFactory';
-import type { MaybePromise } from '@error/MaybePromise';
-import { AllProcedures } from './proxy/AllProcedures';
+import { MaybePromise } from '../error/MaybePromise';
+import { IArchiveEntity } from '../interfaces/archive/entity/IArchiveEntity';
+import { IFactory } from '../interfaces/archive/factory/IFactory';
+import { IArchive } from '../interfaces/archive/IArchive';
+import { IArchiveProcedure } from '../interfaces/archive/procedure/IArchiveProcedure';
+import { IArchiveProxy } from '../interfaces/archive/proxy/IArchiveProxy';
+import { IArchiveProxyRequest } from '../interfaces/archive/proxy/IArchiveProxyRequest';
+import { IArchiveProxyResponse } from '../interfaces/archive/proxy/IArchiveProxyResponse';
+import { IQueryRequest } from '../interfaces/archive/query/IQueryRequest';
+import { IEntity } from '../interfaces/entity/IEntity';
+import { QueryRequest } from './entity/query/QueryRequest';
 import { DefaultFactory } from './factory/DefaultFactory';
-import type { IQueryRequest } from '@interfaces/archive/query/IQueryRequest';
-import type { IQueryResponse } from '@interfaces/archive/query/IQueryResponse';
+import { AllProcedures } from './proxy/AllProcedures';
 
 export abstract class Archive implements IArchive {
 
@@ -24,10 +24,10 @@ export abstract class Archive implements IArchive {
     this.#factory = factory != null ? factory : new DefaultFactory(this);
   }
 
-  abstract entity(entity: IEntity): IArchiveEntity;
+  abstract entity(entity: IEntity<{}>): IArchiveEntity;
 
   abstract get procedures(): {
-    [name: string]: IArchiveProcedure
+    [name: string]: IArchiveProcedure;
   }
 
   get allProxies(): { [name: string]: IArchiveProxy; } {
@@ -107,5 +107,5 @@ export abstract class Archive implements IArchive {
     return false;
   }
 
-  abstract query(queryRequest : IQueryRequest) : MaybePromise<IQueryResponse>;
+  abstract query(queryRequest : IQueryRequest) : MaybePromise<QueryRequest>;
 }

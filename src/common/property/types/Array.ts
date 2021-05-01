@@ -1,36 +1,48 @@
-import type { IProperty } from '@interfaces/property/IProperty';
-import type { IPropertySanitizer } from '@interfaces/property/sanitizer/IPropertySanitizer';
-import { IPropertySerializer } from '@interfaces/property/serialize/IPropertySerializer';
-import { IPropertyUnserializer } from '@interfaces/property/serialize/IPropertyUnserializer';
-import type { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
-import type { Except, JsonValue } from 'type-fest';
+import type { Except } from 'type-fest';
+import type { IProperty } from '../../../interfaces/property/IProperty';
+import type { IPropertySanitizer } from '../../../interfaces/property/sanitizer/IPropertySanitizer';
+import type { IPropertySerializer } from '../../../interfaces/property/serialize/IPropertySerializer';
+import type { IPropertyUnserializer } from '../../../interfaces/property/serialize/IPropertyUnserializer';
+import type { IPropertyValidation } from '../../../interfaces/property/validation/IPropertyValidation';
 
 export const ArrayTypeSymbol = Symbol('ArrayType');
 
-export function ArrayType<Item = JsonValue>(typeDef: ArrayTypeDefinition<Item>): Except<IArrayTypeProperty<Item>, "name"> {
+export function ArrayType<Item extends ArrayItemType = ArrayItemType>(typeDef: ArrayTypeDefinition<Item>): Except<IArrayTypeProperty<Item>, "name"> {
 
-  const PropertyDef: Except<IArrayTypeProperty<Item>, "name"> = { 
-    type: ArrayTypeSymbol, 
-    ...typeDef
+  let validations = typeDef.validations ?? {};
+
+  // Add validations from item
+  validations.ValidateEachItemInArray = async (items : Item['type'][]) => {
+
+    return true;
+  }
+
+  const PropertyDef: Except<IArrayTypeProperty<Item>, "name"> = {
+    type: ArrayTypeSymbol,
+    ...typeDef,
+    validations
   };
 
   return PropertyDef;
 }
 
-export interface IArrayTypeProperty<Item extends JsonValue> extends IProperty {
+export interface IArrayTypeProperty<Item extends ArrayItemType> extends IProperty {
 
   type: Symbol;
 
-  item : Item;
+  item: Item;
 
-  sanitizers?: { [name: string]: IPropertySanitizer<Item[]>; };
-  validations?: { [name: string]: IPropertyValidation<Item[]>; };
+  sanitizers?: { [name: string]: IPropertySanitizer<Item['type'][]>; };
+  validations?: { [name: string]: IPropertyValidation<Item['type'][]>; };
 
-  serializer?: IPropertySerializer<string, Item[]>;
-  unserializer?: IPropertyUnserializer<Item[], string>;
+  serializer?: IPropertySerializer<string, Item['type'][]>;
+  unserializer?: IPropertyUnserializer<Item['type'][], string>;
+
 
   default?: bigint | (() => bigint) | (() => Promise<bigint>) | null | undefined;
 
 }
 
-type ArrayTypeDefinition<Item> = Except<IArrayTypeProperty<Item>, "type">;
+type ArrayTypeDefinition<Item extends ArrayItemType> = Except<IArrayTypeProperty<Item>, "type" | "name">;
+
+type ArrayItemType = Except<IProperty, "name">;

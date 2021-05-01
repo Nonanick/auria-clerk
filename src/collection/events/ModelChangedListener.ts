@@ -1,4 +1,4 @@
-import type { IModel } from '@interfaces/model/IModel';
+import { IModel } from '../../interfaces/model/IModel';
 
 export interface ModelChangedDetail {
   model : IModel;

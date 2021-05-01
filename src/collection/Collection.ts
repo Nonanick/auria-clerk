@@ -1,6 +1,6 @@
-import type { IQueryFilter } from '@interfaces/archive/query/filter/IQueryFilter';
-import type { IQueryOrder } from '@interfaces/archive/query/order/IQueryOrder';
-import type { IModel } from '@interfaces/model/IModel';
+import { IQueryFilter } from '../interfaces/archive/query/filter/IQueryFilter';
+import { IQueryOrder } from '../interfaces/archive/query/order/IQueryOrder';
+import { IModel } from '../interfaces/model/IModel';
 import type { ModelAddedListener } from './events/ModelAddedListener';
 import type { ModelChangedListener } from './events/ModelChangedListener';
 import type { ModelRemovedListener } from './events/ModelRemovedListener';

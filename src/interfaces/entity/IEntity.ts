@@ -1,14 +1,14 @@
-import { IQueryFilter } from '@interfaces/archive/query/filter/IQueryFilter';
-import { IValidateModel } from '@interfaces/model/validation/IValidateModel';
-import type { IProperty } from '@interfaces/property/IProperty';
-import type { Except, JsonObject } from 'type-fest';
+import type { Except } from 'type-fest';
+import { IQueryFilter } from '../archive/query/filter/IQueryFilter';
+import { IValidateModel } from '../model/validation/IValidateModel';
+import { IProperty } from '../property/IProperty';
 
-export interface IEntity<T extends {} = JsonObject> {
+export interface IEntity<T> {
   name : string;
 
-  identifier? : IProperty;
-
   properties : Record<keyof T, Except<IProperty,"name">>;
+
+  identifier? : IProperty;
   
   validations?: Record<string, IValidateModel>;
 

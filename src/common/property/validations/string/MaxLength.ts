@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '@interfaces/property/validation/IPropertyValidation';
+import { IPropertyValidation } from '../../../../interfaces/property/validation/IPropertyValidation';
 
 export function MaxLenngth(max: number): IPropertyValidation<string> {
   return async (str) => {

@@ -1,25 +1,35 @@
-import type { IQueryFilter } from '@interfaces/archive/query/filter/IQueryFilter';
-import type { IEntity } from '@interfaces/entity/IEntity';
-import type { IModel } from '@interfaces/model/IModel';
-import type { IValidateModel } from '@interfaces/model/validation/IValidateModel';
-import type { IProperty } from '@interfaces/property/IProperty';
-import type { Except, JsonObject } from 'type-fest';
+import type { Except } from 'type-fest';
 import { Type } from '../../common/property/types';
+import { IQueryFilter } from '../../interfaces/archive/query/filter/IQueryFilter';
+import { IEntity } from '../../interfaces/entity/IEntity';
+import { IModel } from '../../interfaces/model/IModel';
+import { IValidateModel } from '../../interfaces/model/validation/IValidateModel';
+import { IProperty } from '../../interfaces/property/IProperty';
 import { Model } from '../model/Model';
 import { Property } from '../property/Property';
 
-export class Entity<T extends {} = JsonObject> implements IEntity<T> {
+export function sculptEntity<I>(data: IEntity<I>): ( Entity<I> & { properties: IEntity<I>['properties'] }) {
+  return new Entity<I>({
+    ...data
+  }) as (Entity<I> & IEntity<I>['properties']);
+}
+
+export class Entity<T> implements IEntity<T> {
+
 
   static defaultIdentifier: IProperty = {
     name: '_id',
-    ...Type.String(),
+    ...Type.String({
+      identifier: true,
+      private: false,
+    }),
   };
 
   #interface: IEntity<T>;
 
-  #properties: Record<keyof T, Property>;
+  #properties: Record<keyof T, Property<IEntity<T>['properties'][keyof T] & { name: string }>>;
 
-  static is(obj: any): obj is IEntity {
+  static is(obj: any): obj is IEntity<{}> {
     return (
       typeof obj.name === 'string'
     );
@@ -33,19 +43,21 @@ export class Entity<T extends {} = JsonObject> implements IEntity<T> {
     return this.#interface.name;
   }
 
-  get properties(): Record<keyof T, Property> {
+  get properties(): Record<keyof T, Property<
+    (IEntity<T>['properties'][keyof T] & { name: string })
+  >> {
     return this.#properties;
   }
 
-  get validations() : Record<string, IValidateModel> {
+  get validations(): Record<string, IValidateModel> {
     return { ...this.#interface.validations };
   }
 
-  get defaultFilters() : Record<string, IQueryFilter> {
+  get defaultFilters(): Record<string, IQueryFilter> {
     return { ...this.#interface.defaultFilters };
-  } 
+  }
 
-  model(upgrade? : IModel<T>) : IModel<T> {
+  model(upgrade?: IModel<T>): IModel<T> {
 
     const model = upgrade != null ? upgrade : new Model<T>(this);
 
@@ -57,7 +69,7 @@ export class Entity<T extends {} = JsonObject> implements IEntity<T> {
     return model;
   }
 
-  constructor(entity: IEntity) {
+  constructor(entity: IEntity<T>) {
     this.#interface = entity;
 
     this.#properties = Object.entries(this.#interface.properties)
@@ -71,5 +83,5 @@ export class Entity<T extends {} = JsonObject> implements IEntity<T> {
         return hash[prop.name] = prop;
       }, {} as any);
   }
-  
+
 }

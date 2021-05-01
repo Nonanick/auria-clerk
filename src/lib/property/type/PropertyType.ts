@@ -1,4 +1,4 @@
-import type { IPropertyType } from '@interfaces/property/type/IPropertyType';
+import { IPropertyType } from '../../../interfaces/property/type/IPropertyType';
 
 export class PropertyType {
 

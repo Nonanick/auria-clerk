@@ -6,7 +6,7 @@ import type { ArchiveEntity } from '../entity/ArchiveEntity';
 import { RunProcedure } from './RunProcedure';
 
 export function AddProcedure<
-  Model extends JsonObject = JsonObject,
+  Model extends {} = JsonObject,
   Entity extends ArchiveEntity<Model> = ArchiveEntity<Model>,
   Procedures extends { [name: string]: IArchiveProcedure; } = { [name: string]: IArchiveProcedure; }
 >(target: Entity, procedures: Procedures) {

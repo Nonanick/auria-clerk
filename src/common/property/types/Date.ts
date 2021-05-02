@@ -7,9 +7,9 @@ import type { IPropertyValidation } from '../../../interfaces/property/validatio
 
 export const DateTypeSymbol = Symbol('DateType');
 
-export function DateType(typeDef?: DateTypeDefinition): Except<IDateTypeProperty, "name"> {
+export function DateType(typeDef?: DateTypeDefinition): IDateProperty {
 
-  const PropertyDef: Except<IDateTypeProperty, "name"> = {
+  const PropertyDef: IDateProperty = {
     type: DateTypeSymbol,
     ...typeDef
   };
@@ -17,7 +17,7 @@ export function DateType(typeDef?: DateTypeDefinition): Except<IDateTypeProperty
   return PropertyDef;
 }
 
-export interface IDateTypeProperty extends IProperty {
+export interface IDateProperty extends IProperty {
 
   type: Symbol;
 
@@ -31,4 +31,4 @@ export interface IDateTypeProperty extends IProperty {
 
 }
 
-type DateTypeDefinition = Except<IDateTypeProperty, "type">;
+type DateTypeDefinition = Except<IDateProperty, "type">;

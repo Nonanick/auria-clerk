@@ -1,4 +1,4 @@
-import { MockAddressDTO } from './MockAddressDTO';
+import { MockAddressDTO } from '../address/MockAddressDTO';
 
 export interface MockUserDTO {
   name : string;

@@ -7,17 +7,17 @@ import { IPropertyValidation } from '../../../interfaces/property/validation/IPr
 
 export const BooleanTypeSymbol = Symbol('BooleanType');
 
-export function BooleanType(typeDef?: BooleanTypeDefinition): Except<IBooleanTypeProperty, "name"> {
+export function BooleanType(typeDef?: BooleanTypeDefinition): IBooleanProperty {
 
-  const PropertyDef: Except<IBooleanTypeProperty, "name"> = { 
-    type: BooleanTypeSymbol, 
+  const PropertyDef: IBooleanProperty = {
+    type: BooleanTypeSymbol,
     ...typeDef
   };
 
   return PropertyDef;
 }
 
-export interface IBooleanTypeProperty extends IProperty {
+export interface IBooleanProperty extends IProperty {
 
   type: Symbol;
 
@@ -31,4 +31,4 @@ export interface IBooleanTypeProperty extends IProperty {
 
 }
 
-type BooleanTypeDefinition = Except<IBooleanTypeProperty, "type">;
+type BooleanTypeDefinition = Except<IBooleanProperty, "type">;

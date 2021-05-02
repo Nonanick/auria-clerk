@@ -8,17 +8,17 @@ import { IPropertyValidation } from '../../../interfaces/property/validation/IPr
 
 export const StringTypeSymbol = Symbol('StringType');
 
-export function StringType(typeDef?: StringTypeDefinition): Except<IStringTypeProperty, "name"> {
+export function StringType(typeDef?: StringTypeDefinition): IStringProperty {
 
-  const PropertyDef: Except<IStringTypeProperty, "name"> = { 
-    type: StringTypeSymbol, 
+  const PropertyDef: IStringProperty = {
+    type: StringTypeSymbol,
     ...typeDef
   };
 
   return PropertyDef;
 }
 
-export interface IStringTypeProperty extends IProperty {
+export interface IStringProperty extends IProperty {
 
   type: Symbol;
 
@@ -32,4 +32,4 @@ export interface IStringTypeProperty extends IProperty {
 
 }
 
-type StringTypeDefinition = Except<IStringTypeProperty, "type" | "name">;
+type StringTypeDefinition = Except<IStringProperty, "type">;

@@ -7,7 +7,7 @@ import type { IPropertyValidation } from '../../../interfaces/property/validatio
 
 export const ArrayTypeSymbol = Symbol('ArrayType');
 
-export function ArrayType<Item extends ArrayItemType = ArrayItemType>(typeDef: ArrayTypeDefinition<Item>): Except<IArrayTypeProperty<Item>, "name"> {
+export function ArrayType<Item extends ArrayItemType = ArrayItemType>(typeDef: ArrayTypeDefinition<Item>): IArrayProperty<Item> {
 
   let validations = typeDef.validations ?? {};
 
@@ -17,7 +17,7 @@ export function ArrayType<Item extends ArrayItemType = ArrayItemType>(typeDef: A
     return true;
   }
 
-  const PropertyDef: Except<IArrayTypeProperty<Item>, "name"> = {
+  const PropertyDef: IArrayProperty<Item> = {
     type: ArrayTypeSymbol,
     ...typeDef,
     validations
@@ -26,7 +26,7 @@ export function ArrayType<Item extends ArrayItemType = ArrayItemType>(typeDef: A
   return PropertyDef;
 }
 
-export interface IArrayTypeProperty<Item extends ArrayItemType> extends IProperty {
+export interface IArrayProperty<Item extends ArrayItemType> extends IProperty {
 
   type: Symbol;
 
@@ -43,6 +43,6 @@ export interface IArrayTypeProperty<Item extends ArrayItemType> extends IPropert
 
 }
 
-type ArrayTypeDefinition<Item extends ArrayItemType> = Except<IArrayTypeProperty<Item>, "type" | "name">;
+type ArrayTypeDefinition<Item extends ArrayItemType> = Except<IArrayProperty<Item>, "type">;
 
-type ArrayItemType = Except<IProperty, "name">;
+type ArrayItemType = IProperty;

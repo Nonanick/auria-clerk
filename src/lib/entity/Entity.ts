@@ -8,16 +8,19 @@ import { IProperty } from '../../interfaces/property/IProperty';
 import { Model } from '../model/Model';
 import { Property } from '../property/Property';
 
-export function sculptEntity<I>(data: IEntity<I>): ( Entity<I> & { properties: IEntity<I>['properties'] }) {
+export function sculptEntity<
+  I,
+  EntI extends IEntity<I> = IEntity<I>
+>(data: EntI) {
+  const newData = { ...data } as const;
   return new Entity<I>({
-    ...data
-  }) as (Entity<I> & IEntity<I>['properties']);
+    ...newData
+  }) as Entity<I> & { properties: typeof data['properties'] };
 }
 
-export class Entity<T> implements IEntity<T> {
+export class Entity<T extends {}> implements IEntity<T> {
 
-
-  static defaultIdentifier: IProperty = {
+  static defaultIdentifier: IProperty & { name: string } = {
     name: '_id',
     ...Type.String({
       identifier: true,
@@ -27,6 +30,8 @@ export class Entity<T> implements IEntity<T> {
 
   #interface: IEntity<T>;
 
+  #identifier: Property;
+
   #properties: Record<keyof T, Property<IEntity<T>['properties'][keyof T] & { name: string }>>;
 
   static is(obj: any): obj is IEntity<{}> {
@@ -35,8 +40,8 @@ export class Entity<T> implements IEntity<T> {
     );
   }
 
-  get identifier(): IProperty {
-    return this.#interface.identifier ?? Entity.defaultIdentifier;
+  get identifier(): Property {
+    return this.#identifier;
   }
 
   get name(): string {
@@ -74,14 +79,18 @@ export class Entity<T> implements IEntity<T> {
 
     this.#properties = Object.entries(this.#interface.properties)
       .map(([name, propDef]) => {
-        return new Property({
-          name,
-          ...propDef as Except<IProperty, "name">
+        return new Property(name, {
+          ...propDef as IProperty
         });
       })
       .reduce((hash, prop) => {
         return hash[prop.name] = prop;
       }, {} as any);
+
+    this.#identifier = new Property(
+      this.#interface?.name ?? Entity.defaultIdentifier.name,
+      this.#interface.identifier ?? Entity.defaultIdentifier
+    );
   }
 
 }

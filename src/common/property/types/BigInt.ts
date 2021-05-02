@@ -31,4 +31,4 @@ export interface IBigIntTypeProperty extends IProperty {
 
 }
 
-type BigIntTypeDefinition = Except<IBigIntTypeProperty, "type">;
+type BigIntTypeDefinition = Except<IBigIntTypeProperty, "type" | "name">;

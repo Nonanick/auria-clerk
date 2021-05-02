@@ -6,7 +6,7 @@ import { Entity } from '../entity/Entity';
 import { Property } from '../property/Property';
 
 export class Model<
-Type extends JsonObject = JsonObject,
+Type extends {} = JsonObject,
 > implements IModel<Type> {
 
   static is(obj : any) : obj is IModel<{}> {

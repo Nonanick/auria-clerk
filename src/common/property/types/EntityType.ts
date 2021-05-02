@@ -11,8 +11,8 @@ export const EntityTypeSymbol = Symbol('EntityType');
 
 export function EntityType<Item extends IEntity<{}> = IEntity<{}>>(
   typeDef: EntityTypeDefinition<Item> | Item
-): Except<IEntityType<Item>, "name"> {
-  let PropertyDef: Except<IEntityType<Item>, "name">;
+): IEntityProperty<Item> {
+  let PropertyDef: IEntityProperty<Item>;
 
   if (Entity.is(typeDef)) {
     PropertyDef = {
@@ -29,7 +29,7 @@ export function EntityType<Item extends IEntity<{}> = IEntity<{}>>(
   return PropertyDef;
 }
 
-export interface IEntityType<Item extends IEntity<{}>> extends IProperty {
+export interface IEntityProperty<Item extends IEntity<{}>> extends IProperty {
 
   type: Symbol;
 
@@ -45,4 +45,4 @@ export interface IEntityType<Item extends IEntity<{}>> extends IProperty {
 
 }
 
-type EntityTypeDefinition<Item extends IEntity<{}>> = Except<IEntityType<Item>, "type" | "name">;
+type EntityTypeDefinition<Item extends IEntity<{}>> = Except<IEntityProperty<Item>, "type">;

@@ -1,4 +1,3 @@
-import { Except } from 'type-fest';
 import { IPropertySanitizer } from './sanitizer/IPropertySanitizer';
 import { IPropertySerializer } from './serialize/IPropertySerializer';
 import { IPropertyUnserializer } from './serialize/IPropertyUnserializer';
@@ -7,8 +6,6 @@ import { IPropertyValidation } from './validation/IPropertyValidation';
 
 export interface IProperty {
 
-  name: string;
-  
   type: IPropertyType | Symbol;
 
   required?: boolean;
@@ -36,5 +33,3 @@ export interface IProperty {
   default?: null | undefined | any | (() => any | null) | (() => Promise<any | null>);
 
 }
-
-export type INamelessProperty = Except<IProperty, "name">;

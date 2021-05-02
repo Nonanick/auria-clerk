@@ -60,12 +60,12 @@ export class Property<T extends IProperty = IProperty> implements IProperty {
     return this.#interface.default();
   }
 
-  constructor(prop: T) {
+  constructor(name : string, prop: T) {
     this.#interface = {
       ...prop
     };
 
-    this.#name = this.#interface.name;
+    this.#name = name;
     this.#type = this.#interface.type;
   }
 

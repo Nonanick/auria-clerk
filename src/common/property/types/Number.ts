@@ -7,9 +7,9 @@ import { IPropertyValidation } from '../../../interfaces/property/validation/IPr
 
 export const NumberTypeSymbol = Symbol('NumberType');
 
-export function NumberType(typeDef?: NumberTypeDefinition): Except<INumberTypeProperty, "name"> {
+export function NumberType(typeDef?: NumberTypeDefinition): INumberProperty {
 
-  const PropertyDef: Except<INumberTypeProperty, "name"> = { 
+  const PropertyDef: INumberProperty = { 
     type: NumberTypeSymbol, 
     ...typeDef
   };
@@ -17,7 +17,7 @@ export function NumberType(typeDef?: NumberTypeDefinition): Except<INumberTypePr
   return PropertyDef;
 }
 
-export interface INumberTypeProperty extends IProperty {
+export interface INumberProperty extends IProperty {
 
   type: Symbol;
 
@@ -31,4 +31,4 @@ export interface INumberTypeProperty extends IProperty {
 
 }
 
-type NumberTypeDefinition = Except<INumberTypeProperty, "type">;
+type NumberTypeDefinition = Except<INumberProperty, "type">;

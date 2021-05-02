@@ -31,4 +31,4 @@ export interface IObjectTypeProperty extends IProperty {
 
 }
 
-type ObjectTypeDefinition = Except<IObjectTypeProperty, "type">;
+type ObjectTypeDefinition = Except<IObjectTypeProperty, "type" | "name">;

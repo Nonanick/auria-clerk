@@ -6,8 +6,7 @@
       "ESNext"
     ],
     "declaration": true,
-    "outDir": "./dist",
-    "rootDir": "",
+    "rootDir": "../",
     "importHelpers": true,
     "strict": true,
     "keyofStringsOnly": true,
@@ -19,12 +18,4 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": [
-    "examples",
-    "node_modules",
-    "dist",
-  ],
-  "include": [
-    "src",
-  ]
 }

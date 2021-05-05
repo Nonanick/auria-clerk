@@ -19,7 +19,7 @@ import {
 import { IProxyProcedure } from "../proxy/IProxyProcedure";
 import { IFilterQuery } from "../query/filter/IFilterQuery";
 import { IOrderBy } from "../query/order/IOrderBy";
-import { Except } from 'type-fest';
+import type { Except } from 'type-fest';
 
 export interface IEntity {
   // Unique identifier inside a store
